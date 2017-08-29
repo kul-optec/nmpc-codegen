@@ -1,0 +1,4 @@
+#ifdef LIPSCHITZ_H
+#define LIPSCHITZ_H
+
+#endif LIPSCHITZ_H
