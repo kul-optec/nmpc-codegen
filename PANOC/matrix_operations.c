@@ -14,3 +14,11 @@ real_t norm2_vector(real_t* vector,size_t vector_size){
     }
     return sqrt(norm);
 }
+
+/* add vector and real, put the result in vector */
+void addVectorConstant(real_t* vector,size_t vector_size,real_t real){   
+    for(;vector_size>0;vector_size--){
+        *vector = *vector+real;
+        vector++;
+    }
+}
