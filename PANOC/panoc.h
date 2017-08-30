@@ -4,4 +4,4 @@
 int panoc_init();
 int panoc_cleanup();
 
-#endif PANOC_H
+#endif 

@@ -4,4 +4,4 @@
 int lbfgs_init();
 int lbfgs_cleanup();
 
-#endif PANOC_H
+#endif 
