@@ -1,0 +1,2 @@
+add_executable(bin/matrix_operations_2norm src/matrix_operations_2norm.c)
+target_link_libraries (bin/matrix_operations_2norm PANOC_lib)

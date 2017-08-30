@@ -14,6 +14,5 @@ add_subdirectory (PANOC) # read out the cmakelist file
 enable_testing()
 add_subdirectory(tst)
 
-# example of a test
-# 
-# add_test(NAME testAddTest COMMAND  tests/bin/testAdd)
+# Tests on the matrix/vector operations
+add_test(NAME matrix_operations_2norm COMMAND  tst/bin/matrix_operations_2norm)
