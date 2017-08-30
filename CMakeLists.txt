@@ -15,4 +15,5 @@ enable_testing()
 add_subdirectory(tst)
 
 # Tests on the matrix/vector operations
-add_test(NAME matrix_operations_2norm COMMAND  tst/bin/matrix_operations_2norm)
+add_test(NAME matrix_operations_norms COMMAND  tst/bin/matrix_operations_norms)
+add_test(NAME matrix_operations_vectors COMMAND  tst/bin/matrix_operations_vectors)
