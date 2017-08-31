@@ -19,7 +19,7 @@ real_t estimate_lipschitz(void (*gradient)(real_t*), real_t* current_position,co
     gradient(current_position_delta);
 
     /* substract the 2 vectors */
-    VECTOR_SUB(current_position,current_position_delta,current_position,size_current_position)
+    VECTOR_SUB(current_position,current_position_delta,size_current_position,current_position)
 
     real_t norm2_delta = sqrt(pow(delta_lipschitz,2)*size_current_position);
     return norm2_vector(current_position,size_current_position)/norm2_delta;
