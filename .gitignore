@@ -12,3 +12,5 @@ CTestTestfile.cmake
 *.a
 *.json
 *.gch
+
+casadi
