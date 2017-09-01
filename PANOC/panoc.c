@@ -19,3 +19,11 @@ int panoc_init(){
 int panoc_cleanup(){
 
 }
+
+/*
+ * Solve the actually MPC problem, return the optimal inputs
+ */
+int panoc_solve(real_t* current_state,real_t* optimal_inputs){
+    return 1; /* TODO , return error if called*/
+}
+
