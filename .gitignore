@@ -14,3 +14,5 @@ CTestTestfile.cmake
 *.gch
 
 casadi
+build
+.vscode
