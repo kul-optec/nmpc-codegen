@@ -12,6 +12,7 @@
 #define FAILURE 1
 #define SUCCESS 1
 
+
 /* 
  * ---------------------------------
  * START globals LIPSCHITZ CONSTANTS
@@ -25,5 +26,14 @@
  * END globals LIPSCHITZ CONSTANTS
  * ---------------------------------
  */
+
+
+/* ---------------------------------
+ * Casadi related definitions
+ * ---------------------------------
+ */
+
+/* set the casadi mem argument in function call at zero */
+#define MEM_CASADI 0 
 
 #endif
