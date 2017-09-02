@@ -17,3 +17,4 @@ add_subdirectory(tst)
 # Tests on the matrix/vector operations
 add_test(NAME matrix_operations_norms COMMAND  tst/bin/matrix_operations_norms)
 add_test(NAME matrix_operations_vectors COMMAND  tst/bin/matrix_operations_vectors)
+add_test(NAME panoc_interfaceCasadi_simpleTest COMMAND  tst/bin/panoc_interfaceCasadi_simpleTest)

@@ -3,7 +3,7 @@
 #include <stdlib.h> 
 #include "interfaceCasadi.h"
 
-#include "../casadi/gen_costum.c"
+#include "../casadi/f.c"
 
 static CasadiFunction f_data;
 
