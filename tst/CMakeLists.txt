@@ -8,9 +8,12 @@
 
 add_executable(bin/matrix_operations_norms src/matrix_operations_norms.c)
 target_link_libraries (bin/matrix_operations_norms PANOC_lib)
+target_link_libraries(bin/matrix_operations_norms m) # link with the math lib, some toolchains need this
 
 add_executable(bin/matrix_operations_vectors src/matrix_operations_vectors.c)
 target_link_libraries (bin/matrix_operations_vectors PANOC_lib)
+target_link_libraries(bin/matrix_operations_vectors m) # link with the math lib, some toolchains need this
 
 add_executable(bin/panoc_interfaceCasadi_simpleTest src/panoc_interfaceCasadi_simpleTest.c)
 target_link_libraries (bin/panoc_interfaceCasadi_simpleTest PANOC_lib)
+target_link_libraries(bin/panoc_interfaceCasadi_simpleTest m) # link with the math lib, some toolchains need this
