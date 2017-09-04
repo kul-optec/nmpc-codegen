@@ -3,8 +3,7 @@ from os import *
 from sys import *
 
 x = MX.sym('x ',2) 
-y = MX.sym('y') 
-f = Function('f',[x ,y],[x,sin(y)*x],['x','y'],['r','q'])
+f = Function('f',[x],[sin(x)],['x'],['r'])
 
 # Generate the c file with 
 f.generate('buffer.c')
