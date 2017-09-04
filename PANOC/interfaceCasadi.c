@@ -4,6 +4,9 @@
 #include "interfaceCasadi.h"
 
 #include "../casadi/f.c"
+/*
+ * DOCUMENTATION casadi: http://casadi.sourceforge.net/users_guide/html/node5.html
+ */
 
 static CasadiFunction f_data;
 
@@ -57,10 +60,13 @@ int cleanup_func(){
     free(f_data.buffer_real);
 }
 
+/*
+ * because the input only contains a single vector 
+ * the sparcity parameters are not relevant here
+ */
 int get_inputSize(){
     return f_data.inputSize;
 }
-
 int get_outputSize(){
     return f_data.outputSize;
 }
