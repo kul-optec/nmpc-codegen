@@ -8,24 +8,24 @@
 
 #define test_vector_size 4 /* use a small vector to do some simple tests */
 
-int testSimpleVectorConstantAdd(void);
-int testVectorCopyMacro(void);
-int testVectoraddMacro(void);
-int testVectorsubMacro(void);
-int testVectorRealmulMacro(void);
+int testVectorRealAdd(void);
+int testVectorCopy(void);
+int testVectoradd(void);
+int testVectorsub(void);
+int testVectorRealmul(void);
 
 int main(){
-    return testSimpleVectorConstantAdd() \
-    +testVectorCopyMacro() \
-    +testVectoraddMacro() \
-    +testVectorsubMacro() \
-    +testVectorRealmulMacro();
+    return testVectorRealAdd() \
+    +testVectorCopy() \
+    +testVectoradd() \
+    +testVectorsub() \
+    +testVectorRealmul();
 }
 
 /* 
  *vector:=vector+constant
  */
-int testSimpleVectorConstantAdd(void){
+int testVectorRealAdd(void){
     real_t testVector[test_vector_size] = {1, 2, 3, 4};
     real_t testConstant = 1;
     vector_real_add(testVector,test_vector_size,testConstant,testVector);
@@ -43,11 +43,10 @@ int testSimpleVectorConstantAdd(void){
  * test of vector copy
  */
  #define test_vector_size 4
- int testVectorCopyMacro(void){
+int testVectorCopy(void){
     real_t testVector1[test_vector_size] = {1, 2, 3, 4};
     real_t testVector2[test_vector_size];
 
-    /* run the MACRO that needs testing*/
     vector_copy(testVector1,testVector2,test_vector_size);
     
     if(testVector2[0]==1 && testVector2[1]==2 && testVector2[2]==3 && testVector2[3]==4){ 
@@ -62,11 +61,10 @@ int testSimpleVectorConstantAdd(void){
 /*
  * test of vector add
  */
-  int testVectoraddMacro(void){
+int testVectoradd(void){
     real_t testVector1[test_vector_size] = {1, 2, 3, 4};
     real_t testVector2[test_vector_size] = {2, 3, 4, 5};
 
-    /* run the MACRO that needs testing */
     vector_add(testVector1,testVector2,test_vector_size,testVector2);
     
     if(testVector2[0]==3 && testVector2[1]==5 && testVector2[2]==7 && testVector2[3]==9){ 
@@ -81,11 +79,10 @@ int testSimpleVectorConstantAdd(void){
 /*
  * test of vector substraction
  */
-  int testVectorsubMacro(void){
+int testVectorsub(void){
     real_t testVector1[test_vector_size] = {1, 2, 3, 4};
     real_t testVector2[test_vector_size] = {2, 3, 4, 5};
 
-    /* run the MACRO that needs testing */
     vector_add(testVector1,testVector2,test_vector_size,testVector2);
     
     if(testVector2[0]==3 && testVector2[1]==5 && testVector2[2]==7 && testVector2[3]==9){ 
@@ -100,11 +97,10 @@ int testSimpleVectorConstantAdd(void){
 /*
  * test of vector real multiplication
  */
- int testVectorRealmulMacro(void){
+int testVectorRealmul(void){
     real_t testVector[test_vector_size] = {1, 2, 3, 4};
     real_t testReal =2;
 
-    /* run the MACRO that needs testing */
     vector_real_mul(testVector,test_vector_size,testReal,testVector);
     
     if(testVector[0]==2 && testVector[1]==4 && testVector[2]==6 && testVector[3]==8){ 
