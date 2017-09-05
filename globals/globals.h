@@ -10,7 +10,7 @@
 #define real_eps pow(10,-16)
 /* return values for failure and success */
 #define FAILURE 1
-#define SUCCESS 1
+#define SUCCESS 0
 
 
 /* 
