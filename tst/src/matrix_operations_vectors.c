@@ -28,7 +28,7 @@ int main(){
 int testSimpleVectorConstantAdd(void){
     real_t testVector[test_vector_size] = {1, 2, 3, 4};
     real_t testConstant = 1;
-    VECTOR_REAL_ADD(testVector,test_vector_size,testConstant,testVector)
+    vector_real_add(testVector,test_vector_size,testConstant,testVector);
         
     if(testVector[0]==2 && testVector[1]==3 && testVector[2]==4 && testVector[3]==5){ 
         return 0; /* sucess of test*/
@@ -48,7 +48,7 @@ int testSimpleVectorConstantAdd(void){
     real_t testVector2[test_vector_size];
 
     /* run the MACRO that needs testing*/
-    VECTOR_COPY(testVector1,testVector2,test_vector_size)
+    vector_copy(testVector1,testVector2,test_vector_size);
     
     if(testVector2[0]==1 && testVector2[1]==2 && testVector2[2]==3 && testVector2[3]==4){ 
         return 0; /* sucess of test*/
@@ -67,7 +67,7 @@ int testSimpleVectorConstantAdd(void){
     real_t testVector2[test_vector_size] = {2, 3, 4, 5};
 
     /* run the MACRO that needs testing */
-    VECTOR_ADD(testVector1,testVector2,test_vector_size,testVector2)
+    vector_add(testVector1,testVector2,test_vector_size,testVector2);
     
     if(testVector2[0]==3 && testVector2[1]==5 && testVector2[2]==7 && testVector2[3]==9){ 
         return 0; /* sucess of test */
@@ -86,7 +86,7 @@ int testSimpleVectorConstantAdd(void){
     real_t testVector2[test_vector_size] = {2, 3, 4, 5};
 
     /* run the MACRO that needs testing */
-    VECTOR_ADD(testVector1,testVector2,test_vector_size,testVector2)
+    vector_add(testVector1,testVector2,test_vector_size,testVector2);
     
     if(testVector2[0]==3 && testVector2[1]==5 && testVector2[2]==7 && testVector2[3]==9){ 
         return 0; /* sucess of test */
@@ -105,7 +105,7 @@ int testSimpleVectorConstantAdd(void){
     real_t testReal =2;
 
     /* run the MACRO that needs testing */
-    VECTOR_REAL_MUL(testVector,test_vector_size,testReal,testVector)
+    vector_real_mul(testVector,test_vector_size,testReal,testVector);
     
     if(testVector[0]==2 && testVector[1]==4 && testVector[2]==6 && testVector[3]==8){ 
         return 0; /* sucess of test */

@@ -15,10 +15,32 @@ real_t norm2_vector(real_t* vector,size_t vector_size){
     return sqrt(norm);
 }
 
-/* add vector and real, put the result in vector */
-void addVectorConstant(real_t* vector,size_t vector_size,real_t real){   
-    for(;vector_size>0;vector_size--){
-        *vector = *vector+real;
-        vector++;
-    }
+/* copy vector1 into vector2 */
+void vector_copy(real_t* vector1,real_t* vector2,size_t size_vector){
+    size_t i;
+    for(i=0; i < size_vector; i++)vector2[i]=vector1[i];
+}
+
+/* add vector1 and vector2 save the result in result */
+void vector_add(real_t* vector1,real_t* vector2,size_t size_vector,real_t* result){
+    size_t i;
+    for(i = 0; i < size_vector; i++)result[i]=vector1[i]+vector2[i];
+}
+
+/* add vector with real */
+void vector_real_add(real_t* vector,size_t size_vector,real_t real,real_t* result){
+    size_t i;
+    for(i = 0; i < size_vector; i++)result[i]=vector[i]+real;
+}
+
+/* subtract vector2 from vector1 save the result in result */
+void vector_sub(real_t* vector1,real_t* vector2,size_t size_vector,real_t* result){
+    size_t i;
+    for(i = 0; i < size_vector; i++)result[i]=vector1[i]-vector2[i];
+}
+
+/* multiply vector with real */
+void vector_real_mul(real_t* vector,size_t size_vector,real_t real,real_t* result){
+    size_t i;
+    for(i = 0; i < size_vector; i++)result[i]=vector[i]*real;
 }

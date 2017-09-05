@@ -13,19 +13,19 @@
     norm = sqrt(norm);
 
 /* copy vector1 into vector2 */
-#define VECTOR_COPY(vector1,vector2,size_vector) for(size_t i = 0; i < size_vector; i++)vector2[i]=vector1[i];
+void vector_copy(real_t* vector1,real_t* vector2,size_t size_vector);
 
 /* add vector1 and vector2 save the result in result */
-#define VECTOR_ADD(vector1,vector2,size_vector,result) for(size_t i = 0; i < size_vector; i++)result[i]=vector1[i]+vector2[i];
+void vector_add(real_t* vector1,real_t* vector2,size_t size_vector,real_t* result);
 
 /* add vector with real */
-#define VECTOR_REAL_ADD(vector,size_vector,real,result)for(size_t i = 0; i < size_vector; i++)result[i]=vector[i]+real;
+void vector_real_add(real_t* vector,size_t size_vector,real_t real,real_t* result);
 
 /* subtract vector2 from vector1 save the result in result */
-#define VECTOR_SUB(vector1,vector2,size_vector,result) for(size_t i = 0; i < size_vector; i++)result[i]=vector1[i]-vector2[i];
+void vector_sub(real_t* vector1,real_t* vector2,size_t size_vector,real_t* result);
 
 /* multiply vector with real */
-#define VECTOR_REAL_MUL(vector,size_vector,real,result)for(size_t i = 0; i < size_vector; i++)result[i]=vector[i]*real;
+void vector_real_mul(real_t* vector,size_t size_vector,real_t real,real_t* result);
 
 real_t norm2_vector(real_t* vector,size_t vector_size);
 void addVectorConstant(real_t* vector1,size_t vector1_size,real_t real);
