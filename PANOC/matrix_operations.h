@@ -27,7 +27,10 @@ void vector_sub(real_t* vector1,real_t* vector2,size_t size_vector,real_t* resul
 /* multiply vector with real */
 void vector_real_mul(real_t* vector,size_t size_vector,real_t real,real_t* result);
 
+/*
+ * calculate the 2 norm of a vector defined as
+ * sqrt(x[0]^2 + x[1]^2 + ... x[n]^2)
+ */
 real_t norm2_vector(real_t* vector,size_t vector_size);
-void addVectorConstant(real_t* vector1,size_t vector1_size,real_t real);
 
 #endif
