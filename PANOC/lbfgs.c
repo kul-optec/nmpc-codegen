@@ -1,18 +1,26 @@
 #include"lbfgs.h"
+#include "../globals/globals.h"
 
 /*
- * Initialize the panoc library
- * This function should allways be called before doing anything with the panoc lib
+ * Initialize the lbfgs library
+ * This function should allways be called before doing anything with the lbfgs algorithm.
  */
-int panoc_init(){
+int lbfgs_init(){
 
 }
 
 /*
- * cleanup the panoc library
- * This function cleans up the memory used by the panoc algorithm, 
+ * cleanup the lbfgs library
+ * This function cleans up the memory used by the lbfgs algorithm, 
  * use this when you don't need the lib anymore
  */
-int panoc_cleanup(){
+int lbfgs_cleanup(){
 
+}
+
+/*
+ * solve one iteration of the lbfgs algorithm
+ */ 
+int lbfgs_solve(){
+    return FAILURE; /* return failure as the function is not implemented yet */
 }
