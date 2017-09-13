@@ -1,10 +1,11 @@
 # PANOC NMPC solver
 ## What is this?
-This project is still under construction but the goal is to generate an MPC controller. The user will provide the dynamics of the system, a number of conditions snd some MPC parameters in python. The program will then generate an NMPC controller in c99 code that can be used on embedded devices.
+This project is still under construction but the goal is to generate an MPC controller. The user will provide the dynamics of the system, a number of conditions and some MPC parameters in python. The program will then generate an NMPC controller in c89 code that can be used on embedded devices.
 
-## what do i need?
+## What do I need?
 - GNU toolchain with gcc
 - python (both 2 and 3 work at this moment) with casadi installed on it
+- Cmake (if you want to run the tests)
 
 ## How to compile and test me?
 This is only for those who want to check if the library works on there device. 
