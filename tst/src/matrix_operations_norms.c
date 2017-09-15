@@ -4,9 +4,10 @@
 
 int test2norm(void);
 int test2normMacro(void);
+int test_inner_product(void);
 
 int main(){
-    return test2norm()+test2normMacro();
+    return test2norm()+test2normMacro()+test_inner_product();;
 }
 
 /* 
@@ -16,10 +17,10 @@ int test2norm(void){
     real_t testVector[4] = {1, 2, 2, 4};
     real_t testNorm = norm2_vector(testVector,4);
     if(testNorm==5){ 
-        return 0;
+        return SUCCESS;
     }else{
         printf("The 2 norm of [1; 2; 2; 4] should be 5 but is %f",testNorm);
-        return 1; /* test failed so return 1 */
+        return FAILURE; /* test failed so return 1 */
     }
 }
 
@@ -31,9 +32,22 @@ int test2normMacro(void){
     real_t testNorm;
     VECTOR_2NORM(testVector,4,testNorm)
     if(testNorm==5){ 
-        return 0;
+        return SUCCESS;
     }else{
         printf("The 2 norm of [1; 2; 2; 4] should be 5 but is %f",testNorm);
-        return 1; /* test failed so return 1 */
+        return FAILURE; /* test failed so return 1 */
+    }
+}
+
+int test_inner_product(void){
+    real_t test_vector1[4] = {1, 2, 3, 4};
+    real_t test_vector2[4] = {1, 2, 3, 4};
+
+    real_t inner_product_test =inner_product(test_vector1,test_vector2,4);
+    if(inner_product_test==30){ 
+        return SUCCESS;
+    }else{
+        printf("The innerproduct of [1; 2; 3; 4] with [1; 2; 3; 4]  should be 30 but is %f",inner_product_test);
+        return FAILURE; /* test failed so return 1 */
     }
 }

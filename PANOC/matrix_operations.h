@@ -33,4 +33,13 @@ void vector_real_mul(real_t* vector,size_t size_vector,real_t real,real_t* resul
  */
 real_t norm2_vector(real_t* vector,size_t vector_size);
 
+/*  multiply each element of vector1 times -1 and save it in vector2 */
+void vector_minus(real_t* vector1,real_t* vector2,size_t size_vector);
+
+/* inner product between vector 1 and 2 */
+real_t inner_product(real_t* vector1,real_t* vector2,size_t size_vector);
+
+/* add vector2 n times from vector1 */
+void vector_add_ntimes(real_t* vector1,real_t* vector2,size_t size_vector,real_t n,real_t* result);
+
 #endif
