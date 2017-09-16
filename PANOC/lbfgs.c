@@ -40,14 +40,14 @@ int lbfgs_init(size_t buffer_size_,size_t dimension_, \
     /* 
      * Allocate memory.
      */
-    real_t* s_data; /* data field used to allocate 2D array s, if only oe malloc is used we get cast errors */
+    real_t* s_data; /* data field used to allocate 2D array s, if only one malloc is used we get cast errors */
     s_data = malloc(sizeof(real_t)*dimension*buffer_size);
     if(s_data==NULL) goto fail_1;
 
     s = malloc(sizeof(real_t)*buffer_size);
     if(s==NULL) goto fail_2;
 
-    real_t* y_data; /* data field used to allocate 2D array y, if only oe malloc is used we get cast errors */
+    real_t* y_data; /* data field used to allocate 2D array y, if only one malloc is used we get cast errors */
     y_data = malloc(sizeof(real_t)*dimension*buffer_size);
     if(y_data==NULL) goto fail_3;
 
