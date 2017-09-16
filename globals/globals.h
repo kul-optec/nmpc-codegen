@@ -11,6 +11,9 @@
 /* return values for failure and success */
 #define FAILURE 1
 #define SUCCESS 0
+/* define the 2 boolean states */
+#define TRUE 1
+#define FALSE 0
 
 
 /* 
