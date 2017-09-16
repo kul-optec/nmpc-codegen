@@ -95,8 +95,14 @@ int lbfgs_init(size_t buffer_size_,size_t dimension_, \
  * use this when you don't need the lib anymore
  */
 int lbfgs_cleanup(){
-        free(y);
+        size_t i;
+        for ( i = 0; i < buffer_size; i++)
+        {
+            free(y[i]);
+            free(s[i]);
+        }
         free(s);
+        free(y);
         free(alpha);
         free(rho);
         return SUCCESS;
