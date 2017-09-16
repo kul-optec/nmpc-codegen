@@ -9,7 +9,8 @@
  */
 real_t norm2_vector(real_t* vector,size_t vector_size){
     real_t norm=0;
-    for(int i=0;i<vector_size;i++){
+    size_t i;
+    for(i=0;i<vector_size;i++){
         norm += pow(vector[i],2);
     }
     return sqrt(norm);
