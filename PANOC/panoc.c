@@ -1,7 +1,7 @@
 /*
  * 
  */
-#include"panoc.h"
+#include"../include/panoc.h"
 
 /*
  * Initialize the panoc library
