@@ -42,7 +42,7 @@ int checkIfSolutionIsReached(void){
         vector_add(current_location,direction,DIMENSION,current_location);
         print_location(current_location);
     }
-    
+    lbfgs_cleanup();
     if(current_location[0]<pow(10,-3)&&current_location[1]<pow(10,-3)){
         printf("end of test1:SUCCESS --- \n");
         return SUCCESS;
@@ -50,7 +50,6 @@ int checkIfSolutionIsReached(void){
         printf("end of test1:FAILURE --- \n");
         return FAILURE;
     }
-    lbfgs_cleanup();
 }
 
 int check2thdegreepolynomial(void){
@@ -72,6 +71,7 @@ int check2thdegreepolynomial(void){
         print_location(current_location);
     }
     
+    lbfgs_cleanup();
     if(current_location[0]<pow(10,-15)&&current_location[1]<pow(10,-15)){
         return SUCCESS;
         printf("end of test1:SUCCESS --- \n");
@@ -79,7 +79,6 @@ int check2thdegreepolynomial(void){
         printf("end of test1:FAILURE --- \n");
         return FAILURE;
     }
-    lbfgs_cleanup();
 }
 
 void gradient(real_t* x ,real_t*df){

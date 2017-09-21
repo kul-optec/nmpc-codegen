@@ -25,6 +25,9 @@ static size_t dimension;
 static void (*gradient) (real_t* input, real_t* output); /* gradient used in each iteration */
 void shift_s_and_y(size_t buffer_limit); /* internal function used to shift the s and y buffers */
 
+real_t* y_data; /* data field used to allocate 2D array y, if only one malloc is used we get cast errors */
+real_t* s_data; /* data field used to allocate 2D array s, if only one malloc is used we get cast errors */
+
 /*
  * Initialize the lbfgs library
  * This function should allways be called before doing anything with the lbfgs algorithm.
@@ -40,14 +43,12 @@ int lbfgs_init(size_t buffer_size_,size_t dimension_, \
     /* 
      * Allocate memory.
      */
-    real_t* s_data; /* data field used to allocate 2D array s, if only one malloc is used we get cast errors */
     s_data = malloc(sizeof(real_t)*dimension*buffer_size);
     if(s_data==NULL) goto fail_1;
 
     s = malloc(sizeof(real_t)*buffer_size);
     if(s==NULL) goto fail_2;
 
-    real_t* y_data; /* data field used to allocate 2D array y, if only one malloc is used we get cast errors */
     y_data = malloc(sizeof(real_t)*dimension*buffer_size);
     if(y_data==NULL) goto fail_3;
 
@@ -96,12 +97,9 @@ int lbfgs_init(size_t buffer_size_,size_t dimension_, \
  */
 int lbfgs_cleanup(){
         size_t i;
-        for ( i = 0; i < buffer_size; i++)
-        {
-            free(y[i]);
-            free(s[i]);
-        }
+        free(s_data);
         free(s);
+        free(y_data);
         free(y);
         free(alpha);
         free(rho);
