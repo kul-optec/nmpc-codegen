@@ -18,12 +18,14 @@
 
 /* 
  * ---------------------------------
- * START globals LIPSCHITZ CONSTANTS
+ * START globals proximal gradient descent
  * ---------------------------------
  */
 
 /* constant delta used to estimate lipschitz constant  */
-#define delta_lipschitz pow(10,-12)
+#define DELTA_LIPSCHITZ pow(10,-5)
+
+#define PROXIMAL_GRAD_DESC_SAFETY_VALUE 0.05
 
 /* ---------------------------------
  * END globals LIPSCHITZ CONSTANTS
