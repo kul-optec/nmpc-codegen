@@ -39,7 +39,7 @@ void vector_minus(real_t* vector1,real_t* vector2,size_t size_vector);
 /* inner product between vector 1 and 2 */
 real_t inner_product(real_t* vector1,real_t* vector2,size_t size_vector);
 
-/* add vector2 n times from vector1 */
+/* add vector2 n times to vector1 */
 void vector_add_ntimes(real_t* vector1,real_t* vector2,size_t size_vector,real_t n,real_t* result);
 
 #endif
