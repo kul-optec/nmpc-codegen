@@ -1,6 +1,6 @@
 % demonstration of the proximal gradient descent
 clc;clear all;
-number_of_steps=10;
+number_of_steps=20;
 dimension=2;
 
 x0=[0.5;0.5]; % starting position
@@ -10,9 +10,9 @@ w=0;
 g = @(x) max(abs(x)-w,0);
 proxg = @(x) prox_g( x,w,dimension );
 
-degree_polynomial=20;
+degree_polynomial=5;
 f = @(x) sum(x.^degree_polynomial);
-df = @(x) (degree_polynomial-1)*x;
+df = @(x) (degree_polynomial)*x.^(degree_polynomial-1);
 
 % get starting value gamma
 lipschitz_constant= estimate_lipschitz( df,x0 );
