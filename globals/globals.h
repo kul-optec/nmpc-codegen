@@ -5,7 +5,9 @@
 #define GLOBALS_H
 
 /* data type used to store numbers, the default type is double */
+#ifndef real_t
 #define real_t double
+#endif
 /* the machine accuracy double*/
 #define real_eps pow(10,-16)
 /* return values for failure and success */
