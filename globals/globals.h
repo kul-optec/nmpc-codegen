@@ -10,7 +10,7 @@
 #endif
 /* the machine accuracy double*/
 #define real_eps pow(10,-16)
-/* return values for failure and success */
+/* return values for failure and success of function, the unix way*/
 #define FAILURE 1
 #define SUCCESS 0
 /* define the 2 boolean states */
