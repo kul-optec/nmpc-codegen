@@ -21,3 +21,11 @@ target_link_libraries(bin/panoc_interfaceCasadi_simpleTest m) # link with the ma
 add_executable(bin/lbfgs_poly_test src/lbfgs_poly_test.c)
 target_link_libraries (bin/lbfgs_poly_test PANOC_lib)
 target_link_libraries(bin/lbfgs_poly_test m) # link with the math lib, some toolchains need this
+
+add_executable(bin/lipschitz_estimator_test src/lipschitz_estimator_test.c)
+target_link_libraries (bin/lipschitz_estimator_test PANOC_lib)
+target_link_libraries(bin/lipschitz_estimator_test m) # link with the math lib, some toolchains need this
+
+add_executable(bin/prox_grad_descent_poly_test src/prox_grad_descent_poly_test.c)
+target_link_libraries (bin/prox_grad_descent_poly_test PANOC_lib)
+target_link_libraries(bin/prox_grad_descent_poly_test m) # link with the math lib, some toolchains need this
