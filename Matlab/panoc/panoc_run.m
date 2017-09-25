@@ -47,7 +47,7 @@ for interation_index=1:number_of_steps
         d=x_lbfgs-x;
         potential_x=x-(1-tau)*step_prox + tau*d;
         sigma=beta_safety_value/(4*gamma);
-        if(FBE( potential_x,gamma,beta_safety_value,f,df,proxg  )<= FBE( x,gamma,beta_safety_value,f,df,proxg  )-sigma*norm(step_prox/gamma,2))
+        if(FBE( potential_x,gamma,beta_safety_value,f,df,g,proxg  )<= FBE( x,gamma,beta_safety_value,f,df,g,proxg  )-sigma*norm(step_prox/gamma,2))
             break; % if this is statified stop right away
         else
             tau=tau/2;
