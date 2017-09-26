@@ -6,6 +6,7 @@
 #include "lipschitz.h"
 
 /* functions provided by the init function */
+real_t (*g)(real_t* input);
 void (*proxg)(real_t* input, real_t* output);
 real_t (*f)(real_t* input);
 void (*df)(real_t* input, real_t* output);
@@ -25,14 +26,13 @@ static real_t linesearch_gamma=0; /* linesearch parameter */
 static real_t* new_location;
 static real_t* direction;
 
-
-
 int proximal_gradient_descent_init(size_t dimension_, \
+    real_t (*g_)(real_t* input), \
     void (*proxg_)(real_t* input, real_t* output),\
     real_t (*f_)(real_t* input),\
     void (*df_)(real_t* input, real_t* output)){
     dimension=dimension_;
-    f=f_;proxg=proxg_;df=df_;
+    g=g_;f=f_;proxg=proxg_;df=df_;
 
     new_location = malloc(sizeof(real_t*)*dimension);
     if(new_location==NULL)goto fail_1;
@@ -117,4 +117,26 @@ int proximal_gradient_descent_check_linesearch(real_t* current_location){
         return FAILURE;
     else
         return SUCCESS;
+}
+
+/*
+ * calculate the forward backward envelop using the internal gamma
+ * Matlab cache.FBE = cache.fx + cache.gz - cache.gradfx(:)'*cache.FPR(:) + (0.5/gam)*(cache.normFPR^2);
+ */
+real_t proximal_gradient_descent_forward_backward_envelop(real_t* current_location){
+    proximal_gradient_descent_get_new_location(current_location); /* this will fill the direction variable */
+
+    real_t forward_backward_envelop;
+
+    real_t f_current_location=f(current_location);
+    real_t df_current_location[dimension];df(current_location,df_current_location);
+    real_t g_current_location=g(current_location);
+
+    real_t norm_direction = norm2_vector(direction,dimension);
+
+    forward_backward_envelop = f_current_location + g_current_location \
+     - inner_product(df_current_location,direction,dimension) \
+     + (1/(linesearch_gamma*2))*pow(norm_direction,2);
+
+     return forward_backward_envelop;
 }

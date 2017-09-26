@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 int proximal_gradient_descent_init(size_t dimension, \
+    real_t (*g_)(real_t* input), \
     void (*proxg_)(real_t* input, real_t* output),\
     real_t (*f_)(real_t* input),\
     void (*df_)(real_t* input, real_t* output));

@@ -17,6 +17,7 @@ void print_location(real_t* location);
  * Function g with the resulting function after proximal operator
  */
 real_t f_grad_descent_poly_test(real_t* x);
+real_t g_grad_descent_poly_test(real_t* x);
 void df_grad_descent_poly_test(real_t* x ,real_t* df_x);
 void proxg_grad_descent_poly_test(real_t* x ,real_t* proxg_x);
 
@@ -39,6 +40,7 @@ int checkIfSolutionIsReached(void){
 
     printf("starting in location x1=0.5 x2=0.5 \n");
     proximal_gradient_descent_init(DIMENSION, \
+        g_grad_descent_poly_test,\
         proxg_grad_descent_poly_test,\
         f_grad_descent_poly_test,\
         df_grad_descent_poly_test);
@@ -71,6 +73,12 @@ real_t f_grad_descent_poly_test(real_t* x){
         f_x+=pow(x[i],degree);
     }
     return f_x;
+}
+real_t g_grad_descent_poly_test(real_t* x){
+    real_t g_x=0;
+    size_t i;
+    /* g is unused in this test so we leave this blank */
+    return g_x;
 }
 void df_grad_descent_poly_test(real_t* x ,real_t* df_x){
     size_t i;
