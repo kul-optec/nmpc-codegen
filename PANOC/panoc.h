@@ -11,5 +11,5 @@ int panoc_init(size_t dimension_,\
     void (*df_)(real_t* input, real_t* output));
 int panoc_cleanup();
 
-int panoc_solve(real_t* current_state,real_t* optimal_inputs);
+int panoc_get_new_location(real_t* current_state,real_t* optimal_inputs);
 #endif

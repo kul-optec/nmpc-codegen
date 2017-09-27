@@ -21,3 +21,4 @@ add_test(NAME panoc_interfaceCasadi_simpleTest COMMAND  tst/bin/panoc_interfaceC
 add_test(NAME lbfgs_poly_test COMMAND  tst/bin/lbfgs_poly_test)
 add_test(NAME lipschitz_estimator_test COMMAND  tst/bin/lipschitz_estimator_test)
 add_test(NAME prox_grad_descent_poly_test COMMAND  tst/bin/prox_grad_descent_poly_test)
+add_test(NAME panoc_poly_test COMMAND  tst/bin/panoc_poly_test)

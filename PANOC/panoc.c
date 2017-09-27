@@ -72,7 +72,7 @@ int panoc_cleanup(){
 /*
  * Solve the actually MPC problem, return the optimal inputs
  */
-int panoc_solve(real_t* current_location,real_t* new_location){   
+int panoc_get_new_location(real_t* current_location,real_t* new_location){   
     real_t direction_prox[dimension];
     proximal_gradient_descent_get_direction(current_location,direction_prox);
     real_t sigma = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*proximal_gradient_descent_get_gamma());

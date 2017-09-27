@@ -29,3 +29,7 @@ target_link_libraries(bin/lipschitz_estimator_test m) # link with the math lib, 
 add_executable(bin/prox_grad_descent_poly_test src/prox_grad_descent_poly_test.c)
 target_link_libraries (bin/prox_grad_descent_poly_test PANOC_lib)
 target_link_libraries(bin/prox_grad_descent_poly_test m) # link with the math lib, some toolchains need this
+
+add_executable(bin/panoc_poly_test src/panoc_poly_test.c)
+target_link_libraries (bin/panoc_poly_test PANOC_lib)
+target_link_libraries(bin/panoc_poly_test m) # link with the math lib, some toolchains need this
