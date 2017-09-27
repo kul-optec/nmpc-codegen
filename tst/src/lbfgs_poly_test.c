@@ -10,7 +10,7 @@ static int degree=10;
 int checkIfSolutionIsReached(void);
 int check2thdegreepolynomial(void);
 // void f(real_t*x,real_t fx)
-void gradient(real_t* x ,real_t* df);
+int gradient(real_t* x ,real_t* df);
 void print_location(real_t* location);
 
 /*
@@ -81,7 +81,7 @@ int check2thdegreepolynomial(void){
     }
 }
 
-void gradient(real_t* x ,real_t*df){
+int gradient(real_t* x ,real_t*df){
     df[0] = degree*pow(x[0],degree-1) ;
     df[1] = degree*pow(x[1],degree-1);
 }
