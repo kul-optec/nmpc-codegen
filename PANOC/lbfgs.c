@@ -95,7 +95,7 @@ int lbfgs_init(size_t buffer_size_,size_t dimension_, \
  * This function cleans up the memory used by the lbfgs algorithm, 
  * use this when you don't need the lib anymore
  */
-int lbfgs_cleanup(){
+int lbfgs_cleanup(void){
         size_t i;
         free(s_data);
         free(s);
