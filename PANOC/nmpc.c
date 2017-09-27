@@ -9,6 +9,6 @@ int nmpc_init(){
 int nmpc_cleanup(){
     return FAILURE;/* not implemented yet, return failure */
 }
-int npmc_solve(real_t* current state,real_t* optimal_inputs){
+int npmc_solve(real_t* current_state,real_t* optimal_inputs){
     return FAILURE;/* not implemented yet, return failure */
 }
