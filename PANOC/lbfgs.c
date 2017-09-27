@@ -25,8 +25,8 @@ static size_t dimension;
 static int (*gradient) (real_t* input, real_t* output); /* gradient used in each iteration */
 void shift_s_and_y(size_t buffer_limit); /* internal function used to shift the s and y buffers */
 
-real_t* y_data; /* data field used to allocate 2D array y, if only one malloc is used we get cast errors */
-real_t* s_data; /* data field used to allocate 2D array s, if only one malloc is used we get cast errors */
+static real_t* y_data; /* data field used to allocate 2D array y, if only one malloc is used we get cast errors */
+static real_t* s_data; /* data field used to allocate 2D array s, if only one malloc is used we get cast errors */
 
 /*
  * Initialize the lbfgs library
