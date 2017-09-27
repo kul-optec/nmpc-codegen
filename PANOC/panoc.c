@@ -1,8 +1,10 @@
 /*
  * 
  */
-#include"../include/panoc.h"
+#include"panoc.h"
 #include<stdlib.h>
+#include"lbfgs.h"
+#include"proximal_gradient_descent.h"
 
 real_t (*g)(real_t* input);
 void (*proxg)(real_t* input, real_t* output);
@@ -39,8 +41,16 @@ int panoc_init(size_t dimension_,\
     direction_residue=malloc(sizeof(real_t*)*dimension);
     if(direction_residue==NULL) goto fail_2;
 
+    if(lbfgs_init(LBGFS_BUFFER_SIZE,dimension,proximal_gradient_descent_get_residue)==FAILURE) goto fail_3;
+
+    if(proximal_gradient_descent_init(dimension,g,proxg,f,df)==FAILURE) goto fail_4;
+
     return SUCCESS;
 
+    fail_4:
+        lbfgs_cleanup();
+    fail_3:
+        free(direction_residue);
     fail_2:
         free(direction_prox);
     fail_1:
@@ -53,6 +63,8 @@ int panoc_init(size_t dimension_,\
  * use this when you don't need the lib anymore
  */
 int panoc_cleanup(){
+    proximal_gradient_descent_cleanup();
+    lbfgs_cleanup();
     free(direction_prox);
     free(direction_residue);
 }
@@ -60,16 +72,15 @@ int panoc_cleanup(){
 /*
  * Solve the actually MPC problem, return the optimal inputs
  */
-int panoc_solve(real_t* current_location,real_t* new_location){
-    tau=1;
-    real_t sigma = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*proximal_gradient_descent_get_gamma());
-
+int panoc_solve(real_t* current_location,real_t* new_location){   
     real_t direction_prox[dimension];
     proximal_gradient_descent_get_direction(current_location,direction_prox);
+    real_t sigma = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*proximal_gradient_descent_get_gamma());
 
     real_t direction_residue[dimension];
     lbfgs_get_direction(current_location,direction_residue);
 
+    tau=1;
     panoc_get_new_potential_location(current_location , new_location);
     while(panoc_check_linesearch_condition(current_location,new_location, sigma) ){
             tau=tau/2;
@@ -91,7 +102,7 @@ int panoc_check_linesearch_condition(real_t* current_location, real_t* new_locat
 }
 
 int panoc_get_new_potential_location(real_t* current_location , real_t* potential_new_location){
-    vector_add_ntimes(current_location,direction_prox,dimension,-(1-tau),potential_new_location);
-    vector_add_ntimes(potential_new_location,direction_residue,dimension,tau,potential_new_location);
+    vector_add_ntimes(current_location,direction_prox,dimension,-(1-tau),potential_new_location); /* x = x - (1-tau)*d */
+    vector_add_ntimes(potential_new_location,direction_residue,dimension,tau,potential_new_location); /* x = x + tau*d */
     return SUCCESS;
 }
