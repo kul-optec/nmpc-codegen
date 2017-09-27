@@ -92,16 +92,18 @@ real_t proximal_gradient_descent_get_gamma(void){
     return linesearch_gamma;
 }
 /*
- * Get a new location using proxg and df
+ * Get a new location using proxg and df.
+ * 
+ * This function performs an FB step.
  */
 int proximal_gradient_descent_get_new_location(real_t* current_location){
     real_t buffer[dimension];
-    df(current_location,buffer); 
-    vector_add_ntimes(current_location,buffer,dimension,-1*linesearch_gamma,buffer);
-    proxg(buffer,new_location);
+    df(current_location,buffer); /* buffer = current gradient (at current_location) */
+    vector_add_ntimes(current_location,buffer,dimension,-1*linesearch_gamma,buffer); /* buffer = current_location - gamma * buffer */
+    proxg(buffer,new_location); /* new_location = proxg(buffer) */
     return SUCCESS;
 }
-/*
+/**
  * check if the linesearch condition is satisfied
  */
 int proximal_gradient_descent_check_linesearch(real_t* current_location){
@@ -111,7 +113,7 @@ int proximal_gradient_descent_check_linesearch(real_t* current_location){
     real_t inner_product_df_direction = inner_product(df_current_location,direction,dimension);
     real_t f_current_location=f(current_location);
     real_t f_new_location=f(new_location);
-    real_t norm_direction = norm2_vector(direction,dimension);
+    real_t norm_direction = vector_norm2(direction,dimension);
 
     if(f_new_location>f_current_location - inner_product_df_direction + ( (1-PROXIMAL_GRAD_DESC_SAFETY_VALUE)/2 )*(norm_direction/linesearch_gamma) )
         return FAILURE;
@@ -132,7 +134,7 @@ real_t proximal_gradient_descent_forward_backward_envelop(real_t* current_locati
     real_t df_current_location[dimension];df(current_location,df_current_location);
     real_t g_current_location=g(current_location);
 
-    real_t norm_direction = norm2_vector(direction,dimension);
+    real_t norm_direction = vector_norm2(direction,dimension);
 
     forward_backward_envelop = f_current_location + g_current_location \
      - inner_product(df_current_location,direction,dimension) \

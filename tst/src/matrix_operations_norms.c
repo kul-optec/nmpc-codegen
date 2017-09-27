@@ -2,13 +2,12 @@
 #include "../globals/globals.h"
 #include <stdio.h>
 
-int test2norm(void);
-int test2normMacro(void);
+int test2norm(void); 
 int test_inner_product(void);
 int test2norm_floating_point(void);
 
 int main(){
-    return test2norm()+test2normMacro()+test_inner_product()+test2norm_floating_point();
+    return test2norm()+test_inner_product()+test2norm_floating_point();
 }
 
 /* 
@@ -16,7 +15,7 @@ int main(){
  */
 int test2norm(void){
     real_t testVector[4] = {1, 2, 2, 4};
-    real_t testNorm = norm2_vector(testVector,4);
+    real_t testNorm = vector_norm2(testVector,4);
     if(testNorm==5){ 
         return SUCCESS;
     }else{
@@ -27,7 +26,7 @@ int test2norm(void){
 
 int test2norm_floating_point(void){
     real_t testVector[4] = {0.1, 0.2, 0.2, 0.4};
-    real_t testNorm = norm2_vector(testVector,4);
+    real_t testNorm = vector_norm2(testVector,4);
     if(testNorm==0.5){ 
         return SUCCESS;
     }else{
@@ -36,20 +35,6 @@ int test2norm_floating_point(void){
     }
 }
 
-/* 
- * test the 2 norm macro: the 2 norm of [1 2 2 4] should be 5
- */
-int test2normMacro(void){
-    real_t testVector[4] = {1, 2, 2, 4};
-    real_t testNorm;
-    VECTOR_2NORM(testVector,4,testNorm)
-    if(testNorm==5){ 
-        return SUCCESS;
-    }else{
-        printf("The 2 norm of [1; 2; 2; 4] should be 5 but is %f",testNorm);
-        return FAILURE; /* test failed so return 1 */
-    }
-}
 
 int test_inner_product(void){
     real_t test_vector1[4] = {1, 2, 3, 4};
