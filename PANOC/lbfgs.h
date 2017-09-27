@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 int lbfgs_init(size_t buffer_size_,size_t dimension_, \
-    void (*gradient_)(real_t* input,real_t* output));
+    int (*gradient_)(real_t* input,real_t* output));
 int lbfgs_cleanup(void);
 
 /*
