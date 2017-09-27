@@ -20,19 +20,20 @@
 
 /* 
  * ---------------------------------
- * START globals proximal gradient descent
+ * Proximal gradient descent definitions
  * ---------------------------------
  */
 
 /* constant delta used to estimate lipschitz constant  */
-#define DELTA_LIPSCHITZ pow(10,-5)
-
+#ifndef PROXIMAL_GRAD_DESC_SAFETY_VALUE
 #define PROXIMAL_GRAD_DESC_SAFETY_VALUE 0.05
+#endif
 
 /* ---------------------------------
- * END globals LIPSCHITZ CONSTANTS
+ * lipschitz etimator definitions
  * ---------------------------------
  */
+#define DELTA_LIPSCHITZ pow(10,-5)
 
 
 /* ---------------------------------
@@ -42,5 +43,14 @@
 
 /* set the casadi mem argument in function call at zero */
 #define MEM_CASADI 0 
+
+/* ---------------------------------
+ * lbgfs solver definitions
+ * ---------------------------------
+ */
+
+#ifndef LBGFS_BUFFER_SIZE
+#define LBGFS_BUFFER_SIZE 10
+#endif
 
 #endif
