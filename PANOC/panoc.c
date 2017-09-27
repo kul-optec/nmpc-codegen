@@ -17,7 +17,7 @@ static real_t* direction_prox;
 static real_t* direction_residue;
 
 /* variables reused by each get direction */
-real_t tau;
+static real_t tau;
 
 /* functions used internally */
 int panoc_check_linesearch_condition(real_t* current_location, real_t* new_location, real_t sigma);
@@ -95,7 +95,7 @@ int panoc_check_linesearch_condition(real_t* current_location, real_t* new_locat
     real_t FBE_potential_new_location = proximal_gradient_descent_forward_backward_envelop(new_location);
     real_t FBE_potential_current_location = proximal_gradient_descent_forward_backward_envelop(current_location);
 
-    if(FBE_potential_new_location<=FBE_potential_current_location-sigma*norm2_vector(direction_prox)){
+    if(FBE_potential_new_location<=FBE_potential_current_location-sigma*vector_norm2(direction_prox)){
         return SUCCESS; /* condition is not met */
     }
     return FAILURE; /* condition is met */

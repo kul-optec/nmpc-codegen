@@ -29,5 +29,5 @@ real_t get_lipschitz(void (*gradient)(real_t*,real_t*), real_t* current_position
      */
     vector_sub(df_current_position,df_current_position_delta,dimension,current_position_delta); /* step1: df(x+delta)-df(x) */
     vector_real_mul(current_position_delta,dimension,1/DELTA_LIPSCHITZ,current_position_delta); /* step2: df(x+delta)-df(x))/delta */
-    return norm2_vector(current_position_delta,dimension); /* step3: norm((df(x+delta)-df(x))/delta) */
+    return vector_norm2(current_position_delta,dimension); /* step3: norm((df(x+delta)-df(x))/delta) */
 }

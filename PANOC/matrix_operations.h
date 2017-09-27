@@ -7,10 +7,6 @@
  
 /* 2 norm with preprocessor */
 
-#define VECTOR_2NORM(vector,vector_size,norm)\
-    norm=0;\
-    for(int i=0;i<vector_size;i++)norm+=pow(vector[i],2);\
-    norm = sqrt(norm);
 
 /* copy vector1 into vector2 */
 void vector_copy(real_t* vector1,real_t* vector2,size_t size_vector);
@@ -31,7 +27,7 @@ void vector_real_mul(real_t* vector,size_t size_vector,real_t real,real_t* resul
  * calculate the 2 norm of a vector defined as
  * sqrt(x[0]^2 + x[1]^2 + ... x[n]^2)
  */
-real_t norm2_vector(real_t* vector,size_t vector_size);
+real_t vector_norm2(real_t* vector,size_t vector_size);
 
 /*  multiply each element of vector1 times -1 and save it in vector2 */
 void vector_minus(real_t* vector1,real_t* vector2,size_t size_vector);
