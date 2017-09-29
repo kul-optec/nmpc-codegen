@@ -3,6 +3,7 @@
 #include"../../PANOC/panoc.h"
 #include"../../PANOC/matrix_operations.h"
 #include"../../globals/globals.h"
+#include<stdlib.h>
 
 #define DIMENSION 2
 static const real_t theoretical_solution[]={0,0};
@@ -33,10 +34,11 @@ int main(){
 int checkIfSolutionIsReached(void){
     printf("test1 --- \n");
     degree=5;
-    size_t numer_of_iterations=100;
+    size_t numer_of_iterations=10;
     
-    real_t current_location[DIMENSION]={0.5,0.5};
-    real_t next_location[DIMENSION];
+    real_t* current_location=malloc(DIMENSION*sizeof(real_t));
+    current_location[0]=0.5;current_location[1]=0.5;
+    real_t* next_location=malloc(DIMENSION*sizeof(real_t));
 
     printf("starting in location x1=0.5 x2=0.5 \n");
     panoc_init(DIMENSION,\
@@ -50,12 +52,14 @@ int checkIfSolutionIsReached(void){
     {
             panoc_get_new_location(current_location,next_location);
             /* move the next location to the current location */
-            // real_t* buffer=current_location;
-            // current_location=next_location;
-            // next_location=buffer;
+            real_t* buffer=current_location;
+            current_location=next_location;
+            next_location=buffer;
             /* print out the location */
             print_location(current_location);
     }
+    free(current_location);
+    free(current_location);
     panoc_cleanup();
 
     if(current_location[0]<0.14){ /* theoretical value is about 0.133333 */
