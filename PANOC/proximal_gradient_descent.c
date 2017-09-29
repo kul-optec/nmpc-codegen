@@ -6,14 +6,14 @@
 #include "lipschitz.h"
 
 /* functions provided by the init function */
-real_t (*g)(real_t* input);
-void (*proxg)(real_t* input, real_t* output);
-real_t (*f)(real_t* input);
-void (*df)(real_t* input, real_t* output);
+real_t (*g)(const real_t* input);
+void (*proxg)(const real_t* input, real_t* output);
+real_t (*f)(const real_t* input);
+void (*df)(const real_t* input, real_t* output);
 
 /* functions only used internally */
-int proximal_gradient_descent_check_linesearch(real_t* current_location);
-int proximal_gradient_descent_get_new_location(real_t* current_location);
+int proximal_gradient_descent_check_linesearch(const real_t* current_location);
+int proximal_gradient_descent_get_new_location(const real_t* current_location);
 
 /* values set by the init function */
 static size_t dimension;
@@ -27,10 +27,10 @@ static real_t* new_location;
 static real_t* direction;
 
 int proximal_gradient_descent_init(size_t dimension_, \
-    real_t (*g_)(real_t* input), \
-    void (*proxg_)(real_t* input, real_t* output),\
-    real_t (*f_)(real_t* input),\
-    void (*df_)(real_t* input, real_t* output)){
+    real_t (*g_)(const real_t* input), \
+    void (*proxg_)(const real_t* input, real_t* output),\
+    real_t (*f_)(const real_t* input),\
+    void (*df_)(const real_t* input, real_t* output)){
     dimension=dimension_;
     g=g_;f=f_;proxg=proxg_;df=df_;
 
@@ -58,20 +58,18 @@ int proximal_gradient_descent_cleanup(void){
 /*
  * Find the proximal gradient descent with linesearch
  */
-int proximal_gradient_descent_get_direction(real_t* current_location,real_t* direction_normalized){
+int proximal_gradient_descent_get_direction(const real_t* current_location,real_t* direction_normalized){
    /* 
     * If this is the first time you call me, find the initial gamma value
     * by estimating the lipschitz value of df
     */
     if(iteration_index==0){
-        real_t lipschitz_value;
-        lipschitz_value = get_lipschitz(df,current_location,dimension);
+         real_t lipschitz_value = get_lipschitz(df,current_location,dimension);
 
         linesearch_gamma = (1-PROXIMAL_GRAD_DESC_SAFETY_VALUE)/lipschitz_value;
         iteration_index++; /* index only needs to increment if it is 0 */
     }
     proximal_gradient_descent_get_new_location(current_location);
-
     while(proximal_gradient_descent_check_linesearch(current_location)==FAILURE){
         linesearch_gamma=linesearch_gamma/2;
         proximal_gradient_descent_get_new_location(current_location);
@@ -79,24 +77,22 @@ int proximal_gradient_descent_get_direction(real_t* current_location,real_t* dir
     vector_real_mul(direction,dimension,1/linesearch_gamma,direction_normalized); /* normalize the direction */
     return SUCCESS;
 }
+
 /*
  * returns the residue, R(x) = 1/gamma[ x- proxg(x-df(x)*gamma)]
  */
-int proximal_gradient_descent_get_residue(real_t* current_location,real_t* residue){
+int proximal_gradient_descent_get_residue(const real_t* current_location,real_t* residue){
     proximal_gradient_descent_get_new_location(current_location);
     vector_sub(current_location,new_location,dimension,residue);
     return SUCCESS;
 }
 
-real_t proximal_gradient_descent_get_gamma(void){
-    return linesearch_gamma;
-}
 /*
  * Get a new location using proxg and df.
  * 
  * This function performs an FB step.
  */
-int proximal_gradient_descent_get_new_location(real_t* current_location){
+int proximal_gradient_descent_get_new_location(const real_t* current_location){
     real_t buffer[dimension];
     df(current_location,buffer); /* buffer = current gradient (at current_location) */
     vector_add_ntimes(current_location,buffer,dimension,-1*linesearch_gamma,buffer); /* buffer = current_location - gamma * buffer */
@@ -106,7 +102,7 @@ int proximal_gradient_descent_get_new_location(real_t* current_location){
 /**
  * check if the linesearch condition is satisfied
  */
-int proximal_gradient_descent_check_linesearch(real_t* current_location){
+int proximal_gradient_descent_check_linesearch(const real_t* current_location){
     vector_sub(new_location,current_location,dimension,direction); /* find the not normalized direction */
 
     real_t df_current_location[dimension];df(current_location,df_current_location);
@@ -125,8 +121,9 @@ int proximal_gradient_descent_check_linesearch(real_t* current_location){
  * calculate the forward backward envelop using the internal gamma
  * Matlab cache.FBE = cache.fx + cache.gz - cache.gradfx(:)'*cache.FPR(:) + (0.5/gam)*(cache.normFPR^2);
  */
-real_t proximal_gradient_descent_forward_backward_envelop(real_t* current_location){
-    proximal_gradient_descent_get_new_location(current_location); /* this will fill the direction variable */
+real_t proximal_gradient_descent_forward_backward_envelop(const real_t* current_location){
+    proximal_gradient_descent_get_new_location(current_location); /* this will fill the new_direction variable */
+
 
     real_t forward_backward_envelop;
 
@@ -141,4 +138,8 @@ real_t proximal_gradient_descent_forward_backward_envelop(real_t* current_locati
      + (1/(linesearch_gamma*2))*pow(norm_direction,2);
 
      return forward_backward_envelop;
+}
+
+real_t proximal_gradient_descent_get_gamma(void){
+    return linesearch_gamma;
 }

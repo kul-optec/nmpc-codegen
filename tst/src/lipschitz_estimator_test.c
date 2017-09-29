@@ -9,8 +9,8 @@ static const real_t theoretical_solution[]={0,0};
 static int degree=5;
 int simple_estimate_test(void);
 
-real_t f_grad_descent_poly_test(real_t* x);
-void df_grad_descent_poly_test(real_t* x ,real_t* df_x);
+real_t f_grad_descent_poly_test(const real_t* x);
+void df_grad_descent_poly_test(const real_t* x ,real_t* df_x);
 
 
 int main(){
@@ -37,7 +37,7 @@ int simple_estimate_test(void){
     }  
 }
 
-real_t f_grad_descent_poly_test(real_t* x){
+real_t f_grad_descent_poly_test(const real_t* x){
     real_t f_x=0;
     size_t i;
     for (i = 0; i < DIMENSION; i++){
@@ -45,7 +45,7 @@ real_t f_grad_descent_poly_test(real_t* x){
     }
     return f_x;
 }
-void df_grad_descent_poly_test(real_t* x ,real_t* df_x){
+void df_grad_descent_poly_test(const real_t* x ,real_t* df_x){
     size_t i;
     for (i = 0; i < DIMENSION; i++){
         df_x[i] = degree*pow(x[i],degree-1) ;

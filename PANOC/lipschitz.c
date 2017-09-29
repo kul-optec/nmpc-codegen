@@ -10,7 +10,7 @@
  *     ||gradient(x)|| < B
  *     f is B-lipschitz
  */
-real_t get_lipschitz(void (*gradient)(real_t*,real_t*), real_t* current_position,const size_t dimension){
+real_t get_lipschitz(void (*gradient)(const real_t*,real_t*),const real_t* current_position,const size_t dimension){
     real_t current_position_delta[dimension];
 
     real_t df_current_position[dimension];

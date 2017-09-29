@@ -22,8 +22,8 @@ static size_t iteration_index=0; /* the iteration index, this is increased at th
 static size_t buffer_size; /* buffersize initialized in init method */
 static size_t dimension;
 
-static int (*gradient) (real_t* input, real_t* output); /* gradient used in each iteration */
-void shift_s_and_y(size_t buffer_limit); /* internal function used to shift the s and y buffers */
+static int (*gradient) (const real_t* input, real_t* output); /* gradient used in each iteration */
+void shift_s_and_y(const size_t buffer_limit); /* internal function used to shift the s and y buffers */
 
 static real_t* y_data; /* data field used to allocate 2D array y, if only one malloc is used we get cast errors */
 static real_t* s_data; /* data field used to allocate 2D array s, if only one malloc is used we get cast errors */
@@ -32,8 +32,8 @@ static real_t* s_data; /* data field used to allocate 2D array s, if only one ma
  * Initialize the lbfgs library
  * This function should allways be called before doing anything with the lbfgs algorithm.
  */
-int lbfgs_init(size_t buffer_size_,size_t dimension_, \
-    int (*gradient_)(real_t* input,real_t* output)){
+int lbfgs_init(const size_t buffer_size_,const size_t dimension_, \
+    int (*gradient_)(const real_t* input,real_t* output)){
     
     dimension=dimension_;
     buffer_size=buffer_size_;
@@ -109,7 +109,7 @@ int lbfgs_cleanup(void){
 /*
  * returns the direction calculated with lbfgs
  */ 
-int lbfgs_get_direction(real_t* current_location,real_t* direction){
+int lbfgs_get_direction(const real_t* current_location,real_t* direction){
     real_t q[dimension];gradient(current_location,q);
 
     /* is this the first time you call get_direction? */
@@ -173,7 +173,7 @@ int lbfgs_get_direction(real_t* current_location,real_t* direction){
 }
 
  /* internal function used to shift the s and y buffers */
-void shift_s_and_y(size_t buffer_limit){
+void shift_s_and_y(const size_t buffer_limit){
         real_t* buffer_s =s[buffer_size-1];
         real_t* buffer_y =y[buffer_size-1];
         size_t i;

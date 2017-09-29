@@ -10,16 +10,16 @@ static int degree=5;
 static int w=0;
 int checkIfSolutionIsReached(void);
 
-void print_location(real_t* location);
+void print_location(const real_t* location);
 
 /*
  * Function f with its gradient df  
  * Function g with the resulting function after proximal operator
  */
-real_t f_panoc_poly_test(real_t* x);
-real_t g_panoc_poly_test(real_t* x);
-void df_panoc_poly_test(real_t* x ,real_t* df_x);
-void proxg_panoc_poly_test(real_t* x ,real_t* proxg_x);
+real_t f_panoc_poly_test(const real_t* x);
+real_t g_panoc_poly_test(const real_t* x);
+void df_panoc_poly_test(const real_t* x ,real_t* df_x);
+void proxg_panoc_poly_test(const real_t* x ,real_t* proxg_x);
 
 /*
  * TEST proximal gradient descent
@@ -50,9 +50,9 @@ int checkIfSolutionIsReached(void){
     {
             panoc_get_new_location(current_location,next_location);
             /* move the next location to the current location */
-            real_t* buffer=current_location;
-            current_location=next_location;
-            next_location=buffer;
+            // real_t* buffer=current_location;
+            // current_location=next_location;
+            // next_location=buffer;
             /* print out the location */
             print_location(current_location);
     }
@@ -70,7 +70,7 @@ int checkIfSolutionIsReached(void){
 /*
  * simple problem to test the proximal gradient descent
  */
-real_t f_panoc_poly_test(real_t* x){
+real_t f_panoc_poly_test(const real_t* x){
     real_t f_x=0;
     size_t i;
     for (i = 0; i < DIMENSION; i++){
@@ -78,13 +78,13 @@ real_t f_panoc_poly_test(real_t* x){
     }
     return f_x;
 }
-real_t g_panoc_poly_test(real_t* x){
+real_t g_panoc_poly_test(const real_t* x){
     real_t g_x=0;
     size_t i;
     /* g is unused in this test so we leave this blank */
     return g_x;
 }
-void df_panoc_poly_test(real_t* x ,real_t* df_x){
+void df_panoc_poly_test(const real_t* x ,real_t* df_x){
     size_t i;
     for (i = 0; i < DIMENSION; i++){
         df_x[i] = degree*pow(x[i],degree-1) ;
@@ -94,15 +94,15 @@ real_t sign(real_t x){
     if(x>=0)return 1;
     else return -1;
 }
-void proxg_panoc_poly_test(real_t* x ,real_t* proxg_x){
+void proxg_panoc_poly_test(const real_t* x ,real_t* proxg_x){
     size_t i;
     for (i = 0; i < DIMENSION; i++){
-        if(abs(x[i])<=w){
+        if(fabs(x[i])<=w){
             proxg_x[i]=x[i];
-        }else if(abs(x[i])>2*w){
-            proxg_x[i]=sign(x[i])*(abs(x[i])-w);
+        }else if(fabs(x[i])>2*w){
+            proxg_x[i]=sign(x[i])*(fabs(x[i])-w);
         }else{
-            proxg_x[i]=sign(x[i])*(abs(x[i]-w));
+            proxg_x[i]=sign(x[i])*(fabs(x[i]-w));
         }
     }
 }
@@ -118,6 +118,6 @@ void proxg_panoc_poly_test(real_t* x ,real_t* proxg_x){
 //    end
 // end
 // end
-void print_location(real_t* location){
+void print_location(const real_t* location){
     printf("x1=%f x2=%f \n",location[0],location[1]);
 }
