@@ -14,13 +14,15 @@
 static real_t** s; /* s_k = x_{k+1} - x_{k} */
 static real_t** y; /* y_k = gradient(x_{k+1}) - gradient(x_{k}) */
 
-/* 2 arrays not saved between iterations */
+/* 2 arrays that not need to be saved between iterations */
 static real_t* alpha;
 static real_t* rho;
+
 
 static size_t iteration_index=0; /* the iteration index, this is increased at the end of the iteration */
 static size_t buffer_size; /* buffersize initialized in init method */
 static size_t dimension;
+static real_t* direction;
 
 static int (*gradient) (const real_t* input, real_t* output); /* gradient used in each iteration */
 void shift_s_and_y(const size_t buffer_limit); /* internal function used to shift the s and y buffers */
@@ -61,6 +63,8 @@ int lbfgs_init(const size_t buffer_size_,const size_t dimension_, \
     rho = malloc(sizeof(real_t)*buffer_size);
     if(rho==NULL) goto fail_6;
 
+    direction =malloc(sizeof(real_t)*dimension);
+    if(rho==NULL) goto fail_7;
     /*
      * if all the allocations took place, setup the 2D arrays
      */
@@ -76,6 +80,8 @@ int lbfgs_init(const size_t buffer_size_,const size_t dimension_, \
     /*
      * Something went wrong free up the necessary memory and return failure
      */
+    fail_7:
+        free(rho);
     fail_6:
         free(alpha);
     fail_5:
@@ -109,7 +115,7 @@ int lbfgs_cleanup(void){
 /*
  * returns the direction calculated with lbfgs
  */ 
-int lbfgs_get_direction(const real_t* current_location,real_t* direction){
+const real_t* lbfgs_get_direction(const real_t* current_location){
     real_t q[dimension];gradient(current_location,q);
 
     /* is this the first time you call get_direction? */
@@ -169,7 +175,7 @@ int lbfgs_get_direction(const real_t* current_location,real_t* direction){
     vector_sub(gradient_new_location,gradient_current_location,dimension,y[0]); /* set y=df(new_x) - df(x) */
 
     iteration_index++;
-    return SUCCESS;
+    return direction;
 }
 
  /* internal function used to shift the s and y buffers */

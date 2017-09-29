@@ -38,7 +38,7 @@ int checkIfSolutionIsReached(void){
     size_t i;
     for ( i = 0; i < 100; i++)
     {
-        lbfgs_get_direction(current_location,direction);
+        const real_t* direction = lbfgs_get_direction(current_location);
         vector_add(current_location,direction,DIMENSION,current_location);
         print_location(current_location);
     }
@@ -57,8 +57,6 @@ int check2thdegreepolynomial(void){
     size_t buffer_size =10;
 
     lbfgs_init(buffer_size,DIMENSION,gradient);
-    
-    real_t direction[DIMENSION];
     real_t current_location[DIMENSION]={0.5,0.5};
 
     printf("starting in location x1=0.5 x2=0.5 \n");
@@ -66,7 +64,7 @@ int check2thdegreepolynomial(void){
     size_t i;
     for ( i = 0; i < 2; i++)
     {
-        lbfgs_get_direction(current_location,direction);
+        const real_t* direction = lbfgs_get_direction(current_location);
         vector_add(current_location,direction,DIMENSION,current_location);
         print_location(current_location);
     }
