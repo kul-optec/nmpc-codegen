@@ -11,7 +11,7 @@ int proximal_gradient_descent_init(size_t dimension, \
     real_t (*f_)(const real_t* input),\
     void (*df_)(const real_t* input, real_t* output));
 int proximal_gradient_descent_cleanup(void);
-int proximal_gradient_descent_get_direction(const real_t* current_location,real_t* direction);
+const real_t* proximal_gradient_descent_get_direction(const real_t* current_location);
 
 /*
  * function with lbgfs

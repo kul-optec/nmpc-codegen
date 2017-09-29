@@ -34,8 +34,6 @@ int checkIfSolutionIsReached(void){
     printf("test1 --- \n");
     degree=5;
     size_t numer_of_iterations=100;
-    
-    real_t direction[DIMENSION];
     real_t current_location[DIMENSION]={0.5,0.5};
 
     printf("starting in location x1=0.5 x2=0.5 \n");
@@ -48,8 +46,8 @@ int checkIfSolutionIsReached(void){
     size_t i;
     for ( i = 0; i < numer_of_iterations; i++)
     {
-        proximal_gradient_descent_get_direction(current_location,direction);
-        vector_add_ntimes(current_location,direction,DIMENSION,proximal_gradient_descent_get_gamma(),current_location);
+        const real_t* direction = proximal_gradient_descent_get_direction(current_location);
+        vector_add_ntimes(current_location,direction,DIMENSION,1,current_location);
         print_location(current_location);
     }
     proximal_gradient_descent_cleanup();

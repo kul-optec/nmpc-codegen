@@ -58,7 +58,7 @@ int proximal_gradient_descent_cleanup(void){
 /*
  * Find the proximal gradient descent with linesearch
  */
-int proximal_gradient_descent_get_direction(const real_t* current_location,real_t* direction_normalized){
+const real_t* proximal_gradient_descent_get_direction(const real_t* current_location){
    /* 
     * If this is the first time you call me, find the initial gamma value
     * by estimating the lipschitz value of df
@@ -74,7 +74,17 @@ int proximal_gradient_descent_get_direction(const real_t* current_location,real_
         linesearch_gamma=linesearch_gamma/2;
         proximal_gradient_descent_get_new_location(current_location);
     }
-    vector_real_mul(direction,dimension,1/linesearch_gamma,direction_normalized); /* normalize the direction */
+    return direction;
+}
+/* 
+ * This function performs an forward backward step. x=prox(x-gamma*df(x))
+ */
+int proximal_gradient_descent_get_new_location(const real_t* current_location){
+    real_t buffer[dimension];
+    df(current_location,buffer); /* buffer = current gradient (at current_location) */
+    vector_add_ntimes(current_location,buffer,dimension,-1*linesearch_gamma,buffer); /* buffer = current_location - gamma * buffer */
+    proxg(buffer,new_location); /* new_location = proxg(buffer) */
+    vector_sub(new_location,current_location,dimension,direction); /* find the direction */
     return SUCCESS;
 }
 
@@ -86,30 +96,17 @@ int proximal_gradient_descent_get_residue(const real_t* current_location,real_t*
     vector_sub(current_location,new_location,dimension,residue);
     return SUCCESS;
 }
-
 /*
- * Get a new location using proxg and df.
- * 
- * This function performs an FB step.
- */
-int proximal_gradient_descent_get_new_location(const real_t* current_location){
-    real_t buffer[dimension];
-    df(current_location,buffer); /* buffer = current gradient (at current_location) */
-    vector_add_ntimes(current_location,buffer,dimension,-1*linesearch_gamma,buffer); /* buffer = current_location - gamma * buffer */
-    proxg(buffer,new_location); /* new_location = proxg(buffer) */
-    return SUCCESS;
-}
-/**
  * check if the linesearch condition is satisfied
  */
 int proximal_gradient_descent_check_linesearch(const real_t* current_location){
-    vector_sub(new_location,current_location,dimension,direction); /* find the not normalized direction */
-
     real_t df_current_location[dimension];df(current_location,df_current_location);
-    real_t inner_product_df_direction = inner_product(df_current_location,direction,dimension);
-    real_t f_current_location=f(current_location);
-    real_t f_new_location=f(new_location);
-    real_t norm_direction = vector_norm2(direction,dimension);
+    const real_t inner_product_df_direction = inner_product(df_current_location,direction,dimension);
+
+    const real_t f_current_location=f(current_location);
+    const real_t f_new_location=f(new_location);
+
+    const real_t norm_direction = pow(vector_norm2(direction,dimension),2);
 
     if(f_new_location>f_current_location - inner_product_df_direction + ( (1-PROXIMAL_GRAD_DESC_SAFETY_VALUE)/2 )*(norm_direction/linesearch_gamma) )
         return FAILURE;
@@ -124,18 +121,15 @@ int proximal_gradient_descent_check_linesearch(const real_t* current_location){
 real_t proximal_gradient_descent_forward_backward_envelop(const real_t* current_location){
     proximal_gradient_descent_get_new_location(current_location); /* this will fill the new_direction variable */
 
-
-    real_t forward_backward_envelop;
-
-    real_t f_current_location=f(current_location);
+    const real_t f_current_location=f(current_location);
     real_t df_current_location[dimension];df(current_location,df_current_location);
-    real_t g_current_location=g(current_location);
+    const real_t g_new_location=g(new_location);
 
-    real_t norm_direction = vector_norm2(direction,dimension);
+    const real_t norm_direction = pow(vector_norm2(direction,dimension),2);
 
-    forward_backward_envelop = f_current_location + g_current_location \
+    const real_t forward_backward_envelop = f_current_location + g_new_location \
      - inner_product(df_current_location,direction,dimension) \
-     + (1/(linesearch_gamma*2))*pow(norm_direction,2);
+     + (1/(linesearch_gamma*2))*norm_direction;
 
      return forward_backward_envelop;
 }
