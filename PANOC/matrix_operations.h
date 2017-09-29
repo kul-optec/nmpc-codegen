@@ -38,4 +38,8 @@ real_t inner_product(const real_t* vector1,const real_t* vector2,const size_t si
 /* add vector2 n times to vector1 */
 void vector_add_ntimes(const real_t* vector1,const real_t* vector2,const size_t size_vector,const real_t n,real_t* result);
 
+/* add vector2 a_vector2 times to vector1 and add vector3 a_vector3 times to vector1*/
+void vector_add_2_vectors_a_times(const real_t* vector1,const real_t* vector2,const real_t* vector3,const size_t size_vector,
+    const real_t a_vector2,const real_t a_vector3,real_t* result);
+
 #endif

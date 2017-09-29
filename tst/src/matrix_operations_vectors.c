@@ -15,6 +15,7 @@ int test_vectorsub(void);
 int test_vectorRealmul(void);
 int test_vector_minus(void);
 int test_vector_add_ntimes(void);
+int test_vector_add_2_vectors_a_times(void);
 
 int main(){
     return test_vectorRealAdd() \
@@ -23,7 +24,8 @@ int main(){
     +test_vectorsub() \
     +test_vectorRealmul() \
     +test_vector_minus() \
-    +test_vector_add_ntimes();
+    +test_vector_add_ntimes()\
+    +test_vector_add_2_vectors_a_times();
 }
 
 /* 
@@ -140,6 +142,24 @@ int test_vector_add_ntimes(void){
         return SUCCESS; /* sucess of test */
     }else{
         printf("adding [1 2 3 4] with 2 times [1 1 2 2] and should result in [3 4 7 8] but resulted in [%f %f %f %f]",
+            test_vector1[0],test_vector1[1],test_vector1[2],test_vector1[3]);
+        return FAILURE; /* test failed so return 1 */
+    }
+}
+
+int test_vector_add_2_vectors_a_times(void){
+    real_t test_vector1[test_vector_size] = {1, 2, 3, 4};
+    real_t test_vector2[test_vector_size] = {1, 1, 2, 2};
+    real_t a2=-1;
+    real_t test_vector3[test_vector_size] = {2, 2, 1, 1};
+    real_t a3=1;
+
+    vector_add_2_vectors_a_times(test_vector1,test_vector2,test_vector3,test_vector_size,a2,a3,test_vector1);
+
+    if(test_vector1[0]==2 && test_vector1[1]==3 && test_vector1[2]==2 && test_vector1[3]==3){ 
+        return SUCCESS; /* sucess of test */
+    }else{
+        printf("Test should result in [2 3 2 3] but resulted in [%f %f %f %f]",
             test_vector1[0],test_vector1[1],test_vector1[2],test_vector1[3]);
         return FAILURE; /* test failed so return 1 */
     }
