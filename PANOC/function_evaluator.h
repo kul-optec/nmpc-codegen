@@ -18,7 +18,7 @@ int function_evaluator_init(size_t dimension_,
 int function_evaluator_cleanup();
 
 /*
- * evaluate f,df,g,proxg in current_location
+ * reset the cache
  */
 int function_evaluator_reset_cache();
 

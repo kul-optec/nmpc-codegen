@@ -75,6 +75,7 @@ int function_evaluator_reset_cache(){
     state.f_df=OUT_OF_DATE;
     state.g=OUT_OF_DATE;
     state.proxg=OUT_OF_DATE;
+    return SUCCESS;
 }
 /*
  * return  f(current_location)
@@ -151,4 +152,5 @@ real_t function_evaluator_get_new_g(real_t* location){
  */
 int function_evaluator_get_new_proxg(real_t* location, real_t* proxg_location){
     proxg(location,proxg_location);
+    return SUCCESS;
 }
