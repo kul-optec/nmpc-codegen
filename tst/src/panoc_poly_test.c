@@ -93,5 +93,5 @@ void df_panoc_poly_test(const real_t* x ,real_t* df_x){
     }
 }
 void print_location(const real_t* location){
-    printf("x1=%f x2=%f \n",location[0],location[1]);
+    printf("x1=%f x2=%f tau=%f \n",location[0],location[1],panoc_get_tau());
 }

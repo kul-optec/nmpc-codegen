@@ -96,3 +96,5 @@ int panoc_get_new_potential_location(const real_t* current_location ,const  real
         -(1-tau),tau,potential_new_location); 
     return SUCCESS;
 }
+
+real_t panoc_get_tau(void){return tau;}
