@@ -74,46 +74,12 @@ real_t f_grad_descent_poly_test(const real_t* x){
     }
     return f_x;
 }
-// real_t g_grad_descent_poly_test(const real_t* x){
-//     real_t g_x=0;
-//     size_t i;
-//     /* g is unused in this test so we leave this blank */
-//     return g_x;
-// }
 void df_grad_descent_poly_test(const real_t* x ,real_t* df_x){
     size_t i;
     for (i = 0; i < DIMENSION; i++){
         df_x[i] = degree*pow(x[i],degree-1) ;
     }
 }
-// real_t sign(real_t x){
-//     if(x>=0)return 1;
-//     else return -1;
-// }
-// void proxg_grad_descent_poly_test(const real_t* x ,real_t* proxg_x){
-//     size_t i;
-//     for (i = 0; i < DIMENSION; i++){
-//         if(abs(x[i])<=w){
-//             proxg_x[i]=x[i];
-//         }else if(abs(x[i])>2*w){
-//             proxg_x[i]=sign(x[i])*(abs(x[i])-w);
-//         }else{
-//             proxg_x[i]=sign(x[i])*(abs(x[i]-w));
-//         }
-//     }
-// }
-// function [ prox_g_x ] = prox_g( x,w,dimension )
-// prox_g_x=zeros(dimension,1);
-// for i=1:dimension
-//    if(abs(x(i))<w)
-//        prox_g_x(i) = x(i);
-//    elseif(abs(x)>2*w)
-//        prox_g_x(i) = sign(x(i))*(abs(x(i))-w);
-//    else
-//        prox_g_x(i) = sign(x(i))*(abs(x(i)-w));
-//    end
-// end
-// end
 void print_location(real_t* location){
     printf("x1=%f x2=%f \n",location[0],location[1]);
 }
