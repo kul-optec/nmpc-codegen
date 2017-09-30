@@ -5,10 +5,11 @@
 #include"../../globals/globals.h"
 #include<stdlib.h>
 
+#include "example_problems.h"
+
 #define DIMENSION 2
 static const real_t theoretical_solution[]={0,0};
 static int degree=5;
-static int w=0;
 int checkIfSolutionIsReached(void);
 
 void print_location(const real_t* location);
@@ -34,6 +35,9 @@ int main(){
 int checkIfSolutionIsReached(void){
     printf("test1 --- \n");
     degree=5;
+    real_t w=2;
+    example_problems_set_init_problem1(w,DIMENSION);
+
     size_t numer_of_iterations=10;
     
     real_t* current_location=malloc(DIMENSION*sizeof(real_t));
@@ -42,8 +46,8 @@ int checkIfSolutionIsReached(void){
 
     printf("starting in location x1=0.5 x2=0.5 \n");
     panoc_init(DIMENSION,\
-        g_panoc_poly_test,\
-        proxg_panoc_poly_test,\
+        g_1,\
+        proxg_1,\
         f_panoc_poly_test,\
         df_panoc_poly_test);
 
@@ -59,7 +63,7 @@ int checkIfSolutionIsReached(void){
             print_location(current_location);
     }
     free(current_location);
-    free(current_location);
+    free(next_location);
     panoc_cleanup();
 
     if(current_location[0]<0.14){ /* theoretical value is about 0.133333 */
@@ -82,46 +86,12 @@ real_t f_panoc_poly_test(const real_t* x){
     }
     return f_x;
 }
-real_t g_panoc_poly_test(const real_t* x){
-    real_t g_x=0;
-    size_t i;
-    /* g is unused in this test so we leave this blank */
-    return g_x;
-}
 void df_panoc_poly_test(const real_t* x ,real_t* df_x){
     size_t i;
     for (i = 0; i < DIMENSION; i++){
         df_x[i] = degree*pow(x[i],degree-1) ;
     }
 }
-real_t sign(real_t x){
-    if(x>=0)return 1;
-    else return -1;
-}
-void proxg_panoc_poly_test(const real_t* x ,real_t* proxg_x){
-    size_t i;
-    for (i = 0; i < DIMENSION; i++){
-        if(fabs(x[i])<=w){
-            proxg_x[i]=x[i];
-        }else if(fabs(x[i])>2*w){
-            proxg_x[i]=sign(x[i])*(fabs(x[i])-w);
-        }else{
-            proxg_x[i]=sign(x[i])*(fabs(x[i]-w));
-        }
-    }
-}
-// function [ prox_g_x ] = prox_g( x,w,dimension )
-// prox_g_x=zeros(dimension,1);
-// for i=1:dimension
-//    if(abs(x(i))<w)
-//        prox_g_x(i) = x(i);
-//    elseif(abs(x)>2*w)
-//        prox_g_x(i) = sign(x(i))*(abs(x(i))-w);
-//    else
-//        prox_g_x(i) = sign(x(i))*(abs(x(i)-w));
-//    end
-// end
-// end
 void print_location(const real_t* location){
     printf("x1=%f x2=%f \n",location[0],location[1]);
 }

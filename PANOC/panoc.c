@@ -2,6 +2,8 @@
 #include<stdlib.h>
 #include"lbfgs.h"
 #include"proximal_gradient_descent.h"
+#include"matrix_operations.h"
+#include"../globals/globals.h"
 
 real_t (*g)(const real_t* input);
 void (*proxg)(const real_t* input, real_t* output);
@@ -52,6 +54,7 @@ int panoc_init(size_t dimension_,\
 int panoc_cleanup(){
     proximal_gradient_descent_cleanup();
     lbfgs_cleanup();
+    return SUCCESS;
 }
 
 /*
@@ -65,14 +68,13 @@ int panoc_get_new_location(const real_t* current_location,real_t* new_location){
 
     /* precompute FBE used in linesearch check */
     FBE_current_location = proximal_gradient_descent_forward_backward_envelop(current_location);
-    direction_norm=vector_norm2(forward_backward_step,dimension)^2;
+    direction_norm=pow(vector_norm2(forward_backward_step,dimension),2);
 
     tau=1;
-    real_t potential_new_location[dimension];
-    panoc_get_new_potential_location(current_location,forward_backward_step,direction_residue,tau,potential_new_location);
+    panoc_get_new_potential_location(current_location,forward_backward_step,direction_residue,tau,new_location);
     while(panoc_check_linesearch_condition(current_location,new_location,sigma)==FAILURE){
             tau=tau/2;
-            panoc_get_new_potential_location(current_location,forward_backward_step,direction_residue,tau,potential_new_location);
+            panoc_get_new_potential_location(current_location,forward_backward_step,direction_residue,tau,new_location);
     }
     return SUCCESS;
 }
