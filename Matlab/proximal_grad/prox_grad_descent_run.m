@@ -1,14 +1,14 @@
 % demonstration of the proximal gradient descent
 clc;clear all;
-number_of_steps=20;
+number_of_steps=5;
 dimension=2;
 
 x0=[0.5;0.5]; % starting position
 beta=0.05; % safety constant
 
-w=0; 
-g = @(x) max(abs(x)-w,0);
-proxg = @(x) prox_g( x,w,dimension );
+w=5; 
+g = @(x) g_1(x,w);
+proxg = @(x) prox_g_1( x,w );
 
 degree_polynomial=5;
 f = @(x) sum(x.^degree_polynomial);

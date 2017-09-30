@@ -1,18 +1,21 @@
 % PANOC algorithm using the lbgfs and proximal gradient methods
 % include the Matlab folder with all its subfolders to your path
-number_of_steps=100;
+number_of_steps=10;
 dimension=2;
 x_steps=zeros(dimension,number_of_steps);
 taus=zeros(1,number_of_steps);
 x0=[0.5;0.5];
+% x0=100;
 %% variables proximal gradient descent
 beta_safety_value=0.05; % safety constant
 
-w=0; 
-g = @(x) max(abs(x)-w,0);
-proxg = @(x) prox_g( x,w,dimension );
+w=2; 
+g = @(x) g_1(x,w);
+proxg = @(x) prox_g_1( x,w );
+% g = @(x) g_2(x);
+% proxg = @(x) prox_g_2( x );
 
-degree_polynomial=5;
+degree_polynomial=20;
 f = @(x) sum(x.^degree_polynomial);
 df = @(x) (degree_polynomial)*x.^(degree_polynomial-1);
 
