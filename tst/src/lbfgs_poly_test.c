@@ -30,7 +30,6 @@ int checkIfSolutionIsReached(void){
 
     lbfgs_init(buffer_size,DIMENSION,gradient);
     
-    real_t direction[DIMENSION];
     real_t current_location[DIMENSION]={0.5,0.5};
 
     printf("starting in location x1=0.5 x2=0.5 \n");
@@ -82,6 +81,7 @@ int check2thdegreepolynomial(void){
 int gradient(const real_t* x ,real_t*df){
     df[0] = degree*pow(x[0],degree-1) ;
     df[1] = degree*pow(x[1],degree-1);
+    return SUCCESS;
 }
 
 void print_location(const real_t* location){
