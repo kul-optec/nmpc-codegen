@@ -102,7 +102,6 @@ int lbfgs_init(const size_t buffer_size_,const size_t dimension_, \
  * use this when you don't need the lib anymore
  */
 int lbfgs_cleanup(void){
-        size_t i;
         free(s_data);
         free(s);
         free(y_data);
