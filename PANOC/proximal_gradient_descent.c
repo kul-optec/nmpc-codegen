@@ -94,6 +94,7 @@ int proximal_gradient_descent_get_new_location(const real_t* current_location){
 int proximal_gradient_descent_get_residue(const real_t* current_location,real_t* residue){
     proximal_gradient_descent_get_new_location(current_location);
     vector_sub(current_location,new_location,dimension,residue);
+    vector_real_mul(residue,dimension,1/linesearch_gamma,residue);
     return SUCCESS;
 }
 /*
