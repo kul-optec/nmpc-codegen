@@ -16,6 +16,19 @@ real_t vector_norm2(const real_t* vector,const size_t vector_size){
     return sqrt(norm);
 }
 
+/* calculate the 1 norm */
+real_t vector_norm1(const real_t* vector,const size_t vector_size){
+    real_t norm=0;
+
+    size_t i=0;
+    for ( i = 0; i < vector_size ; i++)
+    {
+        norm += ABS(vector[i]);
+    }
+    return norm;
+}
+
+
 /* copy vector1 into vector2 */
 void vector_copy(const real_t* vector1,real_t* vector2,const size_t size_vector){
     size_t i;

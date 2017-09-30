@@ -5,9 +5,13 @@
 int test2norm(void); 
 int test_inner_product(void);
 int test2norm_floating_point(void);
+int testnorm_floating_point(void);
 
 int main(){
-    return test2norm()+test_inner_product()+test2norm_floating_point();
+    return test2norm()+\
+    test_inner_product()+\
+    test2norm_floating_point()+\
+    testnorm_floating_point();
 }
 
 /* 
@@ -31,6 +35,17 @@ int test2norm_floating_point(void){
         return SUCCESS;
     }else{
         printf("The 2 norm of [0.1; 0.2; 0.2; 0.4] should be 0.5 but is %f",testNorm);
+        return FAILURE; /* test failed so return 1 */
+    }
+}
+
+int testnorm_floating_point(void){
+    real_t testVector[4] = {-0.1, -0.2, 0.2, 0.4};
+    real_t testNorm = vector_norm1(testVector,4);
+    if(testNorm==0.9){ 
+        return SUCCESS;
+    }else{
+        printf("The 1 norm of [-0.1; -0.2; 0.2; 0.4] should be 0.9 but is %f",testNorm);
         return FAILURE; /* test failed so return 1 */
     }
 }

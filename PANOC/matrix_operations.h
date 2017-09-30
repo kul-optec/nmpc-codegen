@@ -29,6 +29,8 @@ void vector_real_mul(const real_t* vector,const size_t size_vector,const real_t 
  */
 real_t vector_norm2(const real_t* vector,const size_t vector_size);
 
+real_t vector_norm1(const real_t* vector,const size_t vector_size);
+
 /*  multiply each element of vector1 times -1 and save it in vector2 */
 void vector_minus(const real_t* vector1,real_t* vector2,const size_t size_vector);
 
