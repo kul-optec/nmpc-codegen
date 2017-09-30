@@ -18,6 +18,9 @@ add_executable(bin/panoc_interfaceCasadi_simpleTest src/panoc_interfaceCasadi_si
 target_link_libraries (bin/panoc_interfaceCasadi_simpleTest PANOC_lib)
 target_link_libraries(bin/panoc_interfaceCasadi_simpleTest m) # link with the math lib, some toolchains need this
 
+add_library(problem_set STATIC src/example_problems.c)
+set_property(TARGET problem_set PROPERTY C_STANDARD 90)
+
 add_executable(bin/lbfgs_poly_test src/lbfgs_poly_test.c)
 target_link_libraries (bin/lbfgs_poly_test PANOC_lib)
 target_link_libraries(bin/lbfgs_poly_test m) # link with the math lib, some toolchains need this
@@ -29,7 +32,9 @@ target_link_libraries(bin/lipschitz_estimator_test m) # link with the math lib, 
 add_executable(bin/prox_grad_descent_poly_test src/prox_grad_descent_poly_test.c)
 target_link_libraries (bin/prox_grad_descent_poly_test PANOC_lib)
 target_link_libraries(bin/prox_grad_descent_poly_test m) # link with the math lib, some toolchains need this
+target_link_libraries(bin/prox_grad_descent_poly_test problem_set)
 
 add_executable(bin/panoc_poly_test src/panoc_poly_test.c)
 target_link_libraries (bin/panoc_poly_test PANOC_lib)
 target_link_libraries(bin/panoc_poly_test m) # link with the math lib, some toolchains need this
+target_link_libraries(bin/panoc_poly_test problem_set)
