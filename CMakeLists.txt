@@ -4,7 +4,8 @@ project (npmc)
 # set the compiler with its flags
 SET(CMAKE_C_COMPILER gcc)
 SET(CMAKE_BUILD_TYPE Debug)
-SET(GCC_COVERAGE_COMPILE_FLAGS "-Wall")
+
+add_definitions(-Wall)
 
 # subdirectories with libraries
 include_directories ("${PROJECT_SOURCE_DIR}/PANOC")
