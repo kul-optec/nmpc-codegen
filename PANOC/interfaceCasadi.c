@@ -58,6 +58,7 @@ int cleanup_func(){
     /* free up the memory used by the buffer */
     free(f_data.buffer_int);
     free(f_data.buffer_real);
+    return SUCCESS;
 }
 
 /*
