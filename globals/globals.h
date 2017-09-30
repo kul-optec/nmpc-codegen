@@ -1,3 +1,4 @@
+#include <math.h>
 /* 
  * This file contains properties configurable by the user
  */
@@ -8,6 +9,9 @@
 #ifndef real_t
 #define real_t double
 #endif
+
+#define ABS(x) fabs(x)
+
 /* the machine accuracy double*/
 #define real_eps pow(10,-16)
 /* return values for failure and success of function, the unix way*/
