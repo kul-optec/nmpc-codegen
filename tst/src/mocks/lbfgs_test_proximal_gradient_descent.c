@@ -17,7 +17,7 @@ real_t proximal_gradient_descent_get_gamma(void){return 0;}
 /*
  * function used with lbgfs, replace this with a polynomial, initialize the polynomial first !
  */
-int proximal_gradient_descent_get_residue(const real_t* input,real_t* output){
+int proximal_gradient_descent_get_residual(const real_t* input,real_t* output){
     df_poly(input,output);
     return SUCCESS;
 }

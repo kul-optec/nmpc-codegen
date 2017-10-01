@@ -89,12 +89,12 @@ int proximal_gradient_descent_get_new_location(const real_t* current_location){
 }
 
 /*
- * returns the residue, R(x) = 1/gamma[ x- proxg(x-df(x)*gamma)]
+ * returns the residual, R(x) = 1/gamma[ x- proxg(x-df(x)*gamma)]
  */
-int proximal_gradient_descent_get_residue(const real_t* current_location,real_t* residue){
+int proximal_gradient_descent_get_residual(const real_t* current_location,real_t* residual){
     proximal_gradient_descent_get_new_location(current_location);
-    vector_sub(current_location,new_location,dimension,residue);
-    vector_real_mul(residue,dimension,1/linesearch_gamma,residue);
+    vector_sub(current_location,new_location,dimension,residual);
+    vector_real_mul(residual,dimension,1/linesearch_gamma,residual);
     return SUCCESS;
 }
 /*
