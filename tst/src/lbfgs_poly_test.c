@@ -3,14 +3,14 @@
 #include"../../PANOC/lbfgs.h"
 #include"../../PANOC/matrix_operations.h"
 #include"../../globals/globals.h"
+#include"example_problems.h"
 
 #define DIMENSION 2
 static const real_t theoretical_solution[]={0,0};
 static int degree=10;
 int checkIfSolutionIsReached(void);
 int check2thdegreepolynomial(void);
-// void f(real_t*x,real_t fx)
-int gradient(const real_t* x ,real_t* df);
+
 void print_location(const real_t* location);
 
 /*
@@ -28,7 +28,8 @@ int checkIfSolutionIsReached(void){
     degree=10;
     size_t buffer_size =10;
 
-    lbfgs_init(buffer_size,DIMENSION,gradient);
+    lbfgs_init(buffer_size,DIMENSION);
+    f_poly_init(DIMENSION,degree);
     
     real_t current_location[DIMENSION]={0.5,0.5};
 
@@ -55,7 +56,8 @@ int check2thdegreepolynomial(void){
     degree=2;
     size_t buffer_size =10;
 
-    lbfgs_init(buffer_size,DIMENSION,gradient);
+    lbfgs_init(buffer_size,DIMENSION);
+    f_poly_init(DIMENSION,degree);
     real_t current_location[DIMENSION]={0.5,0.5};
 
     printf("starting in location x1=0.5 x2=0.5 \n");
@@ -76,12 +78,6 @@ int check2thdegreepolynomial(void){
         printf("end of test1:FAILURE --- \n");
         return FAILURE;
     }
-}
-
-int gradient(const real_t* x ,real_t*df){
-    df[0] = degree*pow(x[0],degree-1) ;
-    df[1] = degree*pow(x[1],degree-1);
-    return SUCCESS;
 }
 
 void print_location(const real_t* location){

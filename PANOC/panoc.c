@@ -35,7 +35,7 @@ int panoc_init(size_t dimension_,\
     dimension=dimension_;
     g=g_;f=f_;proxg=proxg_;df=df_;
 
-    if(lbfgs_init(LBGFS_BUFFER_SIZE,dimension,proximal_gradient_descent_get_residue)==FAILURE) goto fail_1;
+    if(lbfgs_init(LBGFS_BUFFER_SIZE,dimension)==FAILURE) goto fail_1;
     if(proximal_gradient_descent_init(dimension,g,proxg,f,df)==FAILURE) goto fail_2;
 
     return SUCCESS;

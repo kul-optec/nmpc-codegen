@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include "matrix_operations.h"
+#include "proximal_gradient_descent.h"
 
 /* 
  * The following two matrices are safed between iterations 
@@ -24,7 +25,6 @@ static size_t buffer_size; /* buffersize initialized in init method */
 static size_t dimension;
 static real_t* direction;
 
-static int (*gradient) (const real_t* input, real_t* output); /* gradient used in each iteration */
 void shift_s_and_y(const size_t buffer_limit); /* internal function used to shift the s and y buffers */
 
 static real_t* y_data; /* data field used to allocate 2D array y, if only one malloc is used we get cast errors */
@@ -34,12 +34,10 @@ static real_t* s_data; /* data field used to allocate 2D array s, if only one ma
  * Initialize the lbfgs library
  * This function should allways be called before doing anything with the lbfgs algorithm.
  */
-int lbfgs_init(const size_t buffer_size_,const size_t dimension_, \
-    int (*gradient_)(const real_t* input,real_t* output)){
+int lbfgs_init(const size_t buffer_size_,const size_t dimension_){
     
     dimension=dimension_;
     buffer_size=buffer_size_;
-    gradient=gradient_;
     iteration_index=0;
 
     /* 
@@ -115,7 +113,7 @@ int lbfgs_cleanup(void){
  * returns the direction calculated with lbfgs
  */ 
 const real_t* lbfgs_get_direction(const real_t* current_location){
-    real_t q[dimension];gradient(current_location,q);
+    real_t q[dimension];proximal_gradient_descent_get_residue(current_location,q);
 
     /* is this the first time you call get_direction? */
     if(iteration_index==0){
@@ -168,8 +166,8 @@ const real_t* lbfgs_get_direction(const real_t* current_location){
 
     vector_sub(new_location,current_location,dimension,s[0]); /* set s */
     
-    real_t gradient_new_location[dimension];gradient(new_location,gradient_new_location); /* find df(x) */
-    real_t gradient_current_location[dimension];gradient(current_location,gradient_current_location);/* find f(x) */
+    real_t gradient_new_location[dimension];proximal_gradient_descent_get_residue(new_location,gradient_new_location); /* find df(x) */
+    real_t gradient_current_location[dimension];proximal_gradient_descent_get_residue(current_location,gradient_current_location);/* find f(x) */
 
     vector_sub(gradient_new_location,gradient_current_location,dimension,y[0]); /* set y=df(new_x) - df(x) */
 
