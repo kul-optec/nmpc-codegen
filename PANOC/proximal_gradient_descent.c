@@ -13,7 +13,7 @@ void (*df)(const real_t* input, real_t* output);
 
 /* functions only used internally */
 int proximal_gradient_descent_check_linesearch(const real_t* current_location);
-int proximal_gradient_descent_get_new_location(const real_t* current_location);
+int proximal_gradient_descent_forward_backward_step(const real_t* current_location);
 
 /* values set by the init function */
 static size_t dimension;
@@ -69,17 +69,17 @@ const real_t* proximal_gradient_descent_get_direction(const real_t* current_loca
         linesearch_gamma = (1-PROXIMAL_GRAD_DESC_SAFETY_VALUE)/lipschitz_value;
         iteration_index++; /* index only needs to increment if it is 0 */
     }
-    proximal_gradient_descent_get_new_location(current_location);
+    proximal_gradient_descent_forward_backward_step(current_location);
     while(proximal_gradient_descent_check_linesearch(current_location)==FAILURE){
         linesearch_gamma=linesearch_gamma/2;
-        proximal_gradient_descent_get_new_location(current_location);
+        proximal_gradient_descent_forward_backward_step(current_location);
     }
     return direction;
 }
 /* 
  * This function performs an forward backward step. x=prox(x-gamma*df(x))
  */
-int proximal_gradient_descent_get_new_location(const real_t* current_location){
+int proximal_gradient_descent_forward_backward_step(const real_t* current_location){
     real_t buffer[dimension];
     df(current_location,buffer); /* buffer = current gradient (at current_location) */
     vector_add_ntimes(current_location,buffer,dimension,-1*linesearch_gamma,buffer); /* buffer = current_location - gamma * buffer */
@@ -92,7 +92,7 @@ int proximal_gradient_descent_get_new_location(const real_t* current_location){
  * returns the residual, R(x) = 1/gamma[ x- proxg(x-df(x)*gamma)]
  */
 int proximal_gradient_descent_get_residual(const real_t* current_location,real_t* residual){
-    proximal_gradient_descent_get_new_location(current_location);
+    proximal_gradient_descent_forward_backward_step(current_location);
     vector_sub(current_location,new_location,dimension,residual);
     vector_real_mul(residual,dimension,1/linesearch_gamma,residual);
     return SUCCESS;
@@ -120,7 +120,7 @@ int proximal_gradient_descent_check_linesearch(const real_t* current_location){
  * Matlab cache.FBE = cache.fx + cache.gz - cache.gradfx(:)'*cache.FPR(:) + (0.5/gam)*(cache.normFPR^2);
  */
 real_t proximal_gradient_descent_forward_backward_envelop(const real_t* current_location){
-    proximal_gradient_descent_get_new_location(current_location); /* this will fill the new_direction variable */
+    proximal_gradient_descent_forward_backward_step(current_location); /* this will fill the new_direction variable */
 
     const real_t f_current_location=f(current_location);
     real_t df_current_location[dimension];df(current_location,df_current_location);
