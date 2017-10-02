@@ -1,27 +1,28 @@
 #include"lipschitz.h"
 #include"matrix_operations.h"
 #include"math.h"
+#include"casadi_interface.h"
 #include <stddef.h>
 #include <stdlib.h>
-
+#include "buffer.h"
 /*
  * Estimate the lipschitz constant by using the numerical hessian as an estimation
  * Theorem:
  *     ||gradient(x)|| < B
  *     f is B-lipschitz
  */
-real_t get_lipschitz(void (*gradient)(const real_t*,real_t*),const real_t* current_position,const size_t dimension){
-    real_t current_position_delta[dimension];
+real_t get_lipschitz(const real_t* current_position){
+    const size_t dimension=casadi_interface_get_dimension();
 
-    real_t df_current_position[dimension];
+    real_t current_position_delta[dimension];
     real_t df_current_position_delta[dimension];
 
     /* copy over the current position and add delta*/
     vector_real_add(current_position,dimension,DELTA_LIPSCHITZ,current_position_delta);
 
     /* calculate the two gradients and save them in the same variable */
-    gradient(current_position,df_current_position);
-    gradient(current_position_delta,df_current_position_delta);
+    const real_t* df_current_position=buffer_get_current_df();
+    casadi_interface_df(current_position_delta,df_current_position_delta);
 
     /* 
      * L = norm((df(x+delta)-df(x))/delta) 
