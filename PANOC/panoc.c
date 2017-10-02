@@ -5,6 +5,7 @@
 #include"matrix_operations.h"
 #include"../globals/globals.h"
 #include"casadi_interface.h"
+#include"buffer.h"
 
 /* variables set once by init */
 static size_t dimension;
@@ -28,9 +29,12 @@ int panoc_init(){
 
     if(lbfgs_init(LBGFS_BUFFER_SIZE,dimension)==FAILURE) goto fail_1;
     if(proximal_gradient_descent_init()==FAILURE) goto fail_2;
+    if(buffer_init()==FAILURE) goto fail_3;
 
     return SUCCESS;
-
+    
+    fail_3:
+        proximal_gradient_descent_cleanup();
     fail_2:
         lbfgs_cleanup();
     fail_1:
@@ -43,6 +47,7 @@ int panoc_init(){
  * use this when you don't need the lib anymore
  */
 int panoc_cleanup(){
+    buffer_cleanup();
     proximal_gradient_descent_cleanup();
     lbfgs_cleanup();
     return SUCCESS;
@@ -52,6 +57,7 @@ int panoc_cleanup(){
  * Solve the actually MPC problem, return the optimal inputs
  */
 int panoc_get_new_location(const real_t* current_location,real_t* new_location){   
+    buffer_renew(current_location);
     const real_t* forward_backward_step = proximal_gradient_descent_get_direction(current_location);
     const real_t sigma = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*proximal_gradient_descent_get_gamma());
 
