@@ -2,6 +2,7 @@
 #include<math.h>
 #include"../../PANOC/proximal_gradient_descent.h"
 #include"../../PANOC/matrix_operations.h"
+#include"../../PANOC/buffer.h"
 #include"../../globals/globals.h"
 #include"example_problems.h"
 #include"./mocks/casadi_interface_test.h"
@@ -39,16 +40,19 @@ int checkIfSolutionIsReached(void){
         f_poly,
         df_poly);
 
+    buffer_init();
     proximal_gradient_descent_init(dimension);
 
     size_t i;
     for ( i = 0; i < numer_of_iterations; i++)
     {
+        buffer_renew(current_location);
         const real_t* direction = proximal_gradient_descent_get_direction(current_location);
         vector_add_ntimes(current_location,direction,dimension,1,current_location);
         print_location(current_location);
     }
     proximal_gradient_descent_cleanup();
+    buffer_cleanup();
 
     if(current_location[0]<0.14){ /* theoretical value is about 0.133333 */
         printf("end of test1:SUCCESS --- \n");
