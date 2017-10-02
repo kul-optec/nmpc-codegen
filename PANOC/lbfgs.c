@@ -166,8 +166,8 @@ const real_t* lbfgs_get_direction(const real_t* current_location){
 
     vector_sub(new_location,current_location,dimension,s[0]); /* set s */
     
-    real_t gradient_new_location[dimension];proximal_gradient_descent_get_residual(new_location,gradient_new_location); /* find df(x) */
-    real_t gradient_current_location[dimension];proximal_gradient_descent_get_residual(current_location,gradient_current_location);/* find f(x) */
+    real_t gradient_current_location[dimension];proximal_gradient_descent_get_current_residual(current_location,gradient_current_location);/* find df(x) */
+    real_t gradient_new_location[dimension];proximal_gradient_descent_get_residual(new_location,gradient_new_location); /* find df(new_x) */
 
     vector_sub(gradient_new_location,gradient_current_location,dimension,y[0]); /* set y=df(new_x) - df(x) */
 
