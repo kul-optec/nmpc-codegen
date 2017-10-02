@@ -4,11 +4,7 @@
 #include"proximal_gradient_descent.h"
 #include"matrix_operations.h"
 #include"../globals/globals.h"
-
-real_t (*g)(const real_t* input);
-void (*proxg)(const real_t* input, real_t* output);
-real_t (*f)(const real_t* input);
-void (*df)(const real_t* input, real_t* output);
+#include"casadi_interface.h"
 
 /* variables set once by init */
 static size_t dimension;
@@ -27,16 +23,11 @@ int panoc_get_new_potential_location(const real_t* current_location ,const  real
  * Initialize the panoc library
  * This function should allways be called before doing anything with the panoc lib
  */
-int panoc_init(size_t dimension_,\
-        real_t (*g_)(const real_t* input),\
-        void (*proxg_)(const real_t* input, real_t* output),\
-        real_t (*f_)(const real_t* input),\
-        void (*df_)(const real_t* input, real_t* output)){
-    dimension=dimension_;
-    g=g_;f=f_;proxg=proxg_;df=df_;
+int panoc_init(){
+    dimension=casadi_interface_get_dimension();
 
     if(lbfgs_init(LBGFS_BUFFER_SIZE,dimension)==FAILURE) goto fail_1;
-    if(proximal_gradient_descent_init(dimension,g,proxg,f,df)==FAILURE) goto fail_2;
+    if(proximal_gradient_descent_init()==FAILURE) goto fail_2;
 
     return SUCCESS;
 

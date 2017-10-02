@@ -4,23 +4,15 @@
 #include"../../PANOC/matrix_operations.h"
 #include"../../globals/globals.h"
 #include"example_problems.h"
+#include"./mocks/casadi_interface_test.h"
 
-#define DIMENSION 2
+
 static const real_t theoretical_solution[]={0,0};
 static int degree=5;
 static int w=2;
 
 int checkIfSolutionIsReached(void);
 void print_location(real_t* location);
-
-/*
- * Function f with its gradient df  
- * Function g with the resulting function after proximal operator
- */
-real_t f_grad_descent_poly_test(const real_t* x);
-real_t g_grad_descent_poly_test(const real_t* x);
-void df_grad_descent_poly_test(const real_t* x ,real_t* df_x);
-void proxg_grad_descent_poly_test(const real_t* x ,real_t* proxg_x);
 
 /*
  * TEST proximal gradient descent
@@ -33,23 +25,27 @@ int main(){
 
 int checkIfSolutionIsReached(void){
     printf("test1 --- \n");
+    const size_t dimension=2;
     degree=5;
     size_t numer_of_iterations=100;
-    real_t current_location[DIMENSION]={0.5,0.5};
+    real_t current_location[2]={0.5,0.5};
 
     printf("starting in location x1=0.5 x2=0.5 \n");
-    example_problems_set_init_problem1(w,DIMENSION);
-    proximal_gradient_descent_init(DIMENSION, \
-        g_1,\
-        proxg_1,\
-        f_grad_descent_poly_test,\
-        df_grad_descent_poly_test);
-    
+    example_problems_set_init_problem1(w,dimension);
+    f_poly_init(dimension,degree );
+    casadi_interface_test_init(dimension, 
+        g_1,
+        proxg_1,
+        f_poly,
+        df_poly);
+
+    proximal_gradient_descent_init(dimension);
+
     size_t i;
     for ( i = 0; i < numer_of_iterations; i++)
     {
         const real_t* direction = proximal_gradient_descent_get_direction(current_location);
-        vector_add_ntimes(current_location,direction,DIMENSION,1,current_location);
+        vector_add_ntimes(current_location,direction,dimension,1,current_location);
         print_location(current_location);
     }
     proximal_gradient_descent_cleanup();
@@ -63,23 +59,6 @@ int checkIfSolutionIsReached(void){
     }  
 }
 
-/*
- * simple problem to test the proximal gradient descent
- */
-real_t f_grad_descent_poly_test(const real_t* x){
-    real_t f_x=0;
-    size_t i;
-    for (i = 0; i < DIMENSION; i++){
-        f_x+=pow(x[i],degree);
-    }
-    return f_x;
-}
-void df_grad_descent_poly_test(const real_t* x ,real_t* df_x){
-    size_t i;
-    for (i = 0; i < DIMENSION; i++){
-        df_x[i] = degree*pow(x[i],degree-1) ;
-    }
-}
 void print_location(real_t* location){
     printf("x1=%f x2=%f \n",location[0],location[1]);
 }

@@ -1,15 +1,10 @@
 #include "proximal_gradient_descent.h"
+#include "casadi_interface.h"
 #include "../globals/globals.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include "matrix_operations.h"
 #include "lipschitz.h"
-
-/* functions provided by the init function */
-real_t (*g)(const real_t* input);
-void (*proxg)(const real_t* input, real_t* output);
-real_t (*f)(const real_t* input);
-void (*df)(const real_t* input, real_t* output);
 
 /* functions only used internally */
 int proximal_gradient_descent_check_linesearch(const real_t* current_location);
@@ -26,13 +21,8 @@ static real_t linesearch_gamma=0; /* linesearch parameter */
 static real_t* new_location;
 static real_t* direction;
 
-int proximal_gradient_descent_init(size_t dimension_, \
-    real_t (*g_)(const real_t* input), \
-    void (*proxg_)(const real_t* input, real_t* output),\
-    real_t (*f_)(const real_t* input),\
-    void (*df_)(const real_t* input, real_t* output)){
-    dimension=dimension_;
-    g=g_;f=f_;proxg=proxg_;df=df_;
+int proximal_gradient_descent_init(){
+    dimension=casadi_interface_get_dimension();
 
     new_location = malloc(sizeof(real_t*)*dimension);
     if(new_location==NULL)goto fail_1;
@@ -64,7 +54,7 @@ const real_t* proximal_gradient_descent_get_direction(const real_t* current_loca
     * by estimating the lipschitz value of df
     */
     if(iteration_index==0){
-         real_t lipschitz_value = get_lipschitz(df,current_location,dimension);
+         real_t lipschitz_value = get_lipschitz(casadi_interface_df,current_location,dimension);
 
         linesearch_gamma = (1-PROXIMAL_GRAD_DESC_SAFETY_VALUE)/lipschitz_value;
         iteration_index++; /* index only needs to increment if it is 0 */
@@ -81,9 +71,9 @@ const real_t* proximal_gradient_descent_get_direction(const real_t* current_loca
  */
 int proximal_gradient_descent_forward_backward_step(const real_t* current_location){
     real_t buffer[dimension];
-    df(current_location,buffer); /* buffer = current gradient (at current_location) */
+    casadi_interface_df(current_location,buffer); /* buffer = current gradient (at current_location) */
     vector_add_ntimes(current_location,buffer,dimension,-1*linesearch_gamma,buffer); /* buffer = current_location - gamma * buffer */
-    proxg(buffer,new_location); /* new_location = proxg(buffer) */
+    casadi_interface_proxg(buffer,new_location); /* new_location = proxg(buffer) */
     vector_sub(new_location,current_location,dimension,direction); /* find the direction */
     return SUCCESS;
 }
@@ -101,11 +91,11 @@ int proximal_gradient_descent_get_residual(const real_t* current_location,real_t
  * check if the linesearch condition is satisfied
  */
 int proximal_gradient_descent_check_linesearch(const real_t* current_location){
-    real_t df_current_location[dimension];df(current_location,df_current_location);
+    real_t df_current_location[dimension];casadi_interface_df(current_location,df_current_location);
     const real_t inner_product_df_direction = inner_product(df_current_location,direction,dimension);
 
-    const real_t f_current_location=f(current_location);
-    const real_t f_new_location=f(new_location);
+    const real_t f_current_location=casadi_interface_f(current_location);
+    const real_t f_new_location=casadi_interface_f(new_location);
 
     const real_t norm_direction = pow(vector_norm2(direction,dimension),2);
 
@@ -122,9 +112,9 @@ int proximal_gradient_descent_check_linesearch(const real_t* current_location){
 real_t proximal_gradient_descent_forward_backward_envelop(const real_t* current_location){
     proximal_gradient_descent_forward_backward_step(current_location); /* this will fill the new_direction variable */
 
-    const real_t f_current_location=f(current_location);
-    real_t df_current_location[dimension];df(current_location,df_current_location);
-    const real_t g_new_location=g(new_location);
+    const real_t f_current_location=casadi_interface_f(current_location);
+    real_t df_current_location[dimension];casadi_interface_df(current_location,df_current_location);
+    const real_t g_new_location=casadi_interface_g(new_location);
 
     const real_t norm_direction = pow(vector_norm2(direction,dimension),2);
 
