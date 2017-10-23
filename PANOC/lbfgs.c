@@ -1,4 +1,5 @@
 #include"lbfgs.h"
+#include"buffer.h"
 #include "../globals/globals.h"
 #include <stddef.h>
 #include <stdlib.h>
@@ -112,7 +113,8 @@ int lbfgs_cleanup(void){
 /*
  * returns the direction calculated with lbfgs
  */ 
-const real_t* lbfgs_get_direction(const real_t* current_location){
+const real_t* lbfgs_get_direction(){
+    const real_t* current_location = buffer_get_current_location();
     real_t q[dimension];proximal_gradient_descent_get_residual(current_location,q);
 
     /* is this the first time you call get_direction? */
@@ -166,7 +168,7 @@ const real_t* lbfgs_get_direction(const real_t* current_location){
 
     vector_sub(new_location,current_location,dimension,s[0]); /* set s */
     
-    real_t gradient_current_location[dimension];proximal_gradient_descent_get_current_residual(current_location,gradient_current_location);/* find df(x) */
+    real_t gradient_current_location[dimension];proximal_gradient_descent_get_current_residual(gradient_current_location);/* find df(x) */
     real_t gradient_new_location[dimension];proximal_gradient_descent_get_residual(new_location,gradient_new_location); /* find df(new_x) */
 
     vector_sub(gradient_new_location,gradient_current_location,dimension,y[0]); /* set y=df(new_x) - df(x) */

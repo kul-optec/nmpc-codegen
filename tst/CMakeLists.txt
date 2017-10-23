@@ -3,7 +3,7 @@ add_library(problem_set STATIC src/example_problems.c)
 set_property(TARGET problem_set PROPERTY C_STANDARD 90)
 
 # lib used when testing the lbfgs with polynomial, it replaces the prox grad descent with a mock
-add_library(PANOC_test_lbfgs STATIC "${PROJECT_SOURCE_DIR}/PANOC/lbfgs.c" "${PROJECT_SOURCE_DIR}/PANOC/matrix_operations.c" src/mocks/lbfgs_test_proximal_gradient_descent.c)
+add_library(PANOC_test_lbfgs STATIC "${PROJECT_SOURCE_DIR}/PANOC/lbfgs.c" "${PROJECT_SOURCE_DIR}/PANOC/matrix_operations.c" src/mocks/lbfgs_test_proximal_gradient_descent.c src/mocks/lbfgs_test_buffer.c )
 set_property(TARGET PANOC_test_lbfgs PROPERTY C_STANDARD 90)
 
 # from here on compile the different tests

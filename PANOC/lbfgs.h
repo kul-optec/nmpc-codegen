@@ -11,6 +11,6 @@ int lbfgs_cleanup(void);
 /*
  * returns the direction calculated with lbfgs
  */ 
-const real_t* lbfgs_get_direction(const real_t* current_location);
+const real_t* lbfgs_get_direction();
 
 #endif 

@@ -1,4 +1,5 @@
 #include"../../../globals/globals.h"
+#include"../../../PANOC/buffer.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include "../example_problems.h"
@@ -21,7 +22,7 @@ int proximal_gradient_descent_get_residual(const real_t* input,real_t* output){
     df_poly(input,output);
     return SUCCESS;
 }
-int proximal_gradient_descent_get_current_residual(const real_t* current_location,real_t* residual){
-    proximal_gradient_descent_get_residual(current_location,residual);
+int proximal_gradient_descent_get_current_residual(real_t* residual){
+    proximal_gradient_descent_get_residual(buffer_get_current_location(),residual);
     return SUCCESS;
 }

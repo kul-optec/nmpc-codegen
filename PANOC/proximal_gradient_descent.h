@@ -7,19 +7,19 @@
 
 int proximal_gradient_descent_init();
 int proximal_gradient_descent_cleanup(void);
-const real_t* proximal_gradient_descent_get_direction(const real_t* current_location);
+const real_t* proximal_gradient_descent_get_direction();
 
 /*
  * calculate the forward backward envelop using the internal gamma
  * Matlab cache.FBE = cache.fx + cache.gz - cache.gradfx(:)'*cache.FPR(:) + (0.5/gam)*(cache.normFPR^2);
  */
-real_t proximal_gradient_descent_forward_backward_envelop(const real_t* current_location);
+real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location);
 
 /*
  * function with lbgfs
  */
 int proximal_gradient_descent_get_residual(const real_t* input,real_t* output);
-int proximal_gradient_descent_get_current_residual(const real_t* current_location,real_t* residual);
+int proximal_gradient_descent_get_current_residual(real_t* residual);
 real_t proximal_gradient_descent_get_gamma(void);
 
 #endif // !PROXIMAL_GRADIENT_DESCENT_H

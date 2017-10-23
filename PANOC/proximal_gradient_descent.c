@@ -49,11 +49,12 @@ int proximal_gradient_descent_cleanup(void){
 /*
  * Find the proximal gradient descent with linesearch
  */
-const real_t* proximal_gradient_descent_get_direction(const real_t* current_location){
+const real_t* proximal_gradient_descent_get_direction(){
    /* 
     * If this is the first time you call me, find the initial gamma value
     * by estimating the lipschitz value of df
     */
+    const real_t* current_location = buffer_get_current_location();
     if(iteration_index==0){
         real_t lipschitz_value = get_lipschitz(current_location);
 
@@ -92,7 +93,8 @@ int proximal_gradient_descent_get_residual(const real_t* location,real_t* residu
 /*
  * returns the residual using the previous forward backward step, R(x) = 1/gamma[ x- proxg(x-df(x)*gamma)]
  */
-int proximal_gradient_descent_get_current_residual(const real_t* current_location,real_t* residual){
+int proximal_gradient_descent_get_current_residual(real_t* residual){
+    const real_t* current_location = buffer_get_current_location();
     vector_sub(current_location,new_location,dimension,residual);
     vector_real_mul(residual,dimension,1/linesearch_gamma,residual);
     return SUCCESS;

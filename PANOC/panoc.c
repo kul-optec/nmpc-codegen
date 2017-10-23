@@ -16,8 +16,8 @@ static real_t FBE_current_location;
 static real_t direction_norm;
 
 /* functions used internally */
-int panoc_check_linesearch_condition(const real_t* current_location, real_t* new_location, const real_t sigma);
-int panoc_get_new_potential_location(const real_t* current_location ,const  real_t* forward_backward_step,
+int panoc_check_linesearch_condition(real_t* new_location, const real_t sigma);
+int panoc_get_new_potential_location(const  real_t* forward_backward_step,
     const real_t* direction_residue,const real_t tau,real_t* potential_new_location);
 
 /*
@@ -56,7 +56,7 @@ int panoc_cleanup(){
 /*
  * Solve the actually MPC problem, return the optimal inputs
  */
-int panoc_get_new_location(const real_t* current_location,real_t* new_location){   
+int panoc_get_new_location(const real_t* current_location,real_t* new_location){  
     buffer_renew(current_location);
     const real_t* forward_backward_step = proximal_gradient_descent_get_direction(current_location);
     const real_t sigma = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*proximal_gradient_descent_get_gamma());
@@ -68,15 +68,15 @@ int panoc_get_new_location(const real_t* current_location,real_t* new_location){
     direction_norm=pow(vector_norm2(forward_backward_step,dimension),2);
 
     tau=1;
-    panoc_get_new_potential_location(current_location,forward_backward_step,direction_residue,tau,new_location);
-    while(panoc_check_linesearch_condition(current_location,new_location,sigma)==FAILURE){
+    panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
+    while(panoc_check_linesearch_condition(new_location,sigma)==FAILURE){
             tau=tau/2;
-            panoc_get_new_potential_location(current_location,forward_backward_step,direction_residue,tau,new_location);
+            panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
     }
     return SUCCESS;
 }
 
-int panoc_check_linesearch_condition(const real_t* current_location, real_t* new_location,const real_t sigma){
+int panoc_check_linesearch_condition(real_t* new_location,const real_t sigma){
     const real_t FBE_potential_new_location = proximal_gradient_descent_forward_backward_envelop(new_location);
 
     if(FBE_potential_new_location<=FBE_current_location-sigma*direction_norm){
@@ -86,9 +86,10 @@ int panoc_check_linesearch_condition(const real_t* current_location, real_t* new
 }
 
 /* find potential new location x=x-(1-tau)*forward_backward_step+tau*direction_residue */
-int panoc_get_new_potential_location(const real_t* current_location ,const  real_t* forward_backward_step,
+int panoc_get_new_potential_location(const  real_t* forward_backward_step,
     const real_t* direction_residue,const real_t tau,real_t* potential_new_location){
 
+    const real_t* current_location = buffer_get_current_location();
     vector_add_2_vectors_a_times(current_location,forward_backward_step,direction_residue,dimension,\
         -(1-tau),tau,potential_new_location); 
     return SUCCESS;

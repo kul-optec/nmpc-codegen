@@ -6,6 +6,7 @@
 
 static real_t current_f;
 static real_t* current_df;
+static const real_t* current_location;
 
 int buffer_init(){
     current_df=malloc(sizeof(real_t)*casadi_interface_get_dimension());
@@ -21,13 +22,13 @@ int buffer_cleanup(){
     return SUCCESS;
 }
 
-int buffer_renew(const real_t* current_location){
+int buffer_renew(const real_t* current_location_){
+    current_location=current_location_;
     current_f = casadi_interface_f(current_location);
     casadi_interface_df(current_location,current_df);
     return SUCCESS;
 }
 
 real_t buffer_get_current_f(){return current_f;}
-const real_t*  buffer_get_current_df(){
-    return current_df;
-}
+const real_t* buffer_get_current_location(){return current_location;}
+const real_t*  buffer_get_current_df(){return current_df;}

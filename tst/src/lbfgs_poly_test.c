@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<math.h>
 #include"../../PANOC/lbfgs.h"
+#include"../../PANOC/buffer.h"
 #include"../../PANOC/matrix_operations.h"
 #include"../../globals/globals.h"
 #include"example_problems.h"
@@ -30,19 +31,22 @@ int checkIfSolutionIsReached(void){
 
     lbfgs_init(buffer_size,DIMENSION);
     f_poly_init(DIMENSION,degree);
+    buffer_init();
     
     real_t current_location[DIMENSION]={0.5,0.5};
 
-    printf("starting in location x1=0.5 x2=0.5 \n");
+    printf("test1: starting in location x1=0.5 x2=0.5 \n");
 
     size_t i;
     for ( i = 0; i < 100; i++)
     {
+        buffer_renew(current_location);
         const real_t* direction = lbfgs_get_direction(current_location);
         vector_add(current_location,direction,DIMENSION,current_location);
         print_location(current_location);
     }
     lbfgs_cleanup();
+    buffer_cleanup();
     if(current_location[0]<pow(10,-3)&&current_location[1]<pow(10,-3)){
         printf("end of test1:SUCCESS --- \n");
         return SUCCESS;
@@ -58,24 +62,28 @@ int check2thdegreepolynomial(void){
 
     lbfgs_init(buffer_size,DIMENSION);
     f_poly_init(DIMENSION,degree);
+    buffer_init();
     real_t current_location[DIMENSION]={0.5,0.5};
 
-    printf("starting in location x1=0.5 x2=0.5 \n");
+    printf("test2: starting in location x1=0.5 x2=0.5 \n");
 
     size_t i;
     for ( i = 0; i < 2; i++)
     {
-        const real_t* direction = lbfgs_get_direction(current_location);
+        buffer_renew(current_location);
+        const real_t* direction = lbfgs_get_direction();
         vector_add(current_location,direction,DIMENSION,current_location);
         print_location(current_location);
     }
     
     lbfgs_cleanup();
+    buffer_cleanup();
+
     if(current_location[0]<pow(10,-15)&&current_location[1]<pow(10,-15)){
         return SUCCESS;
-        printf("end of test1:SUCCESS --- \n");
+        printf("end of test2:SUCCESS --- \n");
     }else{
-        printf("end of test1:FAILURE --- \n");
+        printf("end of test2:FAILURE --- \n");
         return FAILURE;
     }
 }

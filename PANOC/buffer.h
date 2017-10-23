@@ -12,5 +12,6 @@ int buffer_renew(const real_t* current_location);
 
 real_t buffer_get_current_f();
 const real_t*  buffer_get_current_df();
+const real_t* buffer_get_current_location();
 
 #endif
