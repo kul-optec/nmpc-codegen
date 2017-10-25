@@ -14,9 +14,14 @@
 
 /* the machine accuracy double*/
 #define real_eps pow(10,-16)
+
+/* large number */
+#define LARGE 10000000
+
 /* return values for failure and success of function, the unix way*/
 #define FAILURE 1
 #define SUCCESS 0
+
 /* define the 2 boolean states */
 #define TRUE 1
 #define FALSE 0

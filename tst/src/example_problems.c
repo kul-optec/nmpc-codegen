@@ -67,3 +67,44 @@ void proxg_1(const real_t* x ,real_t* proxg_x){
         for ( i = 0; i < problem1_dimension; i++)proxg_x[i]=sign(x[i])*problem1_w; 
     }
 }
+
+
+/* g2=Indicator{-1;0;1} */
+real_t g_2(const real_t* x){
+    if(*x==-1)return 0;
+    if(*x==1)return 0;
+    if(*x==0)return 0;
+    return LARGE;
+}
+void proxg_2(const real_t* x ,real_t* proxg_x){
+    if(*x<-0.5){
+        *proxg_x= -1;
+    }else if (*x>0.5){
+        *proxg_x= 1;
+    }else{
+        *proxg_x= 0;
+    }
+}
+
+static real_t problem3_u_min=0;
+static real_t problem3_u_max=0;
+
+int example_problems_set_init_problem3(real_t u_min,real_t u_max){
+    problem3_u_max=u_max;
+    problem3_u_min=u_min;
+    return SUCCESS;
+}
+/* indicator{[-u_max u_min]u[u_min u_max]} */
+real_t g_3(const real_t* x){
+    if(*x>problem3_u_min && *x<problem3_u_max)return 0;
+    if(*x<-problem3_u_min && *x>-problem3_u_max)return 0;
+    return LARGE;
+}
+void proxg_3(const real_t* x ,real_t* proxg_x){
+    if(*x>problem3_u_min && *x<problem3_u_max)*proxg_x = *x;
+    if(*x<-problem3_u_min && *x>-problem3_u_max)*proxg_x = *x;
+    if(*x>problem3_u_max) *proxg_x = problem3_u_max;
+    if(*x<-problem3_u_max) *proxg_x = -problem3_u_max;
+    if(*x>0)*proxg_x =problem3_u_min;
+    else *proxg_x =-problem3_u_min;
+}
