@@ -62,4 +62,7 @@
 #define LBGFS_BUFFER_SIZE 10
 #endif
 
+
+#define FBE_LINESEARCH_MAX_ITERATIONS 5
+
 #endif

@@ -69,7 +69,8 @@ int panoc_get_new_location(const real_t* current_location,real_t* new_location){
 
     tau=1;
     panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
-    while(panoc_check_linesearch_condition(new_location,sigma)==FAILURE){
+    int i=0;
+    for(i=0;i<FBE_LINESEARCH_MAX_ITERATIONS && panoc_check_linesearch_condition(new_location,sigma)==FAILURE;i++){
             tau=tau/2;
             panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
     }
