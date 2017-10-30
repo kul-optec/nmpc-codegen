@@ -73,7 +73,7 @@ int checkIfSolutionIsReached(void){
 int checkIfSolutionIsReached2(void){
     printf("test2 --- \n");
     size_t dimension=2;
-    degree=6;
+    degree=5;
     real_t w=2;
     example_problems_set_init_problem1(w,dimension);
     f_poly_init(dimension,degree );
@@ -107,7 +107,7 @@ int checkIfSolutionIsReached2(void){
     free(next_location);
     panoc_cleanup();
 
-    if(current_location[0]<0.5  && current_location[0]>0){ /* theoretical value is about 0.133333 */
+    if(ABS(current_location[0])<1 ){
         printf("end of test2:SUCCESS --- \n");
         return SUCCESS;
     }else{

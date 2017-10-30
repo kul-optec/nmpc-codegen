@@ -10,6 +10,7 @@
 /* functions only used internally */
 int proximal_gradient_descent_check_linesearch();
 int proximal_gradient_descent_forward_backward_step(const real_t* location);
+int proximal_gradient_descent_rollback();
 
 /* values set by the init function */
 static size_t dimension;
@@ -21,6 +22,8 @@ static real_t linesearch_gamma=0; /* linesearch parameter */
 /* variables used by each iteration */
 static real_t* new_location;
 static real_t* direction;
+static real_t* new_location_previous;
+static real_t* direction_previous;
 
 int proximal_gradient_descent_init(){
     dimension=casadi_interface_get_dimension();
@@ -31,11 +34,21 @@ int proximal_gradient_descent_init(){
     direction = malloc(sizeof(real_t*)*dimension);
     if(direction==NULL)goto fail_2;
 
+    new_location_previous = malloc(sizeof(real_t*)*dimension);
+    if(new_location_previous==NULL)goto fail_3;
+
+    direction_previous = malloc(sizeof(real_t*)*dimension);
+    if(direction_previous==NULL)goto fail_4;
+
     return SUCCESS;
 
     /*
      * something went wrong when allocating memory, free up what was already taken
      */
+    fail_4:
+        free(new_location_previous);
+    fail_3:
+        free(direction);
     fail_2:
         free(new_location);
     fail_1:
@@ -84,9 +97,13 @@ int proximal_gradient_descent_forward_backward_step(const real_t* location){
  * returns the residual, R(x) = 1/gamma[ x- proxg(x-df(x)*gamma)]
  */
 int proximal_gradient_descent_get_residual(const real_t* location,real_t* residual){
+    proximal_gradient_descent_rollback(); /* undo changes to the state of this entity */
+
     proximal_gradient_descent_forward_backward_step(location);
     vector_sub(location,new_location,dimension,residual);
     vector_real_mul(residual,dimension,1/linesearch_gamma,residual);
+    
+    proximal_gradient_descent_rollback(); /* undo changes to the state of this entity */
     return SUCCESS;
 }
 
@@ -122,22 +139,37 @@ int proximal_gradient_descent_check_linesearch(){
  * calculate the forward backward envelop using the internal gamma
  * Matlab cache.FBE = cache.fx + cache.gz - cache.gradfx(:)'*cache.FPR(:) + (0.5/gam)*(cache.normFPR^2);
  */
-real_t proximal_gradient_descent_forward_backward_envelop(const real_t* current_location){
-    proximal_gradient_descent_forward_backward_step(current_location); /* this will fill the new_direction variable */
+real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location){
+    proximal_gradient_descent_rollback(); /* undo changes to the state of this entity */
+    proximal_gradient_descent_forward_backward_step(location); /* this will fill the new_direction variable */
 
-    const real_t f_current_location=casadi_interface_f(current_location);
-    real_t df_current_location[dimension];casadi_interface_df(current_location,df_current_location);
+    const real_t f_location=casadi_interface_f(location);
+    real_t df_location[dimension];casadi_interface_df(location,df_location);
     const real_t g_new_location=casadi_interface_g(new_location);
 
     const real_t norm_direction = pow(vector_norm2(direction,dimension),2);
 
-    const real_t forward_backward_envelop = f_current_location + g_new_location \
-     - inner_product(df_current_location,direction,dimension) \
+    const real_t forward_backward_envelop = f_location + g_new_location \
+     - inner_product(df_location,direction,dimension) \
      + (1/(linesearch_gamma*2))*norm_direction;
 
-     return forward_backward_envelop;
+    proximal_gradient_descent_rollback(); /* undo changes to the state of this entity */
+    return forward_backward_envelop;
 }
 
 real_t proximal_gradient_descent_get_gamma(void){
     return linesearch_gamma;
+}
+
+int proximal_gradient_descent_rollback(){
+    real_t* buffer;
+    
+    buffer=direction;
+    direction=direction_previous;
+    direction_previous=buffer;
+
+    buffer=new_location;
+    new_location=new_location_previous;
+    new_location_previous=buffer;
+    return SUCCESS;
 }
