@@ -10,7 +10,7 @@
 /* functions only used internally */
 int proximal_gradient_descent_check_linesearch();
 int proximal_gradient_descent_forward_backward_step(const real_t* location);
-int proximal_gradient_descent_rollback();
+int proximal_gradient_descent_push();
 
 /* values set by the init function */
 static size_t dimension;
@@ -97,13 +97,13 @@ int proximal_gradient_descent_forward_backward_step(const real_t* location){
  * returns the residual, R(x) = 1/gamma[ x- proxg(x-df(x)*gamma)]
  */
 int proximal_gradient_descent_get_residual(const real_t* location,real_t* residual){
-    proximal_gradient_descent_rollback(); /* undo changes to the state of this entity */
+    proximal_gradient_descent_push(); /* undo changes to the state of this entity */
 
     proximal_gradient_descent_forward_backward_step(location);
     vector_sub(location,new_location,dimension,residual);
     vector_real_mul(residual,dimension,1/linesearch_gamma,residual);
-    
-    proximal_gradient_descent_rollback(); /* undo changes to the state of this entity */
+
+    proximal_gradient_descent_push(); /* undo changes to the state of this entity */
     return SUCCESS;
 }
 
@@ -140,7 +140,7 @@ int proximal_gradient_descent_check_linesearch(){
  * Matlab cache.FBE = cache.fx + cache.gz - cache.gradfx(:)'*cache.FPR(:) + (0.5/gam)*(cache.normFPR^2);
  */
 real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location){
-    proximal_gradient_descent_rollback(); /* undo changes to the state of this entity */
+    proximal_gradient_descent_push(); /* undo changes to the state of this entity */
     proximal_gradient_descent_forward_backward_step(location); /* this will fill the new_direction variable */
 
     const real_t f_location=casadi_interface_f(location);
@@ -153,7 +153,7 @@ real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location
      - inner_product(df_location,direction,dimension) \
      + (1/(linesearch_gamma*2))*norm_direction;
 
-    proximal_gradient_descent_rollback(); /* undo changes to the state of this entity */
+    proximal_gradient_descent_push(); /* undo changes to the state of this entity */
     return forward_backward_envelop;
 }
 
@@ -161,7 +161,7 @@ real_t proximal_gradient_descent_get_gamma(void){
     return linesearch_gamma;
 }
 
-int proximal_gradient_descent_rollback(){
+int proximal_gradient_descent_push(){
     real_t* buffer;
     
     buffer=direction;
