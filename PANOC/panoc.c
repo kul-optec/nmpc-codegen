@@ -58,12 +58,12 @@ int panoc_cleanup(){
  */
 int panoc_get_new_location(const real_t* current_location,real_t* new_location){  
     buffer_renew(current_location);
-    const real_t* forward_backward_step = proximal_gradient_descent_get_direction(current_location);
+    const real_t* forward_backward_step = proximal_gradient_descent_get_direction(current_location); /* in paper this is r*gamma */
     const real_t sigma = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*proximal_gradient_descent_get_gamma());
 
     const real_t* direction_residue = lbfgs_get_direction(current_location);
 
-    /* precompute FBE used in linesearch check */
+    /* precompute FBE used in linesearch check, static fields ! */
     FBE_current_location = proximal_gradient_descent_forward_backward_envelop(current_location);
     direction_norm=pow(vector_norm2(forward_backward_step,dimension),2);
 
