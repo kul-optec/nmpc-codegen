@@ -13,6 +13,8 @@ static const real_t theoretical_solution[]={0,0};
 static int degree=5;
 int checkIfSolutionIsReached(void);
 int checkIfSolutionIsReached2(void);
+int checkIfSolutionIsReached3(void);
+int checkIfSolutionIsReached4(void);
 
 void print_location(const real_t* location);
 
@@ -22,7 +24,10 @@ void print_location(const real_t* location);
  * f(x) =0 if x=[0 0 0 0]
  */
 int main(){
-    return checkIfSolutionIsReached()+checkIfSolutionIsReached2();
+    return checkIfSolutionIsReached()+\
+    checkIfSolutionIsReached2()+\
+    checkIfSolutionIsReached3()+\
+    checkIfSolutionIsReached4();
 }
 
 int checkIfSolutionIsReached(void){
@@ -107,11 +112,102 @@ int checkIfSolutionIsReached2(void){
     free(next_location);
     panoc_cleanup();
 
-    if(ABS(current_location[0])<1 ){
+    if(ABS(current_location[0])<1  && ABS(current_location[1])<1){
         printf("end of test2:SUCCESS --- \n");
         return SUCCESS;
     }else{
         printf("end of test2:FAILURE --- \n");
+        return FAILURE;
+    }  
+}
+int checkIfSolutionIsReached3(void){
+    printf("test3 --- \n");
+    size_t dimension=2;
+    degree=5;
+    real_t w=2;
+    example_problems_set_init_problem1(w,dimension);
+    f_poly_init(dimension,degree );
+    casadi_interface_test_init(dimension, 
+        g_2,
+        proxg_2,
+        f_poly,
+        df_poly);
+
+    size_t numer_of_iterations=10;
+    
+    real_t* current_location=malloc(dimension*sizeof(real_t));
+    current_location[0]=1;current_location[1]=1;
+    real_t* next_location=malloc(dimension*sizeof(real_t));
+
+    printf("starting in location x1=%f x2=%f \n",current_location[0],current_location[1]);
+    panoc_init(dimension);
+    
+    size_t i;
+    for ( i = 0; i < numer_of_iterations; i++)
+    {
+            panoc_get_new_location(current_location,next_location);
+            /* move the next location to the current location */
+            real_t* buffer=current_location;
+            current_location=next_location;
+            next_location=buffer;
+            /* print out the location */
+            print_location(current_location);
+    }
+    free(current_location);
+    free(next_location);
+    panoc_cleanup();
+
+    if(ABS(current_location[0])<1 && ABS(current_location[1])<1){
+        printf("end of test3:SUCCESS --- \n");
+        return SUCCESS;
+    }else{
+        printf("end of test3:FAILURE --- \n");
+        return FAILURE;
+    }  
+}
+
+int checkIfSolutionIsReached4(void){
+    printf("test4 --- \n");
+    size_t dimension=2;
+    degree=5;
+    real_t w=2;
+    example_problems_set_init_problem1(w,dimension);
+    f_poly_init(dimension,degree );
+    casadi_interface_test_init(dimension, 
+        g_3,
+        proxg_3,
+        f_poly,
+        df_poly);
+
+    size_t numer_of_iterations=10;
+    
+    real_t* current_location=malloc(dimension*sizeof(real_t));
+    current_location[0]=1;current_location[1]=1;
+    real_t* next_location=malloc(dimension*sizeof(real_t));
+
+    printf("starting in location x1=%f x2=%f \n",current_location[0],current_location[1]);
+    panoc_init(dimension);
+    
+    size_t i;
+    for ( i = 0; i < numer_of_iterations; i++)
+    {
+            panoc_get_new_location(current_location,next_location);
+            /* move the next location to the current location */
+            real_t* buffer=current_location;
+            current_location=next_location;
+            next_location=buffer;
+            /* print out the location */
+            print_location(current_location);
+    }
+    free(current_location);
+    free(next_location);
+    panoc_cleanup();
+
+    if(ABS(current_location[0])<1 && ABS(current_location[1])<1){
+        printf("end of test4:SUCCESS --- \n");
+        return SUCCESS;
+    }else{
+        printf("end of test4:FAILURE --- \n");
         return FAILURE;
     }  
 }
