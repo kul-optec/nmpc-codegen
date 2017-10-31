@@ -16,7 +16,7 @@
 #define real_eps pow(10,-16)
 
 /* large number */
-#define LARGE 10000000
+#define LARGE 10000000000
 
 /* return values for failure and success of function, the unix way*/
 #define FAILURE 1
