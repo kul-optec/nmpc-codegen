@@ -67,7 +67,7 @@ int checkIfSolutionIsReached(void){
 }
 
 int checkIfSolutionIsReached_problem2(void){
-    printf("test1 --- \n");
+    printf("test2 --- \n");
     const size_t dimension=1;
     degree=5;
     size_t numer_of_iterations=3;
@@ -96,10 +96,10 @@ int checkIfSolutionIsReached_problem2(void){
     buffer_cleanup();
 
     if(ABS(current_location[0])<0.5){ 
-        printf("end of test1:SUCCESS --- \n");
+        printf("end of test2:SUCCESS --- \n");
         return SUCCESS;
     }else{
-        printf("end of test1:FAILURE --- \n");
+        printf("end of test2:FAILURE --- \n");
         return FAILURE;
     }  
 }
