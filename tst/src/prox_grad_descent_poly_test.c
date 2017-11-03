@@ -13,7 +13,9 @@ static int degree=5;
 static int w=2;
 
 int checkIfSolutionIsReached(void);
-void print_location(real_t* location);
+int checkIfSolutionIsReached_problem2(void);
+void print_location(const real_t* location);
+void print_location_2D(const real_t* location);
 
 /*
  * TEST proximal gradient descent
@@ -21,7 +23,8 @@ void print_location(real_t* location);
  * f(x) =0 if x=[0 0 0 0]
  */
 int main(){
-    return checkIfSolutionIsReached();
+    return checkIfSolutionIsReached() \
+    +checkIfSolutionIsReached_problem2();
 }
 
 int checkIfSolutionIsReached(void){
@@ -49,7 +52,7 @@ int checkIfSolutionIsReached(void){
         buffer_renew(current_location);
         const real_t* direction = proximal_gradient_descent_get_direction(current_location);
         vector_add_ntimes(current_location,direction,dimension,1,current_location);
-        print_location(current_location);
+        print_location_2D(current_location);
     }
     proximal_gradient_descent_cleanup();
     buffer_cleanup();
@@ -63,6 +66,47 @@ int checkIfSolutionIsReached(void){
     }  
 }
 
-void print_location(real_t* location){
+int checkIfSolutionIsReached_problem2(void){
+    printf("test1 --- \n");
+    const size_t dimension=1;
+    degree=5;
+    size_t numer_of_iterations=3;
+    real_t current_location[1]={0.5};
+
+    printf("starting in location x=0.5 \n");
+    f_poly_init(dimension,degree );
+    casadi_interface_test_init(dimension, 
+        g_2,
+        proxg_2,
+        f_poly,
+        df_poly);
+
+    buffer_init();
+    proximal_gradient_descent_init(dimension);
+
+    size_t i;
+    for ( i = 0; i < numer_of_iterations; i++)
+    {
+        buffer_renew(current_location);
+        const real_t* direction = proximal_gradient_descent_get_direction(current_location);
+        vector_add_ntimes(current_location,direction,dimension,1,current_location);
+        print_location(current_location);
+    }
+    proximal_gradient_descent_cleanup();
+    buffer_cleanup();
+
+    if(ABS(current_location[0])<0.5){ 
+        printf("end of test1:SUCCESS --- \n");
+        return SUCCESS;
+    }else{
+        printf("end of test1:FAILURE --- \n");
+        return FAILURE;
+    }  
+}
+
+void print_location_2D(const real_t* location){
     printf("x1=%f x2=%f \n",location[0],location[1]);
+}
+void print_location(const real_t* location){
+    printf("x=%f \n",location[0]);
 }
