@@ -127,9 +127,9 @@ int proximal_gradient_descent_check_linesearch(){
     const real_t f_current_location=buffer_get_current_f();
     const real_t f_new_location=casadi_interface_f(new_location);
 
-    const real_t norm_direction = pow(vector_norm2(direction,dimension),2);
+    const real_t norm_direction_gamma = pow(vector_norm2(direction,dimension),2); /* direction=gamma*r in paper */
 
-    if(f_new_location>f_current_location - inner_product_df_direction + ( (1-PROXIMAL_GRAD_DESC_SAFETY_VALUE)/2 )*(norm_direction/linesearch_gamma) )
+    if(f_new_location>f_current_location - inner_product_df_direction + ( (1-PROXIMAL_GRAD_DESC_SAFETY_VALUE)/(2*linesearch_gamma) )*norm_direction_gamma )
         return FAILURE;
     else
         return SUCCESS;
