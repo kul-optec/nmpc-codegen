@@ -214,5 +214,5 @@ void print_location_2D(const real_t* location){
     printf("x1=%f x2=%f tau=%f \n",location[0],location[1],panoc_get_tau());
 }
 void print_location(const real_t* location){
-    printf("x1=%f tau=%f \n",location[0],panoc_get_tau());
+    printf("x=%f tau=%f \n",location[0],panoc_get_tau());
 }
