@@ -37,14 +37,14 @@ class Chain_dyn_parameters:
         return self._dimension*(2*self._number_of_balls+1)
     @property
     def number_of_outputs(self):
-        return self._dimension*(self._number_of_balls+1)
+        return self._dimension*(2*self._number_of_balls+1)
 
 # x: state vector [pos_1, ..., pos_M, pos_{M+1}, vel_1, ..., vel_M]
 # u: input vector
 def chain_dyn(x, u, model_parameters):   
     """ returns the derivative of the state dx=f(x) """
     
-    positions = np.transpose(np.reshape( x[0:model_parameters.dimension*(model_parameters.number_of_balls+1)] , 
+    positions = np.transpose(np.reshape( x[0:model_parameters.dimension*(model_parameters.number_of_balls+1),0] ,
                 [ model_parameters.number_of_balls+1 , model_parameters.dimension]))
 
     # compute distance between masses
@@ -63,8 +63,8 @@ def chain_dyn(x, u, model_parameters):
         	(F[:,1:]-F[:,0:model_parameters.number_of_balls])\
               + model_parameters.gravity_acceleration
 
-    x_dot = np.concatenate((positions,np.reshape(u,[2,1]),acceleration),axis=1)
-    x_dot = np.reshape(np.dstack((x_dot)),[1,model_parameters.dimension*model_parameters.number_of_outputs])
+    x_dot = np.concatenate((positions,acceleration),axis=1)
+    x_dot = np.reshape(np.dstack((x_dot)),[model_parameters.number_of_outputs,1])
 
     return x_dot
 
