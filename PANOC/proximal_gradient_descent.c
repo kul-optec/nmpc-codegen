@@ -85,7 +85,7 @@ const real_t* proximal_gradient_descent_get_direction(){
  */
 int proximal_gradient_descent_linesearch(){
     const real_t* current_location = buffer_get_current_location();
-    const real_t* df_current_location=buffer_get_current_df();
+    const real_t* df_current_location = buffer_get_current_df();
 
     proximal_gradient_descent_forward_backward_step(current_location,df_current_location);
     while(proximal_gradient_descent_check_linesearch()==FAILURE){
@@ -100,7 +100,7 @@ int proximal_gradient_descent_linesearch(){
  */
 int proximal_gradient_descent_forward_backward_step(const real_t* location,const real_t* df_location){
     real_t buffer[dimension];
-    vector_add_ntimes(location,df_location,dimension,-1*linesearch_gamma,buffer); /* buffer = location - gamma * buffer */
+    vector_add_ntimes(location,df_location,dimension,-1*linesearch_gamma,buffer); /* buffer = location - gamma * df_location */
     casadi_interface_proxg(buffer,new_location); /* new_location = proxg(buffer) */
     vector_sub(new_location,location,dimension,direction); /* find the direction */
     return SUCCESS;
