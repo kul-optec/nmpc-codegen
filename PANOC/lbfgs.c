@@ -73,7 +73,7 @@ int lbfgs_init(const size_t buffer_size_,const size_t dimension_){
         s[i] = s_data + i*dimension;
         y[i] = y_data + i*dimension;
     }
-    
+
     return SUCCESS;
 
     /*
@@ -107,6 +107,7 @@ int lbfgs_cleanup(void){
         free(y);
         free(alpha);
         free(rho);
+        iteration_index=0;
         return SUCCESS;
 }
 

@@ -58,6 +58,8 @@ int proximal_gradient_descent_init(){
 int proximal_gradient_descent_cleanup(void){
     free(new_location);
     free(direction);
+    iteration_index=0;
+    linesearch_gamma=0;
     return SUCCESS;
 }
 /*
