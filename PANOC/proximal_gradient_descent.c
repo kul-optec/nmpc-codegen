@@ -85,9 +85,7 @@ const real_t* proximal_gradient_descent_get_direction(){
  */
 int proximal_gradient_descent_linesearch(){
     const real_t* current_location = buffer_get_current_location();
-    
-    real_t df_current_location[dimension] ;
-    casadi_interface_df(current_location,df_current_location); /* buffer = current gradient (at location) */
+    const real_t* df_current_location=buffer_get_current_df();
 
     proximal_gradient_descent_forward_backward_step(current_location,df_current_location);
     while(proximal_gradient_descent_check_linesearch()==FAILURE){
