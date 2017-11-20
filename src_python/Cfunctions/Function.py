@@ -1,0 +1,8 @@
+# Cfunction is an abstact class representing any function that has a implementation in c89
+class Cfunction:
+    def __init__(self):
+        raise NotImplementedError
+
+    # save the implementation in c to "location"
+    def generate_c_code(self,location):
+        raise NotImplementedError
