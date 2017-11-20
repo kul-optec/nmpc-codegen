@@ -124,7 +124,7 @@ int checkIfSolutionIsReached2(void){
 int checkIfSolutionIsReached_problem2(void){
     printf("test3 --- \n");
     size_t dimension=1;
-    degree=5;
+    degree=6;
     f_poly_init(dimension,degree );
     casadi_interface_test_init(dimension, 
         g_2,
@@ -168,7 +168,7 @@ int checkIfSolutionIsReached_problem2(void){
 int checkIfSolutionIsReached_problem3(void){
     printf("test4 --- \n");
     size_t dimension=1;
-    degree=5;
+    degree=6;
     real_t u_min=1;real_t u_max=2;
     example_problems_set_init_problem3(u_min,u_max);
     f_poly_init(dimension,degree );
