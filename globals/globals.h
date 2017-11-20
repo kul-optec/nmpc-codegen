@@ -42,7 +42,8 @@
  * lipschitz etimator definitions
  * ---------------------------------
  */
-#define DELTA_LIPSCHITZ pow(10,-5)
+#define DELTA_LIPSCHITZ pow(10,-10)
+#define DELTA_LIPSCHITZ_SAFETY_VALUE pow(10,-6)
 
 
 /* ---------------------------------
