@@ -13,7 +13,7 @@
 #define ABS(x) fabs(x)
 
 /* the machine accuracy double*/
-#define real_eps pow(10,-16)
+#define MACHINE_ACCURACY pow(10,-16)
 
 /* large number */
 #define LARGE 10000000000
