@@ -1,0 +1,2 @@
+# Read me
+This folder contains functions that can be used as g(x) in the optimization problem min f(x) + g(x). Keep in mind that the g function used in the nmpc constructor must be of the type Proximal function. So the prox{g(x)} function must also be available
