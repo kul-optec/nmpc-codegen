@@ -9,8 +9,9 @@
 
 /* functions only used internally */
 int proximal_gradient_descent_check_linesearch();
-int proximal_gradient_descent_forward_backward_step(const real_t* location);
+int proximal_gradient_descent_forward_backward_step(const real_t* location,const real_t* df_location);
 int proximal_gradient_descent_push();
+int proximal_gradient_descent_linesearch();
 
 /* values set by the init function */
 static size_t dimension;
@@ -22,8 +23,8 @@ static real_t linesearch_gamma=0; /* linesearch parameter */
 /* variables used by each iteration */
 static real_t* new_location;
 static real_t* direction;
-static real_t* new_location_previous;
-static real_t* direction_previous;
+static real_t* new_location_FBE;
+static real_t* direction_FBE;
 
 int proximal_gradient_descent_init(){
     dimension=casadi_interface_get_dimension();
@@ -34,11 +35,11 @@ int proximal_gradient_descent_init(){
     direction = malloc(sizeof(real_t*)*dimension);
     if(direction==NULL)goto fail_2;
 
-    new_location_previous = malloc(sizeof(real_t*)*dimension);
-    if(new_location_previous==NULL)goto fail_3;
+    new_location_FBE = malloc(sizeof(real_t*)*dimension);
+    if(new_location_FBE==NULL)goto fail_3;
 
-    direction_previous = malloc(sizeof(real_t*)*dimension);
-    if(direction_previous==NULL)goto fail_4;
+    direction_FBE = malloc(sizeof(real_t*)*dimension);
+    if(direction_FBE==NULL)goto fail_4;
 
     return SUCCESS;
 
@@ -46,7 +47,7 @@ int proximal_gradient_descent_init(){
      * something went wrong when allocating memory, free up what was already taken
      */
     fail_4:
-        free(new_location_previous);
+        free(new_location_FBE);
     fail_3:
         free(direction);
     fail_2:
@@ -57,6 +58,8 @@ int proximal_gradient_descent_init(){
 int proximal_gradient_descent_cleanup(void){
     free(new_location);
     free(direction);
+    iteration_index=0;
+    linesearch_gamma=0;
     return SUCCESS;
 }
 /*
@@ -67,27 +70,37 @@ const real_t* proximal_gradient_descent_get_direction(){
     * If this is the first time you call me, find the initial gamma value
     * by estimating the lipschitz value of df
     */
-    const real_t* current_location = buffer_get_current_location();
     if(iteration_index==0){
-        real_t lipschitz_value = get_lipschitz(current_location);
+        real_t lipschitz_value = get_lipschitz(buffer_get_current_location());
 
         linesearch_gamma = (1-PROXIMAL_GRAD_DESC_SAFETY_VALUE)/lipschitz_value;
         iteration_index++; /* index only needs to increment if it is 0 */
     }
-    proximal_gradient_descent_forward_backward_step(current_location);
-    while(proximal_gradient_descent_check_linesearch()==FAILURE){
-        linesearch_gamma=linesearch_gamma/2;
-        proximal_gradient_descent_forward_backward_step(current_location);
-    }
+    proximal_gradient_descent_linesearch();
     return direction;
 }
+
+/*
+ * This function performs the linesearch
+ */
+int proximal_gradient_descent_linesearch(){
+    const real_t* current_location = buffer_get_current_location();
+    const real_t* df_current_location = buffer_get_current_df();
+
+    proximal_gradient_descent_forward_backward_step(current_location,df_current_location);
+    while(proximal_gradient_descent_check_linesearch()==FAILURE){
+        linesearch_gamma=linesearch_gamma/2;
+        proximal_gradient_descent_forward_backward_step(current_location,df_current_location);
+    }
+    return SUCCESS;
+}
+
 /* 
  * This function performs an forward backward step. x=prox(x-gamma*df(x))
  */
-int proximal_gradient_descent_forward_backward_step(const real_t* location){
+int proximal_gradient_descent_forward_backward_step(const real_t* location,const real_t* df_location){
     real_t buffer[dimension];
-    casadi_interface_df(location,buffer); /* buffer = current gradient (at location) */
-    vector_add_ntimes(location,buffer,dimension,-1*linesearch_gamma,buffer); /* buffer = location - gamma * buffer */
+    vector_add_ntimes(location,df_location,dimension,-1*linesearch_gamma,buffer); /* buffer = location - gamma * df_location */
     casadi_interface_proxg(buffer,new_location); /* new_location = proxg(buffer) */
     vector_sub(new_location,location,dimension,direction); /* find the direction */
     return SUCCESS;
@@ -99,7 +112,10 @@ int proximal_gradient_descent_forward_backward_step(const real_t* location){
 int proximal_gradient_descent_get_residual(const real_t* location,real_t* residual){
     proximal_gradient_descent_push(); /* undo changes to the state of this entity */
 
-    proximal_gradient_descent_forward_backward_step(location);
+    real_t df_location[dimension];
+    casadi_interface_df(location,df_location); /* get current gradient (at location) */
+
+    proximal_gradient_descent_forward_backward_step(location,df_location);
     vector_sub(location,new_location,dimension,residual);
     vector_real_mul(residual,dimension,1/linesearch_gamma,residual);
 
@@ -141,12 +157,13 @@ int proximal_gradient_descent_check_linesearch(){
  */
 real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location){
     proximal_gradient_descent_push(); /* undo changes to the state of this entity */
-    proximal_gradient_descent_forward_backward_step(location); /* this will fill the new_direction variable */
+    
 
     const real_t f_location=casadi_interface_f(location);
     real_t df_location[dimension];casadi_interface_df(location,df_location);
     const real_t g_new_location=casadi_interface_g(new_location);
 
+    proximal_gradient_descent_forward_backward_step(location,df_location); /* this will fill the new_direction variable */
     const real_t norm_direction = pow(vector_norm2(direction,dimension),2);
 
     const real_t forward_backward_envelop = f_location + g_new_location \
@@ -165,11 +182,11 @@ int proximal_gradient_descent_push(){
     real_t* buffer;
     
     buffer=direction;
-    direction=direction_previous;
-    direction_previous=buffer;
+    direction=direction_FBE;
+    direction_FBE=buffer;
 
     buffer=new_location;
-    new_location=new_location_previous;
-    new_location_previous=buffer;
+    new_location=new_location_FBE;
+    new_location_FBE=buffer;
     return SUCCESS;
 }

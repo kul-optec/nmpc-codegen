@@ -47,7 +47,7 @@ int checkIfSolutionIsReached(void){
     }
     lbfgs_cleanup();
     buffer_cleanup();
-    if(current_location[0]<pow(10,-3)&&current_location[1]<pow(10,-3)){
+    if(ABS(current_location[0]<pow(10,-1))&&ABS(current_location[1])<pow(10,-1)){
         printf("end of test1:SUCCESS --- \n");
         return SUCCESS;
     }else{

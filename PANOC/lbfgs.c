@@ -73,7 +73,7 @@ int lbfgs_init(const size_t buffer_size_,const size_t dimension_){
         s[i] = s_data + i*dimension;
         y[i] = y_data + i*dimension;
     }
-    
+
     return SUCCESS;
 
     /*
@@ -107,6 +107,7 @@ int lbfgs_cleanup(void){
         free(y);
         free(alpha);
         free(rho);
+        iteration_index=0;
         return SUCCESS;
 }
 
@@ -116,6 +117,19 @@ int lbfgs_cleanup(void){
 const real_t* lbfgs_get_direction(){
     const real_t* current_location = buffer_get_current_location();
     real_t q[dimension];proximal_gradient_descent_get_residual(current_location,q);
+
+    /* 
+     * If the residual is about zero then this is a fixed point, 
+     * set the direct on zero and return.
+     */
+    if(vector_norm2(q,dimension)<MACHINE_ACCURACY){
+        size_t i;
+        for ( i = 0; i < dimension; i++)
+        {
+            direction[i]=0;
+        }
+        return direction;
+    }
 
     /* is this the first time you call get_direction? */
     if(iteration_index==0){

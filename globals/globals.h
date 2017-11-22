@@ -13,7 +13,7 @@
 #define ABS(x) fabs(x)
 
 /* the machine accuracy double*/
-#define real_eps pow(10,-16)
+#define MACHINE_ACCURACY pow(10,-16)
 
 /* large number */
 #define LARGE 10000000000
@@ -42,7 +42,8 @@
  * lipschitz etimator definitions
  * ---------------------------------
  */
-#define DELTA_LIPSCHITZ pow(10,-5)
+#define DELTA_LIPSCHITZ pow(10,-10)
+#define DELTA_LIPSCHITZ_SAFETY_VALUE pow(10,-6)
 
 
 /* ---------------------------------
