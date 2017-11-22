@@ -46,7 +46,7 @@ def chain_dyn(x, u, model_parameters):
     
     positions = np.transpose(np.reshape( x[0:model_parameters.dimension*(model_parameters.number_of_balls+1),0] ,
                 [ model_parameters.number_of_balls+1 , model_parameters.dimension]))
-
+    print(positions)
     # compute distance between masses
     distance_between_balls =  np.subtract(positions[0:model_parameters.dimension,1:model_parameters.number_of_balls+1] , positions[0:model_parameters.dimension,0:model_parameters.number_of_balls])
 
