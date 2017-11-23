@@ -2,6 +2,8 @@
 #  if the input is held at zero the chain should come to a resting position
 
 from chainDynCasadi import *
+import sys
+sys.path.insert(0, '../../src_python')
 from integrators import *
 import math
 import numpy as np

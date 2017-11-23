@@ -1,6 +1,8 @@
 # import numpy as np
 import casadi as cd
 import numpy as np
+import sys
+sys.path.insert(0, '../../src_python')
 from integrators import *
 
 class Chain_dyn_parameters:
