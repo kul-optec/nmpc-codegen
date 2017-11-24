@@ -1,6 +1,9 @@
 # import numpy as np
 import casadi as cd
 import numpy as np
+import sys
+sys.path.insert(0, '../../src_python')
+from integrators import *
 
 class Chain_dyn_parameters:
     """ chain dynamic model parameters """
@@ -57,19 +60,22 @@ class Chain_dyn_parameters:
 def chain_dyn(x, u, model_parameters):
     """ returns the derivative of the state dx=f(x) """
 
-    positions = cd.transpose(cd.reshape(x[0:model_parameters.dimension * (model_parameters.number_of_balls + 1), 0], \
-                            (model_parameters.number_of_balls + 1, model_parameters.dimension) \
-                            ))
+    positions = cd.reshape(x[0:model_parameters.dimension * (model_parameters.number_of_balls + 1), 0], \
+                            ( model_parameters.dimension,model_parameters.number_of_balls + 1) \
+                            )
+    velocities=cd.reshape(\
+            x[model_parameters.dimension * (model_parameters.number_of_balls + 1):, 0], \
+            (model_parameters.dimension,model_parameters.number_of_balls)\
+        )
 
     # compute distance between masses
     distance_between_balls = \
         positions[0:model_parameters.dimension, 1:model_parameters.number_of_balls + 1 ] - \
         positions[0:model_parameters.dimension, 0:model_parameters.number_of_balls ]
 
-
     # add the distance(and its norm) between the first ball and the fixed wall
     distance_between_balls = cd.horzcat(
-        cd.reshape(positions[0:model_parameters.dimension, 0],(model_parameters.dimension, 1)),distance_between_balls \
+        positions[0:model_parameters.dimension, 0],distance_between_balls \
         )
     distance_between_balls_norm = cd.sqrt(cd.sum1(distance_between_balls ** 2))
 
@@ -78,14 +84,22 @@ def chain_dyn(x, u, model_parameters):
                                             cd.repmat(distance_between_balls_norm,model_parameters.dimension,1) )\
         * distance_between_balls
 
+
+    gravitational_force = np.concatenate(\
+                                    (\
+                                     np.zeros((1,model_parameters.number_of_balls)), \
+                                     -np.ones((1,model_parameters._number_of_balls))*model_parameters.gravity_acceleration \
+                                    ) \
+                                    ,axis=0)
+
     # find acceleration
     acceleration = (1 / model_parameters.ball_mass) * \
                    (F[:, 1:] - F[:, 0:model_parameters.number_of_balls]) \
-                   + model_parameters.gravity_acceleration
+                   + gravitational_force
 
-    x_dot = cd.horzcat(positions, acceleration)
+    x_dot = cd.horzcat(velocities,u, acceleration)
 
-    return x_dot[:]
+    return cd.reshape(x_dot,(model_parameters.number_of_outputs,1))
 
 def main():
     print("Simple demo chain dynamics with 5 masses:")
