@@ -5,7 +5,8 @@ import sys
 sys.path.insert(0, '../../src_python')
 import nmpc_panoc as npc
 import globals_generator as gg
-
+import numpy as np
+import model_continious as modelc
 
 
 def main():
@@ -19,13 +20,22 @@ def main():
 
     test_generator = gg.Globals_generator("./test_globals.c")
 
+    number_of_states=model_params.number_of_states
+    number_of_inputs=model_params.dimension
+    step_size=0.1
+
+
     f = 0
     g = 0
     d = 0
     x_dimension = 0
     u_dimension = 0
 
-    nmpc_controller = npc.Nmpc_panoc("../../", f, g, d, x_dimension, u_dimension)
+    model = modelc.Model_continious(f, g,step_size,number_of_states,number_of_inputs, integrator="RK")
+
+    Q = np.eye(number_of_states, number_of_states)
+    R = np.eye(number_of_inputs, number_of_inputs)
+    nmpc_controller = npc.Nmpc_panoc("../../", model, Q, R)
 
     test_generator.generate_globals(nmpc_controller)
 

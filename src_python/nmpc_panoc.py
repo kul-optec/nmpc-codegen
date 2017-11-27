@@ -2,6 +2,7 @@ import casadi as cd
 import numpy as np
 import os
 from pathlib import Path
+import globals_generator as gg
 
 class Nmpc_panoc:
     """ Defines a nmpc problem of the shape min f(x)+ g(x) """
@@ -18,6 +19,9 @@ class Nmpc_panoc:
 
         self._lbgfs_buffer_size=10
         self._data_type = "double precision"
+
+        # generate the dynamic_globals file
+        self._globals_generator = gg.Globals_generator(self._location_lib + "globals/globals_dyn.h")
 
     def stage_cost(self,state,input):
         # As state and input are of the stype csadi.SX we can't just do vector matrix product
@@ -40,8 +44,8 @@ class Nmpc_panoc:
             self.__generate_cost_function_multipleshot()
         else:
             print('ERROR in generating code: invalid choice of shooting mode [single shot|multiple shot]')
+        self._globals_generator.generate_globals(self)
 
-        # generate the dynamic_globals file
     def __generate_cost_function_singleshot(self):
         """ private function, generates part of the casadi cost function with single shot"""
         initial_state = cd.SX.sym('initial_state', self._model.number_of_states, 1)
@@ -57,7 +61,9 @@ class Nmpc_panoc:
             cost = cost + self.stage_cost(current_state,input)
 
         cost = cost + self.__generate_cost_obstacles()
+        self.__setup_casadi_functions_and_generate_c(initial_state,input_all_steps,cost)
 
+    def __setup_casadi_functions_and_generate_c(self,initial_state,input_all_steps,cost):
         cost_function = cd.Function('cost_function', [initial_state, input_all_steps], [cost])
         cost_function_derivative = cd.Function('cost_function_derivative', [initial_state, input_all_steps],
                                                [cd.jacobian(cost, initial_state)])
@@ -65,10 +71,9 @@ class Nmpc_panoc:
                                                         [initial_state, input_all_steps],
                                                         [cost, cd.jacobian(cost, initial_state)])
 
-        self.__translate_casadi_to_c(cost_function,filename="cost.c")
+        self.__translate_casadi_to_c(cost_function, filename="cost.c")
         self.__translate_casadi_to_c(cost_function_derivative, filename="cost_derivative.c")
         self.__translate_casadi_to_c(cost_function_derivative_combined, filename="cost_derivative_combined.c")
-
     def __translate_casadi_to_c(self,casadi_function,filename):
         # check if the buffer file excists, should never be the case, but check anyway
         buffer_file_name="buffer"
