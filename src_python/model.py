@@ -3,12 +3,17 @@ class Model:
     def __init__(self,system_equations,g,step_size):
         self._system_equations=system_equations
         self._g=g
+        self._step_size=step_size
 
     def get_next_state(self,state,input):
         return self._system_equations(state,input)
 
     def generate_constraint(self,location):
         self._g.generate_code(location)
+
+    @property
+    def system_equations(self):
+        return self._system_equations
 
     @property
     def step_size(self):

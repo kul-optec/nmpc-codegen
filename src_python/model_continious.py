@@ -3,14 +3,14 @@ import integrators as ig
 
 class Model_continious(m.Model):
     def __init__(self,system_equations,g,step_size,integrator):
-        super.__init__(system_equations,g,step_size)
+        super(Model_continious,self).__init__(system_equations,g,step_size)
         self._integrator=integrator
 
     def get_next_state(self,state,input):
         """ integrate the continous system with one step using the selected integrator """
         if (self._integrator == "RK"):
-            system_equation = lambda state: super._system_equations(state, input)
-            return ig.integrator_RK(state, self._step_size, system_equation)
+            system_equation = lambda state: super(Model_continious,self).system_equations(state, input)
+            return ig.integrator_RK(state, super(Model_continious,self).step_size, system_equation)
         else:
             raise NotImplementedError
 
