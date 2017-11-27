@@ -37,7 +37,7 @@ number_of_steps= math.ceil(simulation_time/step_size)
 system_equations = lambda state,input: chain_dyn(state, input, model_params)
 integrator="RK"
 g=0 # is not used here so just put it on zero
-model =modelc.Model_continious(system_equations,g,step_size,integrator)
+model =modelc.Model_continious(system_equations,g,step_size,model_params.number_of_states,model_params.number_of_inputs,integrator)
 
 current_state = model.get_next_state(initial_state,input)
 print(current_state)

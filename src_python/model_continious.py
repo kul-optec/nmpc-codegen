@@ -2,8 +2,8 @@ import model as m
 import integrators as ig
 
 class Model_continious(m.Model):
-    def __init__(self,system_equations,g,step_size,integrator):
-        super(Model_continious,self).__init__(system_equations,g,step_size)
+    def __init__(self,system_equations,g,step_size,number_of_states,number_of_inputs,integrator):
+        super(Model_continious,self).__init__(system_equations,g,step_size,number_of_states,number_of_inputs)
         self._integrator=integrator
 
     def get_next_state(self,state,input):

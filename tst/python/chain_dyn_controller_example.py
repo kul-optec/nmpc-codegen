@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, '../../src_python')
 import nmpc_panoc as npc
+import model_continious as modelc
 
 # model parameters(use the same as the Matlab code):
 dimension=2
@@ -21,20 +22,27 @@ model_params = Chain_dyn_parameters(dimension,number_of_balls,ball_mass,
 spring_constant,rest_length_of_springs,gravity_acceleration)
 
 # initial state:
-x0 = np.array([ 0.2, 0. , 0.4,0. , 0.6 , 0. , 0.8 , 0. \
+initial_state = np.array([ 0.2, 0. , 0.4,0. , 0.6 , 0. , 0.8 , 0. \
                 ,1. , 0., \
                 0.,0., 0.,0.,0.,0.,0.,0. ])
-x0 = x0.reshape([18,1])
+initial_state = initial_state.reshape([18,1])
 
-u = np.zeros([2,1]) # do not change the handle
+input_zero = np.zeros([2,1]) # do not change the handle
 
-function_system = lambda x: chainDynCasadi.chain_dyn(x, u, model_params)
+system_equations = lambda state,input: chain_dyn(state, input, model_params)
+number_of_states=model_params.number_of_states
+number_of_inputs=model_params.dimension
 
-f=function_system
-g=0 # TODO
-d=lambda x,steps:  0*x*steps
-x_dimension=model_params.number_of_states
-u_dimension=model_params.number_of_inputs
+Q=np.eye(number_of_states,number_of_states)
+R=np.eye(number_of_inputs,number_of_inputs)
 
-nmpc_controller = npc.Nmpc_panoc("../../",f,g,d,x_dimension,u_dimension)
-nmpc_controller.generate_code("./test.c")
+step_size=0.01
+simulation_time=5
+number_of_steps= math.ceil(simulation_time/step_size)
+
+integrator="RK"
+g=0 # is not used here so just put it on zero
+model = modelc.Model_continious(system_equations,g,step_size,number_of_states,number_of_inputs,integrator)
+
+nmpc_controller = npc.Nmpc_panoc("../../",model,Q,R)
+nmpc_controller.generate_code()
