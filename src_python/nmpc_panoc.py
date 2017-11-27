@@ -103,9 +103,16 @@ class Nmpc_panoc:
         self.generate_code()
         # TODO call the make file and silumate the controller using a simulation set, return a simulation object
         raise NotImplementedError
-    def generate_minimum_lib(self,location):
+    def generate_minimum_lib(self,location,replace):
         """ Generate a lib with minimum amount of files  """
-        raise NotImplementedError
+        file = Path(location)
+        if (file.exists()):
+            print(location + " already exists")
+            if replace==True:
+                os.remove(location)
+                # TODO copy over all the necessary files !
+            else:
+                print("ERROR folder lib already excist, remove the folder or put repace on true")
 
     @property
     def shooting_mode(self):
