@@ -14,7 +14,6 @@ class Nmpc_panoc:
         self._R = R
 
         self._number_of_steps=10
-        self._step_size=0.1
         self._shooting_mode="single shot"
 
         self._lbgfs_buffer_size=10
@@ -121,13 +120,6 @@ class Nmpc_panoc:
     @number_of_steps.setter
     def number_of_steps(self, value):
         self._number_of_steps = value
-
-    @property
-    def steps_size(self):
-        return self._steps_size
-    @steps_size.setter
-    def steps_size(self, value):
-        self._steps_size = value
 
     @property
     def mode(self):
