@@ -5,6 +5,7 @@ class Globals_generator:
     def __init__(self,location_globals):
         self._location_globals=location_globals
     def generate_globals(self,nmpc_controller):
+        print("Generating globals file at: "+self._location_globals)
         self.init_globals_file()
 
         self.generate_title("lbgfs solver definitions")

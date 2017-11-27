@@ -1,9 +1,5 @@
-# import numpy as np
 import casadi as cd
 import numpy as np
-import sys
-sys.path.insert(0, '../../src_python')
-from integrators import *
 
 class Chain_dyn_parameters:
     """ chain dynamic model parameters """
@@ -100,40 +96,3 @@ def chain_dyn(x, u, model_parameters):
     x_dot = cd.horzcat(velocities,u, acceleration)
 
     return cd.reshape(x_dot,(model_parameters.number_of_outputs,1))
-
-def main():
-    print("Simple demo chain dynamics with 5 masses:")
-    # model parameters:
-    dimension = 2
-    number_of_balls = 5
-    ball_mass = 1
-    spring_constant = 1
-    rest_length_of_springs = 2
-    gravity_acceleration = 9.81
-
-    model_params = Chain_dyn_parameters(dimension, number_of_balls, ball_mass,
-                                        spring_constant, rest_length_of_springs, gravity_acceleration)
-
-    # import inspect
-    # all_functions = inspect.getmembers(cd, inspect.isfunction)
-    # print(all_functions)
-    # # initial state:
-    # x0 = cd.array([1., 0., 2., 0., 3., 0., 4., 0., 5., 0., 6., 0., 0., 0., 0., 0., 0.])
-    x = cd.SX.sym( 'x', 22 ,1 )
-    # x0 = x0.T
-    # u0 = cd.array([6, 0])
-    u = cd.SX.sym( 'u', 2 ,1 )
-
-    #
-    # # call the chain dyn function with intial state
-    # x0_dot = chain_dyn(x, u, model_params)
-    f = cd.Function('f',[x,u],[chain_dyn(x, u, model_params)])
-
-    x0 = np.array([1., 0., 2., 0., 3., 0., 4., 0., 5., 0., 6., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
-    x0 = x0.T
-    u0 = np.array([6, 0])
-    test = f(x0,u0)
-    print(test)
-
-if __name__ == "__main__":
-    main()

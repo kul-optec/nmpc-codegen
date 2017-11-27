@@ -1,11 +1,11 @@
 # a simple test of the chain dynamics:
 #  if the input is held at zero the chain should come to a resting position
 
-from chainDynCasadi import *
 import sys
 sys.path.insert(0, '../../src_python')
 from integrators import *
 import model_continious as modelc
+import models.chain_model as mc
 
 import math
 import numpy as np
@@ -19,7 +19,7 @@ spring_constant=0.1 # D
 rest_length_of_springs=0.033 # L
 gravity_acceleration=9.81
 
-model_params = Chain_dyn_parameters(dimension,number_of_balls,ball_mass,
+model_params = mc.Chain_dyn_parameters(dimension,number_of_balls,ball_mass,
 spring_constant,rest_length_of_springs,gravity_acceleration)
 
 # initial state:
@@ -34,7 +34,7 @@ step_size=0.01
 simulation_time=5
 number_of_steps= math.ceil(simulation_time/step_size)
 
-system_equations = lambda state,input: chain_dyn(state, input, model_params)
+system_equations = lambda state,input: mc.chain_dyn(state, input, model_params)
 integrator="RK"
 g=0 # is not used here so just put it on zero
 model =modelc.Model_continious(system_equations,g,step_size,model_params.number_of_states,model_params.number_of_inputs,integrator)
