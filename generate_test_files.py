@@ -12,7 +12,8 @@ import example_models # this contains the chain example
 def main():
     model = example_models.get_chain_model()
 
-    Q = np.eye(model.number_of_states, model.number_of_states)
+    # Q = np.eye(model.number_of_states, model.number_of_states)
+    Q = np.diag([0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1])*10
     R = np.eye(model.number_of_inputs, model.number_of_inputs)
 
     nmpc_controller = npc.Nmpc_panoc("./", model, Q, R)
