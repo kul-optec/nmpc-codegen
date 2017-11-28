@@ -8,6 +8,11 @@ class Globals_generator:
         print("Generating globals file at: "+self._location_globals)
         self.init_globals_file()
 
+        self.generate_title("Problem specific definitions")
+        self.define_variable("DIMENSION_INPUT", nmpc_controller.model.number_of_inputs)
+        self.define_variable("DIMENSION_STATE", nmpc_controller.model.number_of_states)
+        self.define_variable("MPC_HORIZON", nmpc_controller.number_of_steps)
+
         self.generate_title("lbgfs solver definitions")
         self.define_variable("LBGFS_BUFFER_SIZE",nmpc_controller.lbgfs_buffer_size)
         self.set_data_type(nmpc_controller.data_type)
