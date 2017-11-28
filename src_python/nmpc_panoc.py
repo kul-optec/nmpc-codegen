@@ -70,9 +70,9 @@ class Nmpc_panoc:
                                                         [initial_state, input_all_steps],
                                                         [cost, cd.jacobian(cost, initial_state)])
 
-        self.__translate_casadi_to_c(cost_function, filename="cost.c")
-        self.__translate_casadi_to_c(cost_function_derivative, filename="cost_derivative.c")
-        self.__translate_casadi_to_c(cost_function_derivative_combined, filename="cost_derivative_combined.c")
+        self.__translate_casadi_to_c(cost_function, filename="cost_function.c")
+        self.__translate_casadi_to_c(cost_function_derivative, filename="cost_function_derivative.c")
+        self.__translate_casadi_to_c(cost_function_derivative_combined, filename="cost_function_derivative_combined.c")
     def __translate_casadi_to_c(self,casadi_function,filename):
         # check if the buffer file excists, should never be the case, but check anyway
         buffer_file_name="buffer"
@@ -91,7 +91,26 @@ class Nmpc_panoc:
             os.remove(file_name_costfunction)
 
         # move the function to the right location
-        os.rename('buffer.c',file_name_costfunction)
+        open(file_name_costfunction, 'a').close()
+
+        prototype_function = "(const real_t** arg, real_t** res, int* iw, real_t* w, int mem) {"
+        self.__copy_over_function_to_file("buffer.c",file_name_costfunction,prototype_function)
+
+        prototype_function = "(int *sz_arg, int* sz_res, int *sz_iw, int *sz_w) {"
+        self.__copy_over_function_to_file("buffer.c", file_name_costfunction, prototype_function)
+
+        os.remove("buffer.c")
+    def __copy_over_function_to_file(self,source,destination,function_name):
+        in_file=False;
+        destination_file = open(destination, 'a')
+        with open(source, 'r') as inF:
+            for line in inF:
+                if function_name in line:
+                    in_file=True
+                if in_file:
+                    destination_file.write(line)
+                if "}" in line:
+                    in_file = False
 
     def __generate_cost_function_multipleshot(self,location):
         """ private function, generates part of the casadi cost function with multiple shot"""
