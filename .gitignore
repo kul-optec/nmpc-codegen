@@ -12,6 +12,7 @@ CTestTestfile.cmake
 *.a
 *.json
 *.gch
+*.pyc
 
 casadi
 build
