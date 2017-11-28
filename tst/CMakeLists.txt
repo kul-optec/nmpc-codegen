@@ -38,3 +38,7 @@ add_executable(bin/panoc_poly_test src/panoc_poly_test.c)
 target_link_libraries (bin/panoc_poly_test PANOC_fake)
 target_link_libraries(bin/panoc_poly_test m) # link with the math lib, some toolchains need this
 target_link_libraries(bin/panoc_poly_test problem_set)
+
+add_executable(bin/casadi_interface_test src/casadi_interface_test.c)
+target_link_libraries (bin/casadi_interface_test PANOC_lib)
+target_link_libraries(bin/casadi_interface_test m) # link with the math lib, some toolchains need this

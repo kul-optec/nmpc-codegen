@@ -5,7 +5,19 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-int casadi_interface_init(const real_t* current_state);
+typedef struct {
+    int inputSize;
+    int outputSize;
+    int buffer_intSize;
+    int buffer_realSize;
+    int* buffer_int;
+    real_t* buffer_real;
+    int (*cost_function)(const real_t** arg, real_t** res, int* iw, real_t* w, int mem);
+} CasadiFunction;
+
+int casadi_interface_init();
+int casadi_interface_cleanup();
+int casadi_set_state(const real_t* current_state);
 size_t casadi_interface_get_dimension();
 
 /* cost functions */
