@@ -129,11 +129,11 @@ class Nmpc_panoc:
         self._number_of_steps = value
 
     @property
-    def mode(self):
-        return self._mode
-    @mode.setter
-    def mode(self, value):
-        self._mode = value
+    def model(self):
+        return self._model
+    @model.setter
+    def model(self, value):
+        self._model = value
 
     @property
     def lbgfs_buffer_size(self):
