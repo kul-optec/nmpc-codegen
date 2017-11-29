@@ -54,11 +54,13 @@ size_t casadi_interface_get_dimension(){
 /* cost functions */
 real_t casadi_interface_f(const real_t* input){
     real_t data_output;
-    real_t* output = & data_output;
+    real_t* output[1] = {&data_output};
 
-    cost_function_data->cost_function(&input,&output,cost_function_data->buffer_int,cost_function_data->buffer_real,MEM_CASADI);
+    const real_t* input_function[2]={state,input};
 
-    return data_output;
+    cost_function_data->cost_function(input_function,output,cost_function_data->buffer_int,cost_function_data->buffer_real,MEM_CASADI);
+
+    return *output[0];
 }
 void casadi_interface_df(const real_t* input,real_t* output){
 
@@ -68,7 +70,7 @@ void casadi_interface_proxg(const real_t* input,real_t* output){}
 
 int cleanup_buffer_casadi_function(CasadiFunction* data){
     free(data->buffer_int);
-    free(data->buffer_int);
+    free(data->buffer_real);
     free(data);
     return SUCCESS; 
 }
@@ -86,7 +88,7 @@ CasadiFunction* init_buffer_casadi_function( \
      * ignore the return value as its always zero 
      */
     work_array_size(&function_data->inputSize,&function_data->outputSize,&function_data->buffer_intSize,&function_data->buffer_realSize);
-
+    function_data->cost_function=cost_function;
     /* 
      * Allocate the buffers.
      */
