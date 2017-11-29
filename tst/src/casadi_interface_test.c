@@ -21,7 +21,7 @@ int main(){
     real_t test_cost_optimal = casadi_interface_f(zero_input);
 
     real_t lower_state[DIMENSION_STATE]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    vector_add_ntimes(lower_state,current_state,18,1.5,lower_state);
+    vector_add_ntimes(lower_state,current_state,18,0.8,lower_state);
     
     casadi_set_state(lower_state);
     real_t test_cost_to_low = casadi_interface_f(zero_input);
