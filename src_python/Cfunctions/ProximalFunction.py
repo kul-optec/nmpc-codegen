@@ -1,6 +1,9 @@
-from Function import *
+from Cfunctions.Function import *
 
 class ProximalFunction(Cfunction):
-    def __init__(self,proxFunction):
-        super.__init__(location_cfile)
-        self._proxFunction=proxFunction
+    def __init__(self,prox):
+        self._prox=prox
+
+    @property
+    def prox(self):
+        return self._prox
