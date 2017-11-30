@@ -63,16 +63,16 @@ class Nmpc_panoc:
         self.__setup_casadi_functions_and_generate_c(initial_state,input_all_steps,cost)
 
     def __setup_casadi_functions_and_generate_c(self,initial_state,input_all_steps,cost):
-        cost_function = cd.Function('cost_function', [initial_state, input_all_steps], [cost])
-        cost_function_derivative = cd.Function('cost_function_derivative', [initial_state, input_all_steps],
+        self._cost_function = cd.Function('cost_function', [initial_state, input_all_steps], [cost])
+        self._cost_function_derivative = cd.Function('cost_function_derivative', [initial_state, input_all_steps],
                                                [cd.jacobian(cost, initial_state)])
-        cost_function_derivative_combined = cd.Function('cost_function_derivative_combined',
+        self._cost_function_derivative_combined = cd.Function('cost_function_derivative_combined',
                                                         [initial_state, input_all_steps],
                                                         [cost, cd.jacobian(cost, initial_state)])
 
-        self.__translate_casadi_to_c(cost_function, filename="cost_function.c")
-        self.__translate_casadi_to_c(cost_function_derivative, filename="cost_function_derivative.c")
-        self.__translate_casadi_to_c(cost_function_derivative_combined, filename="cost_function_derivative_combined.c")
+        self.__translate_casadi_to_c(self._cost_function, filename="cost_function.c")
+        self.__translate_casadi_to_c(self._cost_function_derivative, filename="cost_function_derivative.c")
+        self.__translate_casadi_to_c(self._cost_function_derivative_combined, filename="cost_function_derivative_combined.c")
     def __translate_casadi_to_c(self,casadi_function,filename):
         # check if the buffer file excists, should never be the case, but check anyway
         buffer_file_name="buffer"
@@ -167,3 +167,13 @@ class Nmpc_panoc:
     @data_type.setter
     def data_type(self, value):
         self._data_type = value
+
+    @property
+    def cost_function(self):
+        return self._cost_function
+    @property
+    def cost_function_derivative(self):
+        return self._cost_function_derivative
+    @property
+    def cost_function_derivative_combined(self):
+        return self._cost_function_derivative_combined
