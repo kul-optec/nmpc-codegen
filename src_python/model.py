@@ -1,8 +1,8 @@
 class Model:
     """ NMPC discrete model """
-    def __init__(self,system_equations,g,step_size,number_of_states,number_of_inputs):
+    def __init__(self,system_equations,input_constraint,step_size,number_of_states,number_of_inputs):
         self._system_equations=system_equations
-        self._g=g
+        self._input_constraint=input_constraint
         self._step_size=step_size
         self._number_of_states=number_of_states
         self._number_of_inputs=number_of_inputs
@@ -11,7 +11,8 @@ class Model:
         return self._system_equations(state,input)
 
     def generate_constraint(self,location):
-        self._g.generate_code(location)
+        self._input_constraint.generate_c_code(location+"casadi/g.c")
+        self._input_constraint.prox.generate_c_code(location + "casadi/proxg.c")
 
     @property
     def system_equations(self):

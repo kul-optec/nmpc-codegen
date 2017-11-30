@@ -2,6 +2,7 @@ import models.chain_model as cm
 import numpy as np
 import math
 import model_continious as modelc
+import Cfunctions.IndicatorBoxFunction as indbox
 
 def get_chain_model():
     # model parameters(use the same as the Matlab code):
@@ -31,7 +32,7 @@ def get_chain_model():
     number_of_steps = math.ceil(simulation_time / step_size)
 
     integrator = "RK"
-    g = 0  # is not used here so just put it on zero
-    model = modelc.Model_continious(system_equations, g, step_size, number_of_states, number_of_inputs, integrator)
+    constraint_input = indbox.IndicatorBoxFunction([-2,-2],[2,2]) # input needs stay within these borders
+    model = modelc.Model_continious(system_equations, constraint_input, step_size, number_of_states, number_of_inputs, integrator)
 
     return model

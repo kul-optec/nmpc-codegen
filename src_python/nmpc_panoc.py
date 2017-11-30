@@ -45,6 +45,8 @@ class Nmpc_panoc:
             print('ERROR in generating code: invalid choice of shooting mode [single shot|multiple shot]')
         self._globals_generator.generate_globals(self)
 
+        self._model.generate_constraint(self._location_lib)
+
     def __generate_cost_function_singleshot(self):
         """ private function, generates part of the casadi cost function with single shot"""
         initial_state = cd.SX.sym('initial_state', self._model.number_of_states, 1)
