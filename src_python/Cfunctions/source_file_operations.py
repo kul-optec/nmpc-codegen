@@ -18,10 +18,10 @@ class Source_file_generator:
 
         if (self._function_type == "g"):
             print("generating g-type function")
-            self._source_file.write("real_t g(real_t* input){\n")
+            self._source_file.write("real_t casadi_interface_g(const real_t* input){\n")
         elif (self._function_type == "proxg"):
             print("generating proxg-type function")
-            self._source_file.write("void g(real_t* input,real_t* output){\n")
+            self._source_file.write("void casadi_interface_proxg(const real_t* input,real_t* output){\n")
         else:
             print("ERROR wrong function_type pick either g or proxg")
             self._source_file.close()

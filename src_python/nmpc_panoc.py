@@ -19,6 +19,8 @@ class Nmpc_panoc:
         self._lbgfs_buffer_size=10
         self._data_type = "double precision"
 
+        self._panoc_max_steps=10
+
         # generate the dynamic_globals file
         self._globals_generator = gg.Globals_generator(self._location_lib + "globals/globals_dyn.h")
 
@@ -169,6 +171,13 @@ class Nmpc_panoc:
     @data_type.setter
     def data_type(self, value):
         self._data_type = value
+
+    @property
+    def panoc_max_steps(self):
+        return self._panoc_max_steps
+    @panoc_max_steps.setter
+    def panoc_max_steps(self, value):
+        self._panoc_max_steps = value
 
     @property
     def cost_function(self):

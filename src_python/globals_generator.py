@@ -13,9 +13,13 @@ class Globals_generator:
         self.define_variable("DIMENSION_STATE", nmpc_controller.model.number_of_states)
         self.define_variable("MPC_HORIZON", nmpc_controller.number_of_steps)
 
+        self.set_data_type(nmpc_controller.data_type)
+
         self.generate_title("lbgfs solver definitions")
         self.define_variable("LBGFS_BUFFER_SIZE",nmpc_controller.lbgfs_buffer_size)
-        self.set_data_type(nmpc_controller.data_type)
+
+        self.generate_title("NMPC-PANOC solver definitions")
+        self.define_variable("PANOC_MAX_STEPS",nmpc_controller.panoc_max_steps)
 
     def init_globals_file(self):
         # replace globals file of it doesnt exist

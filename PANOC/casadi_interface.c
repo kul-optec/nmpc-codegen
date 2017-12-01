@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include "casadi_interface.h"
 
+#include "../casadi/g.c"
+#include "../casadi/proxg.c"
+
 CasadiFunction* init_buffer_casadi_function( \
         int (*cost_function)(const real_t** arg, real_t** res, int* iw, real_t* w, int mem),  \
         int (*work_array_size)(int*, int*, int *, int *)\
@@ -63,10 +66,9 @@ real_t casadi_interface_f(const real_t* input){
     return *output[0];
 }
 void casadi_interface_df(const real_t* input,real_t* output){
-
+// TODO
 }
-real_t casadi_interface_g(const real_t* input){return 0 ;}
-void casadi_interface_proxg(const real_t* input,real_t* output){}
+
 
 int cleanup_buffer_casadi_function(CasadiFunction* data){
     free(data->buffer_int);
