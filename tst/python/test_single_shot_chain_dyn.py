@@ -27,6 +27,19 @@ nmpc_controller.horizon=10
 nmpc_controller.generate_code()
 
 cost_function = nmpc_controller.cost_function
-print(cost_function(rest_state,input))
 print(cost_function(rest_state*0.8,input))
+print(cost_function(rest_state,input))
 print(cost_function(rest_state*1.5,input))
+
+print("---")
+
+cost_function = nmpc_controller.cost_function_derivative
+
+derivative_cost_low=cost_function(rest_state*0.8,input)
+derivative_cost_optimal=cost_function(rest_state,input)
+derivative_cost_high=cost_function(rest_state*1.5,input)
+
+print_size=2
+print(derivative_cost_low[0:print_size])
+print(derivative_cost_optimal[0:print_size])
+print(derivative_cost_high[0:print_size])
