@@ -21,6 +21,8 @@ class Nmpc_panoc:
 
         self._panoc_max_steps=10
 
+        self._integrator_casadi=False
+
         # generate the dynamic_globals file
         self._globals_generator = gg.Globals_generator(self._location_lib + "globals/globals_dyn.h")
 
@@ -49,7 +51,8 @@ class Nmpc_panoc:
         self._globals_generator.generate_globals(self)
 
         # optional feature, a c version of the integrator
-        self.__generate_integrator()
+        if(self._integrator_casadi):
+            self.__generate_integrator()
 
         self._model.generate_constraint(self._location_lib)
     def __generate_integrator(self):
@@ -191,6 +194,13 @@ class Nmpc_panoc:
         self._panoc_max_steps = value
 
     @property
+    def integrator_casadi(self):
+        return self._integrator_casadi
+    @integrator_casadi.setter
+    def integrator_casadi(self, value):
+        self._integrator_casadi = value
+
+    @property
     def cost_function(self):
         return self._cost_function
     @property
@@ -199,3 +209,4 @@ class Nmpc_panoc:
     @property
     def cost_function_derivative_combined(self):
         return self._cost_function_derivative_combined
+

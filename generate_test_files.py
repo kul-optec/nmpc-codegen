@@ -19,6 +19,7 @@ def main():
     # the horizon is 10
 
     nmpc_controller = npc.Nmpc_panoc("./", model, Q, R)
+    nmpc_controller.integrator_casadi=True
     nmpc_controller.generate_code()
 
 if __name__ == "__main__":

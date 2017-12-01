@@ -21,6 +21,11 @@ class Globals_generator:
         self.generate_title("NMPC-PANOC solver definitions")
         self.define_variable("PANOC_MAX_STEPS",nmpc_controller.panoc_max_steps)
 
+        self.generate_title("Optional features")
+        if( nmpc_controller.integrator_casadi):
+            self.define_variable("INTEGRATOR_CASADI","1")
+
+
     def init_globals_file(self):
         # replace globals file of it doesnt exist
         globals_file = open(self._location_globals, 'w')
