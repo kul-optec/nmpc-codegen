@@ -45,9 +45,20 @@ class Nmpc_panoc:
             self.__generate_cost_function_multipleshot()
         else:
             print('ERROR in generating code: invalid choice of shooting mode [single shot|multiple shot]')
+
         self._globals_generator.generate_globals(self)
 
+        # optional feature, a c version of the integrator
+        self.__generate_integrator()
+
         self._model.generate_constraint(self._location_lib)
+    def __generate_integrator(self):
+        state = cd.SX.sym('istate', self._model.number_of_states, 1)
+        input = cd.SX.sym('input', self._model.number_of_inputs , 1)
+
+        integrator = cd.Function('integrator', [state, input], [self._model.get_next_state(state,input)])
+
+        self.__translate_casadi_to_c(integrator, filename="integrator.c")
 
     def __generate_cost_function_singleshot(self):
         """ private function, generates part of the casadi cost function with single shot"""
