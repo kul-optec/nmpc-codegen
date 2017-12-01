@@ -14,8 +14,12 @@ int nmpc_init(){
     if(current_input==NULL) goto fail_2;
     new_input=malloc(DIMENSION_INPUT*MPC_HORIZON*sizeof(real_t));
     if(new_input==NULL) goto fail_3;
+    
+    if(casadi_interface_init()) goto fail_4;
 
     return SUCCESS;
+    fail_4:
+        casadi_interface_cleanup();
     fail_3:
         free(current_input);
     fail_2:

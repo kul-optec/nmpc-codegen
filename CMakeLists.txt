@@ -24,3 +24,4 @@ add_test(NAME lipschitz_estimator_test COMMAND  tst/bin/lipschitz_estimator_test
 add_test(NAME prox_grad_descent_poly_test COMMAND  tst/bin/prox_grad_descent_poly_test)
 add_test(NAME panoc_poly_test COMMAND  tst/bin/panoc_poly_test)
 add_test(NAME casadi_interface_test COMMAND  tst/bin/casadi_interface_test)
+add_test(NAME nmpc_panoc_test COMMAND  tst/bin/nmpc_panoc_test)
