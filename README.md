@@ -4,19 +4,19 @@ This project is still under construction but the goal is to generate an MPC cont
 
 ## What do I need?
 - GNU toolchain with gcc
-- python (both 2 and 3 work at this moment) with casadi installed on it
-- Cmake (if you want to run the tests)
+- python 3 with casadi and numpy installed on it
+- Cmake
 
 ## How to compile and test me?
 This is only for those who want to check if the library works on there device. 
 ### Windows with Mingw 
-- Generate a test function python ./tst/python/generate_simple_func.py ./casadi/f.c
+- Generate the test functions by running the generate_test_files.py script with python3
 - Run Cmake to generate the make files: cmake . -G "MinGW Makefiles"
 - Run Make to compile everything: make
-- Run make test to test everything: make test
+- Run make test to test everything: make all test
 
 ### Unix-like operating systems
-- Generate a test function python ./tst/python/generate_simple_func.py ./casadi/f.c
+- Generate the test functions by running the generate_test_files.py script with python3
 - Run Cmake to generate the make files: cmake .
 - Run Make to compile everything: make
-- Run make test to test everything: make test
+- Run make test to test everything: make all test
