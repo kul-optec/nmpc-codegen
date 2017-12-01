@@ -6,10 +6,15 @@
 
 int test_casadi_interface_f(void);
 int test_casadi_interface_df(void);
+int simple_test_integrator(void);
+int check_positions(const real_t* state,const real_t* required_state);
+
+static size_t number_of_masses=4;
 
 int main(){
     return test_casadi_interface_f()+\
-        test_casadi_interface_df();
+        test_casadi_interface_df()+\
+        simple_test_integrator();
 }
 
 int test_casadi_interface_f(void){
@@ -95,4 +100,55 @@ int test_casadi_interface_df(void){
     
     casadi_interface_cleanup();
     return SUCCESS; 
+}
+
+int simple_test_integrator(void){
+    printf("-----------------\n");
+    printf("Starting test on npmc at  \n");
+    casadi_interface_init();
+
+    real_t input[2]={1,0};
+    real_t start_state[DIMENSION_STATE]={0.1932, -5.9190 , 0.3874,-8.8949,0.6126,-8.8949,0.8068,-5.9190 \
+                ,1. , 0., \
+                0.,0., 0.,0.,0.,0.,0.,0.};
+
+    real_t* current_state=malloc(sizeof(real_t)*DIMENSION_STATE);
+    size_t i;
+    for (size_t i = 0; i < DIMENSION_STATE; i++)current_state[i]=start_state[i];
+    real_t* new_state=malloc(sizeof(real_t)*DIMENSION_STATE);
+
+    size_t number_of_simulations=10;
+    for ( i = 0; i < number_of_simulations; i++)
+    {
+        casadi_integrate(current_state,input,new_state);
+
+        real_t* buffer=current_state;
+        current_state=new_state;
+        new_state=buffer;
+
+        
+    }
+    int return_value = check_positions(current_state,start_state);
+
+    free(current_state);
+    free(new_state);
+    casadi_interface_cleanup();
+    return return_value; 
+}
+
+int check_positions(const real_t* state,const real_t* required_state){
+    int i;int return_value=SUCCESS;
+    for (i = 0; i < number_of_masses; i++)
+    {
+        printf(" mass%d [%f , %f] ",i,state[i*2],state[i*2+1]);
+        real_t sensitivity = 0.1;
+        real_t difference_1 = ABS(state[i*2]-required_state[i*2]);
+        real_t difference_2 = ABS(state[i*2+1]-required_state[i*2+1]);
+        if(difference_1>sensitivity || difference_2>sensitivity){
+            printf("\n ERROR difference is %f and %f \n",difference_1,difference_2);
+            return_value=FAILURE;
+        }
+    }
+    printf("\n");
+    return return_value;
 }

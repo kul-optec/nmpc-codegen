@@ -12,6 +12,7 @@
 
 #include "../casadi/g.c"
 #include "../casadi/proxg.c"
+#include "../casadi/integrator.c"
 
 CasadiFunction* init_buffer_casadi_function( \
         int (*cost_function)(const real_t** arg, real_t** res, int* iw, real_t* w, int mem),  \
@@ -22,16 +23,31 @@ int cleanup_buffer_casadi_function(CasadiFunction* data);
 static CasadiFunction* cost_function_data;
 static CasadiFunction* cost_function_derivative_data;
 static CasadiFunction* cost_function_derivative_combined_data;
+#ifdef INTEGRATOR_CASADI
+static CasadiFunction* integrator_data;
+#endif
 
 int casadi_interface_init(){
     cost_function_data=init_buffer_casadi_function(cost_function,cost_function_work);
     if(cost_function_data==NULL) goto fail_1;
+
     cost_function_derivative_data=init_buffer_casadi_function(cost_function_derivative,cost_function_derivative_work);
     if(cost_function_derivative_data==NULL) goto fail_2;
+
     cost_function_derivative_combined_data=init_buffer_casadi_function(cost_function_derivative_combined,cost_function_derivative_combined_work);
     if(cost_function_derivative_combined_data==NULL) goto fail_3;
 
+    #ifdef INTEGRATOR_CASADI
+        integrator_data=init_buffer_casadi_function(integrator,integrator_work);
+        if(integrator_data==NULL) goto fail_4;
+    #endif
+
     return SUCCESS;
+
+    #ifdef INTEGRATOR_CASADI
+    fail_4:
+        cleanup_buffer_casadi_function(cost_function_derivative_combined_data);
+    #endif
     fail_3:
         cleanup_buffer_casadi_function(cost_function_derivative_data);
     fail_2:
@@ -43,8 +59,24 @@ int casadi_interface_cleanup(){
     cleanup_buffer_casadi_function(cost_function_data);
     cleanup_buffer_casadi_function(cost_function_derivative_data);
     cleanup_buffer_casadi_function(cost_function_derivative_combined_data);
+    #ifdef INTEGRATOR_CASADI
+    cleanup_buffer_casadi_function(integrator_data);
+    #endif
     return SUCCESS;
 }
+#ifdef INTEGRATOR_CASADI
+int casadi_integrate(const real_t* current_state,const real_t* input,real_t* new_state){
+    const real_t* input_casadi[2]={current_state,input};
+    real_t* output_casadi[1]={new_state};
+
+    integrator_data->cost_function(input_casadi,output_casadi,\
+        integrator_data->buffer_int,\
+        integrator_data->buffer_real,\
+        MEM_CASADI);
+
+    return SUCCESS;
+}
+#endif
 static const real_t* state;
 int casadi_set_state(const real_t* current_state){
     state = current_state;
