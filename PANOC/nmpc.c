@@ -29,20 +29,27 @@ int nmpc_cleanup(){
     free(new_input);
     return SUCCESS;
 }
+void switch_input_current_new(){
+    real_t* buffer;
+    buffer=current_input;
+    current_input=new_input;
+    new_input=buffer;
+
+}
 int npmc_solve(const real_t* current_state,real_t* optimal_inputs){
     casadi_set_state(current_state);
-    
+
+    /* 
+     * take implicityly the previous inputs as the starting position for the algorithm 
+     */
+
     size_t i;
     for (i= 0; i < PANOC_MAX_STEPS; i++)
     {
         panoc_get_new_location(current_input,new_input);
 
         /* set the new_input as input for the next iteration */
-        real_t* buffer;
-        buffer=current_input;
-        current_input=new_input;
-        new_input=buffer;
-
+        switch_input_current_new();
     }
     /* only return the optimal input */
     for (i = 0; i < DIMENSION_INPUT; i++)

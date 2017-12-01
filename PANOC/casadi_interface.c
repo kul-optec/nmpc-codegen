@@ -61,12 +61,21 @@ real_t casadi_interface_f(const real_t* input){
 
     const real_t* input_function[2]={state,input};
 
-    cost_function_data->cost_function(input_function,output,cost_function_data->buffer_int,cost_function_data->buffer_real,MEM_CASADI);
+    cost_function_data->cost_function(input_function,output,\
+        cost_function_data->buffer_int,\
+        cost_function_data->buffer_real,\
+        MEM_CASADI);
 
     return *output[0];
 }
-void casadi_interface_df(const real_t* input,real_t* output){
-// TODO
+void casadi_interface_df(const real_t* input,real_t* data_output){
+    real_t* output[1] = {data_output};
+    const real_t* input_function[2]={state,input};
+
+    cost_function_derivative_data->cost_function(input_function,output,\
+        cost_function_data->buffer_int,\
+        cost_function_data->buffer_real,\
+        MEM_CASADI);
 }
 
 
