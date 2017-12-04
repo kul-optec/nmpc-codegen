@@ -29,16 +29,16 @@ static real_t* direction_FBE;
 int proximal_gradient_descent_init(){
     dimension=casadi_interface_get_dimension();
 
-    new_location = malloc(sizeof(real_t*)*dimension);
+    new_location = malloc(sizeof(real_t)*dimension);
     if(new_location==NULL)goto fail_1;
 
-    direction = malloc(sizeof(real_t*)*dimension);
+    direction = malloc(sizeof(real_t)*dimension);
     if(direction==NULL)goto fail_2;
 
-    new_location_FBE = malloc(sizeof(real_t*)*dimension);
+    new_location_FBE = malloc(sizeof(real_t)*dimension);
     if(new_location_FBE==NULL)goto fail_3;
 
-    direction_FBE = malloc(sizeof(real_t*)*dimension);
+    direction_FBE = malloc(sizeof(real_t)*dimension);
     if(direction_FBE==NULL)goto fail_4;
 
     return SUCCESS;
