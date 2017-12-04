@@ -12,6 +12,8 @@ def main():
                     0.,0., 0.,0.,0.,0.,0.,0. ]
 
     sim = simulator.Simulator('../../')
+    sim.compile_interface()
+
     (test,optimal_input) = sim.simulate_nmpc(current_state,2)
 
     print(str(optimal_input[0])+"<->"+str(test))

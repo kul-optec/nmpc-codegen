@@ -9,7 +9,7 @@ This project is still under construction but the goal is to generate an MPC cont
 
 ## How to compile and test me?
 This is only for those who want to check if the library works on there device. 
-### Windows with Mingw 
+### Windows with Mingw (!!! make sure python and the toolchain are either BOTH 32 or BOTH 64 bit)
 - Generate the test functions by running the generate_test_files.py script with python3
 - Run Cmake to generate the make files: cmake . -G "MinGW Makefiles"
 - Run Make to compile everything: make
