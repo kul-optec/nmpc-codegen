@@ -7,7 +7,8 @@ import subprocess
 class Simulator:
     """ simulator used to interact in python with an controller in c """
     def __init__(self,location):
-        # detect the operating system
+        self._location=location
+        self.compile_interface()
 
         if(platform.system()=='Linux'):
             print("Compiling python interface for Linux")
@@ -23,8 +24,7 @@ class Simulator:
             print("ERROR platform can't be detected, using Linux")
             extension_lib = '.so'
 
-        self._location=location
-
+        
         # self.nmpc_python_interface.simulation_init.argtypes = ()
         # self.nmpc_python_interface.simulate_nmpc_panoc.argtypes = (ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double))
         # self.nmpc_python_interface.simulation_cleanup.argtypes = ()
