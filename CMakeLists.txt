@@ -11,6 +11,13 @@ add_definitions(-Wall)
 include_directories ("${PROJECT_SOURCE_DIR}/PANOC")
 add_subdirectory (PANOC) # read out the cmakelist file
 
+# add the python interface, this target is excluded from all
+add_library(python_interface SHARED "${PROJECT_SOURCE_DIR}/python_interface/nmpc_python")
+target_link_libraries (python_interface PANOC_lib)
+set_property(TARGET python_interface PROPERTY C_STANDARD 90)
+set_property(TARGET python_interface PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_property(TARGET python_interface PROPERTY EXCLUDE_FROM_ALL TRUE)
+
 # Test the functionality
 enable_testing()
 add_subdirectory(tst)

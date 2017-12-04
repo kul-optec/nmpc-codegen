@@ -2,6 +2,7 @@
 #define NMPC_H
 
 #include<stdlib.h>
+#include "../globals/globals.h"
 
 int nmpc_init();
 int nmpc_cleanup();
