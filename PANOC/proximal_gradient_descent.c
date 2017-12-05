@@ -8,10 +8,10 @@
 #include"buffer.h"
 
 /* functions only used internally */
-int proximal_gradient_descent_check_linesearch();
+int proximal_gradient_descent_check_linesearch(void);
 int proximal_gradient_descent_forward_backward_step(const real_t* location,const real_t* df_location);
-int proximal_gradient_descent_push();
-int proximal_gradient_descent_linesearch();
+int proximal_gradient_descent_push(void);
+int proximal_gradient_descent_linesearch(void);
 
 /* values set by the init function */
 static size_t dimension;
@@ -26,7 +26,7 @@ static real_t* direction;
 static real_t* new_location_FBE;
 static real_t* direction_FBE;
 
-int proximal_gradient_descent_init(){
+int proximal_gradient_descent_init(void){
     dimension=casadi_interface_get_dimension();
 
     new_location = malloc(sizeof(real_t)*dimension);
@@ -58,6 +58,11 @@ int proximal_gradient_descent_init(){
 int proximal_gradient_descent_cleanup(void){
     free(new_location);
     free(direction);
+    proximal_gradient_descent_reset_iteration_counters();
+    return SUCCESS;
+}
+
+int proximal_gradient_descent_reset_iteration_counters(void){
     iteration_index=0;
     linesearch_gamma=0;
     return SUCCESS;
@@ -65,7 +70,7 @@ int proximal_gradient_descent_cleanup(void){
 /*
  * Find the proximal gradient descent with linesearch
  */
-const real_t* proximal_gradient_descent_get_direction(){
+const real_t* proximal_gradient_descent_get_direction(void){
    /* 
     * If this is the first time you call me, find the initial gamma value
     * by estimating the lipschitz value of df
@@ -83,7 +88,7 @@ const real_t* proximal_gradient_descent_get_direction(){
 /*
  * This function performs the linesearch
  */
-int proximal_gradient_descent_linesearch(){
+int proximal_gradient_descent_linesearch(void){
     const real_t* current_location = buffer_get_current_location();
     const real_t* df_current_location = buffer_get_current_df();
 
@@ -136,7 +141,7 @@ int proximal_gradient_descent_get_current_residual(real_t* residual){
 /*
  * check if the linesearch condition is satisfied
  */
-int proximal_gradient_descent_check_linesearch(){
+int proximal_gradient_descent_check_linesearch(void){
     const real_t* df_current_location=buffer_get_current_df();
     const real_t inner_product_df_direction = inner_product(df_current_location,direction,dimension);
 
@@ -178,7 +183,7 @@ real_t proximal_gradient_descent_get_gamma(void){
     return linesearch_gamma;
 }
 
-int proximal_gradient_descent_push(){
+int proximal_gradient_descent_push(void){
     real_t* buffer;
     
     buffer=direction;

@@ -60,5 +60,6 @@ int npmc_solve(const real_t* current_state,real_t* optimal_inputs){
     {
         optimal_inputs[i]=current_input[i];
     }
+    panoc_reset_cycli();
     return SUCCESS;
 }

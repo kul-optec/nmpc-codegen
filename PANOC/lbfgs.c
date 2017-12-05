@@ -110,11 +110,15 @@ int lbfgs_cleanup(void){
         iteration_index=0;
         return SUCCESS;
 }
+int lbfgs_reset_iteration_counters(void){
+    iteration_index=0;
+    return SUCCESS;
+}
 
 /*
  * returns the direction calculated with lbfgs
  */ 
-const real_t* lbfgs_get_direction(){
+const real_t* lbfgs_get_direction(void){
     const real_t* current_location = buffer_get_current_location();
     real_t q[dimension];proximal_gradient_descent_get_residual(current_location,q);
 

@@ -5,9 +5,10 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-int proximal_gradient_descent_init();
+int proximal_gradient_descent_init(void);
+int proximal_gradient_descent_reset_iteration_counters(void);
 int proximal_gradient_descent_cleanup(void);
-const real_t* proximal_gradient_descent_get_direction();
+const real_t* proximal_gradient_descent_get_direction(void);
 
 /*
  * calculate the forward backward envelop using the internal gamma

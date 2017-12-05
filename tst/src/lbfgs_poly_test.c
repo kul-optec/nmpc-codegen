@@ -41,7 +41,7 @@ int checkIfSolutionIsReached(void){
     for ( i = 0; i < 100; i++)
     {
         buffer_renew(current_location);
-        const real_t* direction = lbfgs_get_direction(current_location);
+        const real_t* direction = lbfgs_get_direction();
         vector_add(current_location,direction,DIMENSION,current_location);
         print_location(current_location);
     }

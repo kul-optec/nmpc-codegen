@@ -44,13 +44,13 @@ int checkIfSolutionIsReached(void){
         df_poly);
 
     buffer_init();
-    proximal_gradient_descent_init(dimension);
+    proximal_gradient_descent_init();
 
     size_t i;
     for ( i = 0; i < numer_of_iterations; i++)
     {
         buffer_renew(current_location);
-        const real_t* direction = proximal_gradient_descent_get_direction(current_location);
+        const real_t* direction = proximal_gradient_descent_get_direction();
         vector_add_ntimes(current_location,direction,dimension,1,current_location);
         print_location_2D(current_location);
     }
@@ -82,13 +82,13 @@ int checkIfSolutionIsReached_problem2(void){
         df_poly);
 
     buffer_init();
-    proximal_gradient_descent_init(dimension);
+    proximal_gradient_descent_init();
 
     size_t i;
     for ( i = 0; i < numer_of_iterations; i++)
     {
         buffer_renew(current_location);
-        const real_t* direction = proximal_gradient_descent_get_direction(current_location);
+        const real_t* direction = proximal_gradient_descent_get_direction();
         vector_add_ntimes(current_location,direction,dimension,1,current_location);
         print_location(current_location);
     }
