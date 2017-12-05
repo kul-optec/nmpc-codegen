@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "matrix_operations.h"
 #include "proximal_gradient_descent.h"
+#include "math.h"
 
 /* 
  * The following two matrices are safed between iterations 
@@ -30,6 +31,8 @@ void shift_s_and_y(const size_t buffer_limit); /* internal function used to shif
 
 static real_t* y_data; /* data field used to allocate 2D array y, if only one malloc is used we get cast errors */
 static real_t* s_data; /* data field used to allocate 2D array s, if only one malloc is used we get cast errors */
+
+static int lbfgs_reset_direction(void); /* internal function */
 
 /*
  * Initialize the lbfgs library
@@ -127,11 +130,7 @@ const real_t* lbfgs_get_direction(void){
      * set the direct on zero and return.
      */
     if(vector_norm2(q,dimension)<MACHINE_ACCURACY){
-        size_t i;
-        for ( i = 0; i < dimension; i++)
-        {
-            direction[i]=0;
-        }
+        lbfgs_reset_direction();
         return direction;
     }
 
@@ -192,6 +191,16 @@ const real_t* lbfgs_get_direction(void){
     vector_sub(gradient_new_location,gradient_current_location,dimension,y[0]); /* set y=df(new_x) - df(x) */
 
     iteration_index++;
+
+    /* check if the solution is not NaN, if so set it too zero */
+    size_t i;
+    for ( i = 0; i < dimension; i++)
+    {
+        if(isnan(direction[i])){
+            lbfgs_reset_direction();
+            break;
+        }
+    }
     return direction;
 }
 
@@ -207,4 +216,13 @@ void shift_s_and_y(const size_t buffer_limit){
         }
         s[0]=buffer_s;
         y[0]=buffer_y;
+}
+
+static int lbfgs_reset_direction(void){
+    size_t i;
+    for ( i = 0; i < dimension; i++)
+    {
+        direction[i]=0;
+    }
+    return SUCCESS;
 }
