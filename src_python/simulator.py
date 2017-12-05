@@ -3,6 +3,7 @@ from subprocess import call
 import os
 import platform
 import subprocess
+import numpy as np
 
 class Simulator:
     """ simulator used to interact in python with an controller in c """
@@ -38,7 +39,11 @@ class Simulator:
             array_state(*current_state),\
             optimal_input\
             )
-        return (result, optimal_input)
+        # copy over the data in a numpy variable
+        optimal_input_numpy = np.zeros((input_size,1))
+        for i in range(0,input_size):
+            optimal_input_numpy[i]=float(optimal_input[i])
+        return (result, optimal_input_numpy)
     def simulator_init(self):
         self.compile_interface()
         self.load_library()

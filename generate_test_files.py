@@ -16,10 +16,13 @@ def main():
     Q = np.diag([0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1])*10
     R = np.eye(model.number_of_inputs, model.number_of_inputs)
 
-    # the horizon is 10
-
     nmpc_controller = npc.Nmpc_panoc("./", model, Q, R)
+
+    nmpc_controller.horizon = 50
+    nmpc_controller.step_size = 0.1
+
     nmpc_controller.integrator_casadi=True
+
     nmpc_controller.generate_code()
 
 if __name__ == "__main__":

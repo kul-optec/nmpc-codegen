@@ -55,7 +55,7 @@ class Chain_dyn_parameters:
 # u: input vector
 def chain_dyn(x, u, model_parameters):
     """ returns the derivative of the state dx=f(x) """
-
+    a=3
     positions = cd.reshape(x[0:model_parameters.dimension * (model_parameters.number_of_balls + 1), 0], \
                             ( model_parameters.dimension,model_parameters.number_of_balls + 1) \
                             )
