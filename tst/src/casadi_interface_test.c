@@ -107,7 +107,7 @@ int simple_test_integrator(void){
     printf("Starting test on npmc at  \n");
     casadi_interface_init();
 
-    real_t input[2]={1,0};
+    real_t input[2]={0,0};
     real_t start_state[DIMENSION_STATE]={0.1932, -5.9190 , 0.3874,-8.8949,0.6126,-8.8949,0.8068,-5.9190 \
                 ,1. , 0., \
                 0.,0., 0.,0.,0.,0.,0.,0.};
@@ -117,7 +117,7 @@ int simple_test_integrator(void){
     for (size_t i = 0; i < DIMENSION_STATE; i++)current_state[i]=start_state[i];
     real_t* new_state=malloc(sizeof(real_t)*DIMENSION_STATE);
 
-    size_t number_of_simulations=10;
+    size_t number_of_simulations=1000;
     for ( i = 0; i < number_of_simulations; i++)
     {
         casadi_integrate(current_state,input,new_state);
