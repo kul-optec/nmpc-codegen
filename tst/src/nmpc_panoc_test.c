@@ -33,7 +33,7 @@ int simple_test_steady_state(void){
     for (size_t i = 0; i < DIMENSION_STATE; i++)current_state[i]=start_state[i];
     real_t* new_state=malloc(sizeof(real_t)*DIMENSION_STATE);
 
-    size_t number_of_simulations=100;
+    size_t number_of_simulations=1000;
     for ( i = 0; i < number_of_simulations; i++)
     {
         /* find input trough the nmpc problem */
@@ -75,7 +75,7 @@ int simple_test(void){
     for (size_t i = 0; i < DIMENSION_STATE; i++)current_state[i]=start_state[i];
     real_t* new_state=malloc(sizeof(real_t)*DIMENSION_STATE);
 
-    size_t number_of_simulations=10;
+    size_t number_of_simulations=100;
     for ( i = 0; i < number_of_simulations; i++)
     {
         /* find input trough the nmpc problem */

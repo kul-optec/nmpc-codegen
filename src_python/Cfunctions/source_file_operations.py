@@ -25,12 +25,16 @@ class Source_file_generator:
         else:
             print("ERROR wrong function_type pick either g or proxg")
             self._source_file.close()
-
+    def start_for(self,iterator_name,length,indent):
+        self.write_line("size_t "+iterator_name+ ";",indent)
+        self.write_line("for("+iterator_name+"=0;i<"+str(length)+";i++){",indent)
+    def close_for(self,indent):
+        self.write_line("}",indent)
     def write_line(self,line,indent):
         string_indent = " "*indent*Source_file_generator.number_of_spaces_in_tab
         self._source_file.write(string_indent+line+"\n")
-    def define(self,name,value):
-        self.write_line("#define "+name+" "+str(value))
+    def write_define(self,name,value,indent):
+        self.write_line("#define "+name+" "+str(value),indent)
     def write_comment_line(self,line,indent):
         self.write_line("/* "+line+" */",indent)
     def set_output(self,output_index,value,indent):
