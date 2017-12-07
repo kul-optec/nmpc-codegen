@@ -162,13 +162,12 @@ int proximal_gradient_descent_check_linesearch(void){
  */
 real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location){
     proximal_gradient_descent_push(); /* undo changes to the state of this entity */
-    
 
     const real_t f_location=casadi_interface_f(location);
     real_t df_location[dimension];casadi_interface_df(location,df_location);
-    const real_t g_new_location=casadi_interface_g(new_location);
 
-    proximal_gradient_descent_forward_backward_step(location,df_location); /* this will fill the new_direction variable */
+    proximal_gradient_descent_forward_backward_step(location, df_location); /* this will fill the new_direction variable */
+    const real_t g_new_location=casadi_interface_g(new_location);
     const real_t norm_direction = pow(vector_norm2(direction,dimension),2);
 
     const real_t forward_backward_envelop = f_location + g_new_location \
