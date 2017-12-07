@@ -50,8 +50,8 @@ int checkIfSolutionIsReached(void){
     for ( i = 0; i < numer_of_iterations; i++)
     {
         buffer_renew(current_location);
-        const real_t* direction = proximal_gradient_descent_get_direction();
-        vector_add_ntimes(current_location,direction,dimension,1,current_location);
+        const real_t* direction = proximal_gradient_descent_get_direction(); /* direction = old_location - new_location */
+        vector_add_ntimes(current_location,direction,dimension,-1,current_location);
         print_location_2D(current_location);
     }
     proximal_gradient_descent_cleanup();
@@ -88,8 +88,8 @@ int checkIfSolutionIsReached_problem2(void){
     for ( i = 0; i < numer_of_iterations; i++)
     {
         buffer_renew(current_location);
-        const real_t* direction = proximal_gradient_descent_get_direction();
-        vector_add_ntimes(current_location,direction,dimension,1,current_location);
+        const real_t* direction = proximal_gradient_descent_get_direction(); /* direction = old_location - new_location */
+        vector_add_ntimes(current_location,direction,dimension,-1,current_location);
         print_location(current_location);
     }
     proximal_gradient_descent_cleanup();

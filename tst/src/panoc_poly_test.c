@@ -34,7 +34,7 @@ int main(){
 int checkIfSolutionIsReached(void){
     printf("test1 --- \n");
     size_t dimension=2;
-    degree=5;
+    degree=6;
     real_t w=2;
     example_problems_set_init_problem1(w,dimension);
     f_poly_init(dimension,degree );
@@ -79,7 +79,7 @@ int checkIfSolutionIsReached(void){
 int checkIfSolutionIsReached2(void){
     printf("test2 --- \n");
     size_t dimension=2;
-    degree=5;
+    degree=6;
     real_t w=2;
     example_problems_set_init_problem1(w,dimension);
     f_poly_init(dimension,degree );

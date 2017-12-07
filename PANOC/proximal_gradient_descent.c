@@ -107,7 +107,7 @@ int proximal_gradient_descent_forward_backward_step(const real_t* location,const
     real_t buffer[dimension];
     vector_add_ntimes(location,df_location,dimension,-1*linesearch_gamma,buffer); /* buffer = location - gamma * df_location */
     casadi_interface_proxg(buffer,new_location); /* new_location = proxg(buffer) */
-    vector_sub(new_location,location,dimension,direction); /* find the direction */
+    vector_sub(location,new_location,dimension,direction); /* find the direction */
     return SUCCESS;
 }
 
@@ -171,8 +171,8 @@ real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location
     const real_t norm_direction = pow(vector_norm2(direction,dimension),2);
 
     const real_t forward_backward_envelop = f_location + g_new_location \
-     - inner_product(df_location,direction,dimension) \
-     + (1/(linesearch_gamma*2))*norm_direction;
+     + inner_product(df_location,direction,dimension) \
+     - (1/(linesearch_gamma*2))*norm_direction;
 
     proximal_gradient_descent_push(); /* undo changes to the state of this entity */
     return forward_backward_envelop;
