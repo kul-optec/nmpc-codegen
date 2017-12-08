@@ -9,13 +9,25 @@ import ctypes
 import simulator
 import numpy as np
 import matplotlib.pyplot as plt
+import math
+import Cfunctions.IndicatorBoxFunction as indbox
 
 
 # simulation_cleanup
 def main():
-    model = example_models.get_chain_model()
+    (system_equations, number_of_states, number_of_inputs) = example_models.get_chain_model()
     dimension = 2
-    number_of_balls=4
+    number_of_balls = 4
+
+    step_size = 0.01
+    simulation_time = 5
+    number_of_steps = math.ceil(simulation_time / step_size)
+
+    integrator = "RK"
+    constraint_input = indbox.IndicatorBoxFunction([-2,-2],[2,2]) # input needs stay within these borders
+    model = modelc.Model_continious(system_equations, constraint_input, step_size, number_of_states,\
+                                    number_of_inputs, integrator)
+
 
     Q = np.diag([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1])
     R = np.eye(model.number_of_inputs, model.number_of_inputs)*10
@@ -29,21 +41,21 @@ def main():
     rest_state = np.array([0.1932, -5.9190, 0.3874, -8.8949, 0.6126, -8.8949, 0.8068, -5.9190 \
                               , 1., 0., \
                            0., 0., 0., 0., 0., 0., 0., 0.])
-    current_state = [ 0.2, 0. , 0.4,0. , 0.6 , 0. , 0.8 , 0. \
+    current_state =  np.array([ 0.2, 0. , 0.4,0. , 0.6 , 0. , 0.8 , 0. \
                     ,1. , 0., \
-                    0.,0., 0.,0.,0.,0.,0.,0. ]
+                    0.,0., 0.,0.,0.,0.,0.,0. ]).reshape(model.number_of_states,1)
 
     # setup a simulator to test
-    sim = simulator.Simulator('../../')
+    sim = simulator.Simulator(nmpc_controller)
 
     # init the controller
     sim.simulator_init()
 
-    number_of_steps=10
+    number_of_steps=100
     for i in range(1,number_of_steps):
-        (test,optimal_input) = sim.simulate_nmpc(current_state,2)
+        (test,optimal_input) = sim.simulate_nmpc(current_state)
         print("The optimal input is: [" + str(optimal_input[0]) + "," + str(optimal_input[0]) + "]")
-        current_state = model.get_next_state(current_state, optimal_input)
+        current_state = np.asarray(model.get_next_state(current_state, optimal_input))
 
     # cleanup the controller
     sim.simulator_cleanup()

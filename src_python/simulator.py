@@ -7,18 +7,19 @@ import numpy as np
 
 class Simulator:
     """ simulator used to interact in python with an controller in c """
-    def __init__(self,location):
-        self._location=location
+    def __init__(self,nmpc_controller):
+        self._nmpc_controller=nmpc_controller
+
     def load_library(self):
         try:
             if (platform.system() == 'Linux'):
                 print("Compiling python interface for Linux")
                 extension_lib = '.so'
-                lib_location = self._location + "libpython_interface" + extension_lib
+                lib_location = self._nmpc_controller.location + "libpython_interface" + extension_lib
                 self.nmpc_python_interface = ctypes.CDLL(lib_location)
             elif (platform.system() == 'Windows'):
                 extension_lib = '.dll'
-                lib_location = self._location + "libpython_interface" + extension_lib
+                lib_location = self._nmpc_controller.location + "libpython_interface" + extension_lib
                 print("Compiling python interface for Windows: " + lib_location)
                 self.nmpc_python_interface = ctypes.windll.LoadLibrary(lib_location)
             else:
@@ -27,11 +28,11 @@ class Simulator:
         except:
             print("Failed to load the dll, are you sure python and the toolchain are compatible?")
             print("check if they both are either 32bit or both 64 bit")
-    def simulate_nmpc(self,current_state,input_size):
+    def simulate_nmpc(self,current_state):
         length_state = len(current_state)
         array_state = ctypes.c_double * length_state
 
-        array_optimal_input = ctypes.c_double * input_size
+        array_optimal_input = ctypes.c_double * self._nmpc_controller.model.number_of_inputs
         optimal_input = array_optimal_input()
 
         result = ctypes.c_double
@@ -39,11 +40,8 @@ class Simulator:
             array_state(*current_state),\
             optimal_input\
             )
-        # copy over the data in a numpy variable
-        optimal_input_numpy = np.zeros((input_size,1))
-        for i in range(0,input_size):
-            optimal_input_numpy[i]=float(optimal_input[i])
-        return (result, optimal_input_numpy)
+
+        return (result, np.asarray(optimal_input))
     def simulator_init(self):
         self.compile_interface()
         self.load_library()
@@ -53,7 +51,7 @@ class Simulator:
     def compile_interface(self):
         cwd = os.getcwd()
         try:
-            os.chdir(self._location)
+            os.chdir(self._nmpc_controller.location)
             os.system("make clean python_interface")
         finally:
             os.chdir(cwd)

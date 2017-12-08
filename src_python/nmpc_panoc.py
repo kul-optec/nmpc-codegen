@@ -119,7 +119,7 @@ class Nmpc_panoc:
 
         os.remove("buffer.c")
     def __copy_over_function_to_file(self,source,destination,function_name):
-        in_file=False;
+        in_file=False
         destination_file = open(destination, 'a')
         with open(source, 'r') as inF:
             for line in inF:
@@ -199,6 +199,13 @@ class Nmpc_panoc:
     @integrator_casadi.setter
     def integrator_casadi(self, value):
         self._integrator_casadi = value
+
+    @property
+    def location(self):
+        return self._location_lib
+    @location.setter
+    def location(self, value):
+        self._location_lib = value
 
     @property
     def cost_function(self):
