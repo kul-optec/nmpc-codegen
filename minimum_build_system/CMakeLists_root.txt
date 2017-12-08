@@ -1,0 +1,17 @@
+cmake_minimum_required (VERSION 2.6)
+project (npmc_minimum)
+
+# set the compiler with its flags
+SET(CMAKE_C_COMPILER gcc)
+SET(CMAKE_BUILD_TYPE Debug)
+
+add_definitions(-Wall)
+
+# subdirectory with lib
+include_directories ("${PROJECT_SOURCE_DIR}/PANOC")
+add_subdirectory (PANOC) # read out the cmakelist file
+
+add_library(python_interface SHARED "${PROJECT_SOURCE_DIR}/python_interface/nmpc_python")
+target_link_libraries (python_interface PANOC_lib)
+set_property(TARGET python_interface PROPERTY C_STANDARD 90)
+set_property(TARGET python_interface PROPERTY POSITION_INDEPENDENT_CODE ON)
