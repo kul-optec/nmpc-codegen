@@ -11,10 +11,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import Cfunctions.IndicatorBoxFunction as indbox
-
+import bootstrapper as bs
 
 # simulation_cleanup
 def main():
+    # start by generating the static files and folder of the controller
+    location_nmpc_repo = "../.."
+    location = location_nmpc_repo + "/test_controller_builds"
+    controller_name = "nmpc_python_demo"
+    nmpc_controller_location=location+"/"+ controller_name + "/"
+
+    bs.Bootstrapper_panoc_nmpc.bootstrap(location_nmpc_repo, location, controller_name,python_interface_enabled=True)
+
+    # get an example model
     (system_equations, number_of_states, number_of_inputs) = example_models.get_chain_model()
     dimension = 2
     number_of_balls = 4
@@ -32,11 +41,17 @@ def main():
     Q = np.diag([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1])
     R = np.eye(model.number_of_inputs, model.number_of_inputs)*10
 
-    nmpc_controller = npc.Nmpc_panoc("../../", model, Q, R)
+    # define the controller
+    nmpc_controller = npc.Nmpc_panoc(nmpc_controller_location, model, Q, R)
     nmpc_controller.horizon = 50
     nmpc_controller.step_size=0.1
+    nmpc_controller.integrator_casadi = True
 
+    # generate the code
     nmpc_controller.generate_code()
+
+    # From here of on , only simulation !
+    #
 
     rest_state = np.array([0.1932, -5.9190, 0.3874, -8.8949, 0.6126, -8.8949, 0.8068, -5.9190 \
                               , 1., 0., \
