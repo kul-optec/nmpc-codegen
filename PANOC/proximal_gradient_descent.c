@@ -172,7 +172,7 @@ real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location
 
     const real_t forward_backward_envelop = f_location + g_new_location \
      + inner_product(df_location,direction,dimension) \
-     - (1/(linesearch_gamma*2))*norm_direction;
+     + (1/(linesearch_gamma*2))*norm_direction;
 
     proximal_gradient_descent_push(); /* undo changes to the state of this entity */
     return forward_backward_envelop;
