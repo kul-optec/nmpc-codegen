@@ -12,7 +12,9 @@
 
 #include "../casadi/g.c"
 #include "../casadi/proxg.c"
+#ifdef INTEGRATOR_CASADI
 #include "../casadi/integrator.c"
+#endif
 
 CasadiFunction* init_buffer_casadi_function( \
         int (*cost_function)(const real_t** arg, real_t** res, int* iw, real_t* w, int mem),  \
