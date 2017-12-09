@@ -44,9 +44,8 @@ int npmc_solve(const real_t* current_state,real_t* optimal_inputs){
     casadi_set_state(current_state);
 
     /* 
-     * take implicityly the previous inputs as the starting position for the algorithm 
+     * take implicitly the previous inputs as the starting position for the algorithm 
      */
-
     size_t i;
     for (i= 0; i < PANOC_MAX_STEPS; i++)
     {
