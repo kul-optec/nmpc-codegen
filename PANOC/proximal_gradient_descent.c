@@ -8,10 +8,10 @@
 #include"buffer.h"
 
 /* functions only used internally */
-int proximal_gradient_descent_check_linesearch(void);
-int proximal_gradient_descent_forward_backward_step(const real_t* location,const real_t* df_location);
-int proximal_gradient_descent_push(void);
-int proximal_gradient_descent_linesearch(void);
+static int proximal_gradient_descent_check_linesearch(void);
+static int proximal_gradient_descent_forward_backward_step(const real_t* location,const real_t* df_location);
+static int proximal_gradient_descent_push(void);
+static int proximal_gradient_descent_linesearch(void);
 
 /* values set by the init function */
 static size_t dimension;
@@ -88,7 +88,7 @@ const real_t* proximal_gradient_descent_get_direction(void){
 /*
  * This function performs the linesearch
  */
-int proximal_gradient_descent_linesearch(void){
+static int proximal_gradient_descent_linesearch(void){
     const real_t* current_location = buffer_get_current_location();
     const real_t* df_current_location = buffer_get_current_df();
 
@@ -103,7 +103,7 @@ int proximal_gradient_descent_linesearch(void){
 /* 
  * This function performs an forward backward step. x=prox(x-gamma*df(x))
  */
-int proximal_gradient_descent_forward_backward_step(const real_t* location,const real_t* df_location){
+static int proximal_gradient_descent_forward_backward_step(const real_t* location,const real_t* df_location){
     real_t buffer[dimension];
     vector_add_ntimes(location,df_location,dimension,-1*linesearch_gamma,buffer); /* buffer = location - gamma * df_location */
     casadi_interface_proxg(buffer,new_location); /* new_location = proxg(buffer) */
@@ -141,7 +141,7 @@ int proximal_gradient_descent_get_current_residual(real_t* residual){
 /*
  * check if the linesearch condition is satisfied
  */
-int proximal_gradient_descent_check_linesearch(void){
+static int proximal_gradient_descent_check_linesearch(void){
     const real_t* df_current_location=buffer_get_current_df();
     const real_t inner_product_df_direction = inner_product(df_current_location,direction,dimension);
 
@@ -182,7 +182,7 @@ real_t proximal_gradient_descent_get_gamma(void){
     return linesearch_gamma;
 }
 
-int proximal_gradient_descent_push(void){
+static int proximal_gradient_descent_push(void){
     real_t* buffer;
     
     buffer=direction;
