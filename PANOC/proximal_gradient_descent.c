@@ -150,7 +150,7 @@ static int proximal_gradient_descent_check_linesearch(void){
 
     const real_t norm_direction_gamma = pow(vector_norm2(direction,dimension),2); /* direction=gamma*r in paper */
 
-    if(f_new_location>f_current_location - inner_product_df_direction + ( (1-PROXIMAL_GRAD_DESC_SAFETY_VALUE)/(2*linesearch_gamma) )*norm_direction_gamma )
+    if(f_new_location>f_current_location - inner_product_df_direction + ( 1/(2*linesearch_gamma) )*norm_direction_gamma )
         return FAILURE;
     else
         return SUCCESS;
@@ -171,7 +171,7 @@ real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location
     const real_t norm_direction = pow(vector_norm2(direction,dimension),2);
 
     const real_t forward_backward_envelop = f_location + g_new_location \
-     + inner_product(df_location,direction,dimension) \
+     - inner_product(df_location,direction,dimension) \
      + (1/(linesearch_gamma*2))*norm_direction;
 
     proximal_gradient_descent_push(); /* undo changes to the state of this entity */
