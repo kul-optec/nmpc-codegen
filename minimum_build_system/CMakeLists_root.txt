@@ -15,3 +15,8 @@ add_library(python_interface SHARED "${PROJECT_SOURCE_DIR}/python_interface/nmpc
 target_link_libraries (python_interface PANOC_lib)
 set_property(TARGET python_interface PROPERTY C_STANDARD 90)
 set_property(TARGET python_interface PROPERTY POSITION_INDEPENDENT_CODE ON)
+
+# uncomment this if you want to play around with the controller in c
+# add_executable(main_exe main.c)
+# target_link_libraries (main_exe PANOC_lib)
+# target_link_libraries(main_exe m) # link with the math lib, some toolchains need this
