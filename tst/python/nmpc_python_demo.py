@@ -4,6 +4,7 @@ sys.path.insert(0, '../../src_python')
 import nmpc_panoc as npc
 import model_continious as modelc
 import example_models # this contains the chain example
+import stage_costs
 
 import ctypes
 import simulator
@@ -41,8 +42,9 @@ def main():
     Q = np.diag([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1])
     R = np.eye(model.number_of_inputs, model.number_of_inputs)*10
 
+    stage_cost = stage_costs.Stage_cost_QR(model,Q,R)
     # define the controller
-    nmpc_controller = npc.Nmpc_panoc(nmpc_controller_location, model, Q, R)
+    nmpc_controller = npc.Nmpc_panoc(nmpc_controller_location,model,stage_cost )
     nmpc_controller.horizon = 50
     nmpc_controller.step_size=0.1
     nmpc_controller.integrator_casadi = True
@@ -51,7 +53,6 @@ def main():
     nmpc_controller.generate_code()
 
     # From here of on , only simulation !
-    #
 
     rest_state = np.array([0.1932, -5.9190, 0.3874, -8.8949, 0.6126, -8.8949, 0.8068, -5.9190 \
                               , 1., 0., \
@@ -67,10 +68,15 @@ def main():
     sim.simulator_init()
 
     number_of_steps=100
+    optimal_input_history=np.zeros((number_of_inputs,number_of_steps))
     for i in range(1,number_of_steps):
         (test,optimal_input) = sim.simulate_nmpc(current_state)
         print("The optimal input is: [" + str(optimal_input[0]) + "," + str(optimal_input[0]) + "]")
         current_state = np.asarray(model.get_next_state(current_state, optimal_input))
+
+        # save the optimal input to plot it at the end of the script
+        optimal_input_history[0,i-1] = optimal_input[0]
+        optimal_input_history[1,i-1] = optimal_input[1]
 
     # cleanup the controller
     sim.simulator_cleanup()
@@ -83,7 +89,12 @@ def main():
     print(current_state)
     print(final_positions)
 
+    plt.figure(1)
+    plt.subplot(211)
     plt.plot(final_positions[0,:],final_positions[1,:])
+    plt.subplot(212)
+    plt.plot(optimal_input_history[0, :])
+    plt.plot(optimal_input_history[1, :])
     plt.show()
 
 

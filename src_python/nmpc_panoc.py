@@ -6,12 +6,11 @@ import globals_generator as gg
 
 class Nmpc_panoc:
     """ Defines a nmpc problem of the shape min f(x)+ g(x) """
-    def __init__(self, location_lib,model,Q,R):
+    def __init__(self, location_lib,model,stage_cost):
         self._location_lib=location_lib # location of the library
         self._model=model
 
-        self._Q=Q
-        self._R = R
+        self._stage_cost=stage_cost
 
         self._number_of_steps=10
         self._shooting_mode="single shot"
@@ -26,17 +25,7 @@ class Nmpc_panoc:
         # generate the dynamic_globals file
         self._globals_generator = gg.Globals_generator(self._location_lib + "globals/globals_dyn.h")
 
-    def stage_cost(self,state,input):
-        # As state and input are of the stype csadi.SX we can't just do vector matrix product
-        # Everything must be written out in basic operations
-        stage_cost=0
-        for i_col in range(1,self._model.number_of_states):
-            for i_row in range(1, self._model.number_of_states):
-                stage_cost += state[i_col]*self._Q[i_col,i_row]*state[i_row]
-        for i_col in range(1,self._model.number_of_inputs):
-            for i_row in range(1, self._model.number_of_inputs):
-                stage_cost += input[i_col]*self._R[i_col,i_row]*input[i_row]
-        return stage_cost
+
 
     def generate_code(self):
         """ Generate code controller """
@@ -75,7 +64,7 @@ class Nmpc_panoc:
         for i in range(1,self._number_of_steps):
             input = input_all_steps[(i-1)*self._model.number_of_inputs:i*self._model.number_of_inputs]
             current_state = self._model.get_next_state(current_state,input)
-            cost = cost + self.stage_cost(current_state,input)
+            cost = cost + self._stage_cost.stage_cost(current_state,input,i)
 
         cost = cost + self.__generate_cost_obstacles()
         self.__setup_casadi_functions_and_generate_c(initial_state,input_all_steps,cost)
