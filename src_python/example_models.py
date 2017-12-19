@@ -1,4 +1,5 @@
 import models.chain_model as cm
+import models.trailer_model as tm
 import numpy as np
 import math
 import model_continious as modelc
@@ -20,5 +21,14 @@ def get_chain_model():
 
     number_of_states = model_params.number_of_states
     number_of_inputs = model_params.dimension
+
+    return (system_equations,number_of_states,number_of_inputs)
+
+def get_trailer_model(L):
+    number_of_states=3
+    number_of_inputs=2
+    trailer_model = tm.Trailer_model(L)
+
+    system_equations = lambda state,input: trailer_model.system_equation(state,input)
 
     return (system_equations,number_of_states,number_of_inputs)
