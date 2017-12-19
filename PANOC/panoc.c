@@ -1,4 +1,5 @@
 #include"panoc.h"
+#include"math.h"
 #include<stdlib.h>
 #include"lbfgs.h"
 #include"proximal_gradient_descent.h"
@@ -16,7 +17,7 @@ static real_t FBE_current_location;
 static real_t direction_norm;
 
 /* functions used internally */
-int panoc_check_linesearch_condition(real_t* new_location, const real_t sigma);
+int panoc_check_linesearch_condition(real_t* new_location, const real_t linesearch_gamma);
 int panoc_get_new_potential_location(const  real_t* forward_backward_step,
     const real_t* direction_residue,const real_t tau,real_t* potential_new_location);
 
@@ -60,7 +61,7 @@ int panoc_get_new_location(const real_t* current_location,real_t* new_location){
     buffer_renew(current_location);
     const real_t* forward_backward_step = proximal_gradient_descent_get_direction(); /* in paper this is r*gamma */
     const real_t linesearch_gamma = proximal_gradient_descent_get_gamma();
-    const real_t sigma = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*linesearch_gamma);
+    // const real_t sigma = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*linesearch_gamma);
 
     const real_t* direction_residue = lbfgs_get_direction();
 
@@ -71,7 +72,7 @@ int panoc_get_new_location(const real_t* current_location,real_t* new_location){
     tau=1;
     panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
     int i=0;
-    for(i=0;i<FBE_LINESEARCH_MAX_ITERATIONS && panoc_check_linesearch_condition(new_location,sigma)==FAILURE;i++){
+    for(i=0;i<FBE_LINESEARCH_MAX_ITERATIONS && panoc_check_linesearch_condition(new_location,linesearch_gamma)==FAILURE;i++){
             tau=tau/2;
             panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
     }
@@ -84,10 +85,11 @@ int panoc_get_new_location(const real_t* current_location,real_t* new_location){
     return SUCCESS;
 }
 
-int panoc_check_linesearch_condition(real_t* new_location,const real_t sigma){
+int panoc_check_linesearch_condition(real_t* new_location,const real_t linesearch_gamma){
     const real_t FBE_potential_new_location = proximal_gradient_descent_forward_backward_envelop(new_location);
+    const real_t factor = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*pow(linesearch_gamma,3));
 
-    if(FBE_potential_new_location<=FBE_current_location-sigma*direction_norm){
+    if(FBE_potential_new_location<=FBE_current_location-factor*direction_norm){
         return SUCCESS; 
     }
     return FAILURE;

@@ -17,3 +17,4 @@ CTestTestfile.cmake
 casadi
 build
 .vscode
+test_controller_builds
