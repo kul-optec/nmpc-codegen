@@ -72,10 +72,10 @@ class Nmpc_panoc:
     def __setup_casadi_functions_and_generate_c(self,initial_state,input_all_steps,cost):
         self._cost_function = cd.Function('cost_function', [initial_state, input_all_steps], [cost])
         self._cost_function_derivative = cd.Function('cost_function_derivative', [initial_state, input_all_steps],
-                                               [cd.jacobian(cost, initial_state)])
+                                               [cd.jacobian(cost, input_all_steps)])
         self._cost_function_derivative_combined = cd.Function('cost_function_derivative_combined',
                                                         [initial_state, input_all_steps],
-                                                        [cost, cd.jacobian(cost, initial_state)])
+                                                        [cost, cd.jacobian(cost, input_all_steps)])
 
         self.__translate_casadi_to_c(self._cost_function, filename="cost_function.c")
         self.__translate_casadi_to_c(self._cost_function_derivative, filename="cost_function_derivative.c")
