@@ -61,7 +61,7 @@ class Nmpc_panoc:
         cost=0
 
         current_state=initial_state
-        for i in range(1,self._number_of_steps):
+        for i in range(1,self._number_of_steps+1):
             input = input_all_steps[(i-1)*self._model.number_of_inputs:i*self._model.number_of_inputs]
             current_state = self._model.get_next_state(current_state,input)
             cost = cost + self._stage_cost.stage_cost(current_state,input,i)
