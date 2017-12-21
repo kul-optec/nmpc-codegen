@@ -86,13 +86,13 @@ def generate_controller(controller_name,reference_state):
     plt.show()
 
 def main():
-#    reference_state=np.array([0,2,0])
-#    generate_controller("trailer_move_up",reference_state)
+   reference_state=np.array([0,2,0])
+   generate_controller("trailer_move_up",reference_state)
 
-    reference_state=np.array([2,0,0])
-    generate_controller("trailer_move_right",reference_state)
+    # reference_state=np.array([2,0,0])
+    # generate_controller("trailer_move_right",reference_state)
 
-#    reference_state=np.array([2,2,0])
-#    generate_controller("trailer_move_diag",reference_state)
+   # reference_state=np.array([2,2,0])
+   # generate_controller("trailer_move_diag",reference_state)
 if __name__ == '__main__':
     main()
