@@ -31,7 +31,7 @@ def generate_controller(controller_name,reference_state):
     (system_equations,number_of_states,number_of_inputs) = example_models.get_trailer_model(L=0.5)
 
     step_size = 0.1
-    simulation_time = 5
+    simulation_time = 10
     number_of_steps = math.ceil(simulation_time / step_size)
 
     integrator = "RK"
@@ -47,7 +47,7 @@ def generate_controller(controller_name,reference_state):
 
     # define the controller
     trailer_controller = npc.Nmpc_panoc(trailer_controller_location,model,stage_cost )
-    trailer_controller.horizon = number_of_steps
+    trailer_controller.horizon = 100
     trailer_controller.step_size = step_size
     trailer_controller.integrator_casadi = True
     trailer_controller.panoc_max_steps=100
@@ -76,7 +76,7 @@ def generate_controller(controller_name,reference_state):
     # cleanup the controller
     sim.simulator_cleanup()
 
-    print(state_history[:,0:5])
+    print(state)
 
     plt.figure(1)
     plt.subplot(211)
@@ -89,10 +89,10 @@ def main():
    reference_state=np.array([0,2,0])
    generate_controller("trailer_move_up",reference_state)
 
-    # reference_state=np.array([2,0,0])
-    # generate_controller("trailer_move_right",reference_state)
+   reference_state=np.array([2,0,0])
+   generate_controller("trailer_move_right",reference_state)
 
-   # reference_state=np.array([2,2,0])
-   # generate_controller("trailer_move_diag",reference_state)
+   reference_state=np.array([2,2,0])
+   generate_controller("trailer_move_diag",reference_state)
 if __name__ == '__main__':
     main()
