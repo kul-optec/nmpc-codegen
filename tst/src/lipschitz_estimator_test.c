@@ -18,10 +18,18 @@ void df_grad_descent_poly_test(const real_t* x ,real_t* df_x);
 int main(){
     return simple_estimate_test();
 }
-
+/*
+ * problem:
+ *     p = x^6 + y^6
+ *     norm(gradient(f)) = sqrt((6*5*x^4)^2+(6*5*y^4)^2)
+ * 
+ *     estimate in point [ 0.5 0.5 ]
+ *     matlab solution =  norm(p(0.5+10^-10,0.5+10^-10)-p(0.5,0.5))/(sqrt(2)*10^-10) = 2.6517
+ *     theoretical = sqrt((6*5*0.5^4)^2+(6*5*0.5^4)^2) = 2.6517
+ */
 int simple_estimate_test(void){
     printf("Test1 --- \n");
-    degree=5;
+    degree=6;
     real_t current_location[2]={0.5,0.5};
     static size_t dimension=2;
     real_t w=0;/* parameter used in g1, set on 0, doesnt matter here */
@@ -41,11 +49,11 @@ int simple_estimate_test(void){
 
     buffer_cleanup();
     
-    if(abs(lipschitz_value-3.5356)<0.001){
+    if(abs(lipschitz_value-2.6517)<0.001){
         printf("end of test1:SUCCESS --- \n");
         return SUCCESS;
     }else{
-        printf("Estimating lipschitz value %f at [0.5 0.5] while matlab simulates 3.5356 \n",lipschitz_value);
+        printf("Estimating lipschitz value %f at [0.5 0.5] theoretical is 2.6517 \n",lipschitz_value);
         printf("end of test1:FAILURE --- \n");
         return FAILURE;
     }  

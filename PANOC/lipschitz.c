@@ -22,12 +22,13 @@ real_t get_lipschitz_get_delta(const real_t* current_position){
  */
 real_t get_lipschitz(const real_t* current_position){
     const size_t dimension=casadi_interface_get_dimension();
+    const real_t delta=get_lipschitz_get_delta(current_position);
 
     real_t current_position_delta[dimension];
     real_t df_current_position_delta[dimension];
 
     /* copy over the current position and add delta*/
-    vector_real_add(current_position,dimension,get_lipschitz_get_delta(current_position),current_position_delta);
+    vector_real_add(current_position,dimension,delta,current_position_delta);
 
     /* calculate the two gradients and save them in the same variable */
     const real_t* df_current_position=buffer_get_current_df();
@@ -38,6 +39,8 @@ real_t get_lipschitz(const real_t* current_position){
      * reuse the current_position_delta values as buffer
      */
     vector_sub(df_current_position,df_current_position_delta,dimension,current_position_delta); /* step1: df(x+delta)-df(x) */
-    vector_real_mul(current_position_delta,dimension,1/get_lipschitz_get_delta(current_position),current_position_delta); /* step2: df(x+delta)-df(x))/delta */
-    return vector_norm2(current_position_delta,dimension); /* step3: norm((df(x+delta)-df(x))/delta) */
+    const real_t numerator = vector_norm2(current_position_delta,dimension); /* step2: norm((df(x+delta)-df(x))) */
+    const real_t denominator = sqrt(dimension)*delta; /* step3: norm(current_position_delta) */
+
+    return numerator/denominator;
 }

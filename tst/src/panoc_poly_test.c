@@ -80,7 +80,7 @@ int checkIfSolutionIsReached2(void){
     printf("test2 --- \n");
     size_t dimension=2;
     degree=6;
-    real_t w=2;
+    real_t w=3;
     example_problems_set_init_problem1(w,dimension);
     f_poly_init(dimension,degree );
     casadi_interface_test_init(dimension, 
@@ -89,7 +89,7 @@ int checkIfSolutionIsReached2(void){
         f_poly,
         df_poly);
 
-    size_t numer_of_iterations=10;
+    size_t numer_of_iterations=50;
     
     real_t* current_location=malloc(dimension*sizeof(real_t));
     current_location[0]=1;current_location[1]=1;
@@ -113,10 +113,14 @@ int checkIfSolutionIsReached2(void){
     free(next_location);
     panoc_cleanup();
 
-    if(ABS(current_location[0])<1  && ABS(current_location[1])<1){
+    real_t error_x1 = ABS(current_location[0]+0.83);
+    real_t error_x2 = ABS(current_location[1]+0.83);
+
+    if(error_x1<0.1  && error_x2<0.1){
         printf("end of test2:SUCCESS --- \n");
         return SUCCESS;
     }else{
+        printf("--> error on x: x1=%f and x2=%f \n",error_x1,error_x2);
         printf("end of test2:FAILURE --- \n");
         return FAILURE;
     }  
