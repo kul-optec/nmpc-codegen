@@ -39,8 +39,8 @@ def generate_controller(controller_name,reference_state):
     model = modelc.Model_continious(system_equations, constraint_input, step_size, number_of_states,\
                                     number_of_inputs, integrator)
 
-    Q = np.diag([1,1,1])*10
-    R = np.eye(model.number_of_inputs, model.number_of_inputs)
+    Q = np.diag([1,1,1])*100
+    R = np.eye(model.number_of_inputs, model.number_of_inputs)*0.
 
     # reference_state=np.array([2,2,0])
     stage_cost = stage_costs.Stage_cost_QR_reference(model,Q,R,reference_state)
