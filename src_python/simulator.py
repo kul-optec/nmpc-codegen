@@ -4,6 +4,7 @@ import os
 import platform
 import subprocess
 import numpy as np
+import sys
 
 class Simulator:
     """ simulator used to interact in python with an controller in c """
@@ -28,6 +29,7 @@ class Simulator:
         except:
             print("Failed to load the dll, are you sure python and the toolchain are compatible?")
             print("check if they both are either 32bit or both 64 bit")
+        sys.stdout.flush()
     def simulate_nmpc(self,current_state):
         length_state = len(current_state)
         array_state = ctypes.c_double * length_state

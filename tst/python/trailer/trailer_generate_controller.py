@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import math
 import Cfunctions.IndicatorBoxFunction as indbox
 import bootstrapper as bs
+import sys
 
 
 
@@ -30,7 +31,7 @@ def generate_controller(controller_name,reference_state):
     # get the continious system equations
     (system_equations,number_of_states,number_of_inputs) = example_models.get_trailer_model(L=0.5)
 
-    step_size = 0.1
+    step_size = 0.05
     simulation_time = 10
     number_of_steps = math.ceil(simulation_time / step_size)
 
@@ -47,7 +48,7 @@ def generate_controller(controller_name,reference_state):
 
     # define the controller
     trailer_controller = npc.Nmpc_panoc(trailer_controller_location,model,stage_cost )
-    trailer_controller.horizon = 100
+    trailer_controller.horizon = 200
     trailer_controller.step_size = step_size
     trailer_controller.integrator_casadi = True
     trailer_controller.panoc_max_steps=100
@@ -69,6 +70,7 @@ def generate_controller(controller_name,reference_state):
     for i in range(1,number_of_steps):
         (test, optimal_input) = sim.simulate_nmpc(state)
         print("The optimal input is: [" + str(optimal_input[0]) + "," + str(optimal_input[0]) + "]")
+        sys.stdout.flush()
 
         state = np.asarray(model.get_next_state(state,optimal_input))
         state_history[:,i] = np.reshape(state[:],number_of_states)
@@ -84,6 +86,7 @@ def generate_controller(controller_name,reference_state):
     plt.subplot(212)
     plt.plot(state_history[2,:])
     plt.show()
+    sys.stdout.flush()
 
 def main():
    reference_state=np.array([0,2,0])

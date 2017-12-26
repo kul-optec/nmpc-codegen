@@ -23,11 +23,7 @@ class IndicatorBoxFunctionProx(Cfunctions.Function.Cfunction):
                 indent=2)
             source_file.write_line("if(input["+str(dimension)+"]<"+str(self._lower_limits[dimension])+"){",indent=2)
             source_file.set_output(dimension,str(self._lower_limits[dimension]),3)
-            source_file.write_line("}else{",2)
-            source_file.set_output(dimension, "input["+str(dimension)+"]", 3)
-            source_file.write_line("}", 2)
-
-            source_file.write_line("if(input[" + str(dimension) + "]>" + str(self._upper_limits[dimension]) + "){",
+            source_file.write_line("}else if(input[" + str(dimension) + "]>" + str(self._upper_limits[dimension]) + "){",
                                    indent=2)
             source_file.set_output(dimension, str(self._upper_limits[dimension]), 3)
             source_file.write_line("}else{", 2)
