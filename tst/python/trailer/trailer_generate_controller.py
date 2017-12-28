@@ -40,7 +40,7 @@ def generate_controller(controller_name,reference_state):
     model = modelc.Model_continious(system_equations, constraint_input, step_size, number_of_states,\
                                     number_of_inputs, integrator)
 
-    Q = np.diag([1,1,1])*100
+    Q = np.diag([1,100,1])*100
     R = np.eye(model.number_of_inputs, model.number_of_inputs)*0.
 
     # reference_state=np.array([2,2,0])
@@ -48,7 +48,7 @@ def generate_controller(controller_name,reference_state):
 
     # define the controller
     trailer_controller = npc.Nmpc_panoc(trailer_controller_location,model,stage_cost )
-    trailer_controller.horizon = 200
+    trailer_controller.horizon = 100
     trailer_controller.step_size = step_size
     trailer_controller.integrator_casadi = True
     trailer_controller.panoc_max_steps=100
@@ -85,7 +85,9 @@ def generate_controller(controller_name,reference_state):
     plt.plot(state_history[0,:],state_history[1,:])
     plt.subplot(212)
     plt.plot(state_history[2,:])
-    plt.show()
+    # plt.show()
+    plt.savefig(controller_name+'.png')
+    plt.clf()
     sys.stdout.flush()
 
 def main():
