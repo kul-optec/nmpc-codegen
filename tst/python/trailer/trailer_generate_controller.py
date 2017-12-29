@@ -14,10 +14,11 @@ import math
 import Cfunctions.IndicatorBoxFunction as indbox
 import bootstrapper as bs
 import sys
+import time
 
 
 
-def generate_controller(controller_name,reference_state):
+def generate_controller(controller_name,reference_state,display_figure=True):
     ## -- GENERATE STATIC FILES --
     # start by generating the static files and folder of the controller
     location_nmpc_repo = "../../.."
@@ -78,26 +79,30 @@ def generate_controller(controller_name,reference_state):
     # cleanup the controller
     sim.simulator_cleanup()
 
+    print("Final state:")
     print(state)
 
-    plt.figure(1)
-    plt.subplot(211)
-    plt.plot(state_history[0,:],state_history[1,:])
-    plt.subplot(212)
-    plt.plot(state_history[2,:])
-    # plt.show()
-    plt.savefig(controller_name+'.png')
-    plt.clf()
-    sys.stdout.flush()
+    if(display_figure==True):
+        plt.figure(1)
+        plt.subplot(211)
+        plt.plot(state_history[0,:],state_history[1,:])
+        plt.subplot(212)
+        plt.plot(state_history[2,:])
+        plt.show()
+        plt.savefig(controller_name+'.png')
+        plt.clf()
+        sys.stdout.flush()
+
+    return state
 
 def main():
    reference_state=np.array([0,2,0])
-   generate_controller("trailer_move_up",reference_state)
+   current_state = generate_controller("trailer_move_up",reference_state)
 
    reference_state=np.array([2,0,0])
-   generate_controller("trailer_move_right",reference_state)
+   current_state = generate_controller("trailer_move_right",reference_state)
 
    reference_state=np.array([2,2,0])
-   generate_controller("trailer_move_diag",reference_state)
+   current_state = generate_controller("trailer_move_diag",reference_state)
 if __name__ == '__main__':
     main()
