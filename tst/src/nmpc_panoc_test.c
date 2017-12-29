@@ -10,11 +10,10 @@ static size_t number_of_masses=4;
 int check_positions(const real_t* state,const real_t* required_state);
 int simple_test(void);
 int simple_test_steady_state(void);
-int print_input(real_t* input);
+int print_input(const real_t* input);
 
 int main(){
-    return simple_test_steady_state()+\
-        simple_test();
+    return simple_test()+simple_test_steady_state();
     return SUCCESS;
 }
 
@@ -33,7 +32,7 @@ int simple_test_steady_state(void){
     for (size_t i = 0; i < DIMENSION_STATE; i++)current_state[i]=start_state[i];
     real_t* new_state=malloc(sizeof(real_t)*DIMENSION_STATE);
 
-    size_t number_of_simulations=1000;
+    size_t number_of_simulations=100;
     for ( i = 0; i < number_of_simulations; i++)
     {
         /* find input trough the nmpc problem */
@@ -66,7 +65,7 @@ int simple_test(void){
     real_t start_state[DIMENSION_STATE]={0.2, 0, 0.4, 0, 0.6, 0, 0.8, 0 \
                 ,1. , 0., \
                 0.,0., 0.,0.,0.,0.,0.,0.};
-    real_t rest_state[DIMENSION_STATE]={0.1932, -5.9190 , 0.3874,-8.8949,0.6126,-8.8949,0.8068,-5.9190 \
+    real_t rest_state[DIMENSION_STATE]={0.18, -3.7 , 0.38,-4.9,0.6,-4.3,0.8,-1.9 \
                 ,1. , 0., \
                 0.,0., 0.,0.,0.,0.,0.,0.};
 
@@ -75,7 +74,7 @@ int simple_test(void){
     for (size_t i = 0; i < DIMENSION_STATE; i++)current_state[i]=start_state[i];
     real_t* new_state=malloc(sizeof(real_t)*DIMENSION_STATE);
 
-    size_t number_of_simulations=100;
+    size_t number_of_simulations=1000;
     for ( i = 0; i < number_of_simulations; i++)
     {
         /* find input trough the nmpc problem */
@@ -99,7 +98,7 @@ int simple_test(void){
     return return_value; 
 }
 
-int print_input(real_t* input){
+int print_input(const real_t* input){
     printf("Applying input [%f,%f] \n",input[0],input[1]);
     return SUCCESS;
 }

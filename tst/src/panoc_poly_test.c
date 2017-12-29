@@ -109,12 +109,13 @@ int checkIfSolutionIsReached2(void){
             /* print out the location */
             print_location_2D(current_location);
     }
-    free(current_location);
-    free(next_location);
-    panoc_cleanup();
 
     real_t error_x1 = ABS(current_location[0]+0.83);
     real_t error_x2 = ABS(current_location[1]+0.83);
+
+    free(current_location);
+    free(next_location);
+    panoc_cleanup();   
 
     if(error_x1<0.1  && error_x2<0.1){
         printf("end of test2:SUCCESS --- \n");
