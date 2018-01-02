@@ -41,8 +41,8 @@ def generate_controller(controller_name,reference_state,display_figure=True):
     model = modelc.Model_continious(system_equations, constraint_input, step_size, number_of_states,\
                                     number_of_inputs, integrator)
 
-    Q = np.diag([1,100,1])*100
-    R = np.eye(model.number_of_inputs, model.number_of_inputs)*0.
+    Q = np.diag([1.,100.,1.])
+    R = np.eye(model.number_of_inputs, model.number_of_inputs)*1.
 
     # reference_state=np.array([2,2,0])
     stage_cost = stage_costs.Stage_cost_QR_reference(model,Q,R,reference_state)
@@ -64,7 +64,7 @@ def generate_controller(controller_name,reference_state,display_figure=True):
     # init the controller
     sim.simulator_init()
 
-    initial_state=np.array([0.,0.,0.])
+    initial_state=np.array([0.01,0.,0.])
     state=initial_state
     state_history = np.zeros((number_of_states,number_of_steps))
 
