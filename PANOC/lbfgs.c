@@ -27,7 +27,8 @@ static size_t buffer_size; /* buffersize initialized in init method */
 static size_t dimension;
 static real_t* direction;
 
-void shift_s_and_y(const size_t buffer_limit); /* internal function used to shift the s and y buffers */
+static void shift_s_and_y(void); /* internal function used to shift the s and y buffers */
+static int check_if_valid_update(const real_t* gradient_current_location); /* internal function used to check if the new s and y should be saved */
 
 static real_t* y_data; /* data field used to allocate 2D array y, if only one malloc is used we get cast errors */
 static real_t* s_data; /* data field used to allocate 2D array s, if only one malloc is used we get cast errors */
@@ -47,16 +48,16 @@ int lbfgs_init(const size_t buffer_size_,const size_t dimension_){
     /* 
      * Allocate memory.
      */
-    s_data = malloc(sizeof(real_t)*dimension*buffer_size);
+    s_data = malloc(sizeof(real_t)*dimension*(buffer_size+1));
     if(s_data==NULL) goto fail_1;
 
-    s = malloc(sizeof(real_t)*buffer_size);
+    s = malloc(sizeof(real_t*)*(buffer_size+1));
     if(s==NULL) goto fail_2;
 
-    y_data = malloc(sizeof(real_t)*dimension*buffer_size);
+    y_data = malloc(sizeof(real_t)*dimension*(buffer_size+1));
     if(y_data==NULL) goto fail_3;
 
-    y = malloc(sizeof(real_t)*buffer_size);
+    y = malloc(sizeof(real_t*)*(buffer_size+1));
     if(y==NULL) goto fail_4;
 
     alpha = malloc(sizeof(real_t)*buffer_size);
@@ -65,13 +66,14 @@ int lbfgs_init(const size_t buffer_size_,const size_t dimension_){
     rho = malloc(sizeof(real_t)*buffer_size);
     if(rho==NULL) goto fail_6;
 
-    direction =malloc(sizeof(real_t)*dimension);
+    direction =calloc(sizeof(real_t),dimension);
     if(rho==NULL) goto fail_7;
+
     /*
      * if all the allocations took place, setup the 2D arrays
      */
     size_t i;
-    for (i = 0; i < buffer_size; i++)
+    for (i = 0; i < buffer_size+1; i++)
     {
         s[i] = s_data + i*dimension;
         y[i] = y_data + i*dimension;
@@ -110,6 +112,7 @@ int lbfgs_cleanup(void){
         free(y);
         free(alpha);
         free(rho);
+        free(direction);
         iteration_index=0;
         return SUCCESS;
 }
@@ -176,23 +179,30 @@ const real_t* lbfgs_get_direction(void){
             vector_add_ntimes(z,s[i],dimension,(alpha[i]-beta),z); 
         }
         vector_minus(z,direction,dimension); /* z contains upward direction, multiply with -1 to get downward direction */
-
-        shift_s_and_y(buffer_limit); /* prepare s and y for new values */
     }
 
     real_t new_location[dimension]; 
     vector_add(current_location,direction,dimension,new_location); /* get the new location */
 
-    vector_sub(new_location,current_location,dimension,s[0]); /* set s */
+    vector_sub(new_location,current_location,dimension,s[buffer_size]); /* set s */
     
     real_t gradient_current_location[dimension];proximal_gradient_descent_get_current_residual(gradient_current_location);/* find df(x) */
     real_t gradient_new_location[dimension];proximal_gradient_descent_get_residual(new_location,gradient_new_location); /* find df(new_x) */
 
-    vector_sub(gradient_new_location,gradient_current_location,dimension,y[0]); /* set y=df(new_x) - df(x) */
+    vector_sub(gradient_new_location,gradient_current_location,dimension,y[buffer_size]); /* set y=df(new_x) - df(x) */
 
-    iteration_index++;
-
-    /* check if the solution is not NaN, if so set it too zero */
+    if(check_if_valid_update(gradient_current_location)==SUCCESS){
+        shift_s_and_y();  /* shift the s and y buffers */
+        iteration_index++;
+    }else{
+        /* 
+         * Update is not valid, return direction but don't save y and s,
+         * which means that the hessian approximation stays the sam.
+         */
+    }
+    return direction;
+    /* OLD CODE: check if the solution is not NaN, if so set it too zero */
+    /*
     size_t i;
     for ( i = 0; i < dimension; i++)
     {
@@ -200,16 +210,30 @@ const real_t* lbfgs_get_direction(void){
             lbfgs_reset_direction();
             break;
         }
-    }
-    return direction;
+    */
+}
+
+/*
+ * Theoretical condition:
+ * update if (y^Ts)/||s||^2 > epsilon * ||grad(x)||
+ * 
+ */
+static int check_if_valid_update(const real_t* gradient_current_location){
+    const real_t numerator = inner_product(y[buffer_size],s[buffer_size],dimension);
+    const real_t denominator = vector_norm2(s[buffer_size],dimension);
+    const real_t norm_gradient_current_location = vector_norm2(gradient_current_location,dimension);
+
+    if(numerator/denominator >=LBGFS_SAFETY_SMALL_VALUE*norm_gradient_current_location)
+        return SUCCESS;
+    return FAILURE;
 }
 
  /* internal function used to shift the s and y buffers */
-void shift_s_and_y(const size_t buffer_limit){
-        real_t* buffer_s =s[buffer_size-1];
-        real_t* buffer_y =y[buffer_size-1];
+static void shift_s_and_y(void){
+        real_t* buffer_s =s[buffer_size];
+        real_t* buffer_y =y[buffer_size];
         size_t i;
-        for (i = buffer_size-1; i >0 ; i--)
+        for (i = buffer_size; i >0 ; i--)
         {
             s[i] = s[i-1];
             y[i] = y[i-1];

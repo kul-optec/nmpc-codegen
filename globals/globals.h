@@ -78,4 +78,8 @@
         #define FBE_LINESEARCH_MAX_ITERATIONS 5
     #endif
 
+    #ifndef LBGFS_SAFETY_SMALL_VALUE
+        #define LBGFS_SAFETY_SMALL_VALUE pow(10,-12)
+    #endif
+
 #endif
