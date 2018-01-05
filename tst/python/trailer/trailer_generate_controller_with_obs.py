@@ -15,10 +15,11 @@ import Cfunctions.IndicatorBoxFunction as indbox
 import bootstrapper as bs
 import sys
 import time
+import obstacle as obs
 
 
 
-def generate_controller(controller_name,reference_state,display_figure=True):
+def generate_controller_with_obs(controller_name,reference_state,Q,obstacle,obstacle_weight,horizon,display_figure=True):
     ## -- GENERATE STATIC FILES --
     # start by generating the static files and folder of the controller
     location_nmpc_repo = "../../.."
@@ -41,7 +42,7 @@ def generate_controller(controller_name,reference_state,display_figure=True):
     model = modelc.Model_continious(system_equations, constraint_input, step_size, number_of_states,\
                                     number_of_inputs,coordinates_indices, integrator)
 
-    Q = np.diag([1.,100.,1.])
+
     R = np.eye(model.number_of_inputs, model.number_of_inputs)*1.
 
     # reference_state=np.array([2,2,0])
@@ -49,10 +50,13 @@ def generate_controller(controller_name,reference_state,display_figure=True):
 
     # define the controller
     trailer_controller = npc.Nmpc_panoc(trailer_controller_location,model,stage_cost )
-    trailer_controller.horizon = 100
+    trailer_controller.horizon = horizon
     trailer_controller.step_size = step_size
     trailer_controller.integrator_casadi = True
-    trailer_controller.panoc_max_steps=100
+    trailer_controller.panoc_max_steps=500
+
+    # add an obstacle
+    trailer_controller.add_obstacle(obstacle,obstacle_weight)
 
     # generate the code
     trailer_controller.generate_code()
@@ -94,15 +98,52 @@ def generate_controller(controller_name,reference_state,display_figure=True):
         sys.stdout.flush()
 
     return state
-
 def main():
-   reference_state=np.array([0,2,0])
-   current_state = generate_controller("trailer_move_up",reference_state)
 
-   reference_state=np.array([2,0,0])
-   current_state = generate_controller("trailer_move_right",reference_state)
+    # TEST 1
+    x_up = 1.
+    x_down = 0.5
+    y_up = 0.6
+    y_down = 0.3
+    obstacle = obs.Basic_obstacles.generate_rec_object(x_up, x_down, y_up, y_down)
 
-   reference_state=np.array([2,2,0])
-   current_state = generate_controller("trailer_move_diag",reference_state)
+    Q = np.diag([1., 100., 1.])
+    obstacle_weight = 10000000000000.
+    # obstacle_weight=0
+    horizon = 300
+
+    reference_state = np.array([2, 0.5, 0])
+    current_state = generate_controller_with_obs("trailer_move_diag_obs", reference_state, Q, obstacle, obstacle_weight,
+                                        horizon)
+
+    # TEST 2
+    x_up = 1.
+    x_down = 0.5
+    y_up = 0.2
+    y_down = -0.2
+    obstacle = obs.Basic_obstacles.generate_rec_object(x_up, x_down, y_up, y_down)
+
+    Q = np.diag([10., 1., 1.])
+    obstacle_weight = 10000000000000.
+    horizon = 500
+
+    reference_state = np.array([2, 0, 0])
+    current_state = generate_controller_with_obs("trailer_move_right_obs", reference_state, Q, obstacle, obstacle_weight,horizon)
+
+
+
+    # TEST 3
+    x_up = 1
+    x_down = -1
+    y_up = 0.6
+    y_down = 0.4
+    obstacle = obs.Basic_obstacles.generate_rec_object(x_up, x_down, y_up, y_down)
+
+    Q = np.diag([1., 1000., 1.])
+    obstacle_weight = 10000000.
+    horizon = 750
+
+    reference_state = np.array([0, 2, 0])
+    current_state = generate_controller_with_obs("trailer_move_up_obs", reference_state, Q, obstacle, obstacle_weight,horizon)
 if __name__ == '__main__':
     main()

@@ -25,7 +25,9 @@ class Nmpc_panoc:
         # generate the dynamic_globals file
         self._globals_generator = gg.Globals_generator(self._location_lib + "globals/globals_dyn.h")
 
-
+        # at first assume no obstacles
+        self._obstacle=[]
+        self._obstacle_weights = []
 
     def generate_code(self):
         """ Generate code controller """
@@ -53,7 +55,7 @@ class Nmpc_panoc:
         self.__translate_casadi_to_c(integrator, filename="integrator.c")
 
     def __generate_cost_function_singleshot(self):
-        """ private function, generates part of the casadi cost function with single shot"""
+        """ private function, generates part of the casadi cost function with single shot """
         initial_state = cd.SX.sym('initial_state', self._model.number_of_states, 1)
         input_all_steps = cd.SX.sym('input_all_steps', self._model.number_of_inputs*self._number_of_steps, 1)
 
@@ -64,9 +66,10 @@ class Nmpc_panoc:
         for i in range(1,self._number_of_steps+1):
             input = input_all_steps[(i-1)*self._model.number_of_inputs:i*self._model.number_of_inputs]
             current_state = self._model.get_next_state(current_state,input)
-            cost = cost + self._stage_cost.stage_cost(current_state,input,i)
 
-        cost = cost + self.__generate_cost_obstacles()
+            cost = cost + self._stage_cost.stage_cost(current_state,input,i)
+            cost = cost + self.__generate_cost_obstacles(current_state)
+
         self.__setup_casadi_functions_and_generate_c(initial_state,input_all_steps,cost)
 
     def __setup_casadi_functions_and_generate_c(self,initial_state,input_all_steps,cost):
@@ -122,13 +125,16 @@ class Nmpc_panoc:
     def __generate_cost_function_multipleshot(self,location):
         """ private function, generates part of the casadi cost function with multiple shot"""
         raise NotImplementedError
-    def __generate_cost_obstacles(self):
-        return 0 # TODO implementation obstacles
-    def simulation(self):
-        """ Simulate the controller """
-        self.generate_code()
-        # TODO call the make file and silumate the controller using a simulation set, return a simulation object
-        raise NotImplementedError
+    def __generate_cost_obstacles(self,state):
+        number_of_obstacles=len(self._obstacle)
+        if(number_of_obstacles==0):
+            return 0.
+        else:
+            cost = 0.
+            for i in range(0,number_of_obstacles):
+                cost += self._obstacle_weights[i]*self._obstacle[i].evaluate_cost(state[self._model.indices_coordinates])
+
+            return cost
     def generate_minimum_lib(self,location,replace):
         """ Generate a lib with minimum amount of files  """
         file = Path(location)
@@ -140,6 +146,9 @@ class Nmpc_panoc:
             else:
                 print("ERROR folder lib already excist, remove the folder or put repace on true")
 
+    def add_obstacle(self,obstacle,weight):
+        self._obstacle.append(obstacle)
+        self._obstacle_weights.append(weight)
     @property
     def shooting_mode(self):
         return self._shooting_mode

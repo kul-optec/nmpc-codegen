@@ -27,8 +27,9 @@ def get_chain_model():
 def get_trailer_model(L):
     number_of_states=3
     number_of_inputs=2
+    indices_coordinates = [0,1] # only x and y are coordinates, theta has nothing to do with position of the trailer
     trailer_model = tm.Trailer_model(L)
 
     system_equations = lambda state,input: trailer_model.system_equation(state,input)
 
-    return (system_equations,number_of_states,number_of_inputs)
+    return (system_equations,number_of_states,number_of_inputs,indices_coordinates)

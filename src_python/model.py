@@ -1,11 +1,12 @@
 class Model:
     """ NMPC discrete model """
-    def __init__(self,system_equations,input_constraint,step_size,number_of_states,number_of_inputs):
+    def __init__(self,system_equations,input_constraint,step_size,number_of_states,number_of_inputs,indices_coordinates):
         self._system_equations=system_equations
         self._input_constraint=input_constraint
         self._step_size=step_size
         self._number_of_states=number_of_states
         self._number_of_inputs=number_of_inputs
+        self._indices_coordinates=indices_coordinates
 
     def get_next_state(self,state,input):
         return self._system_equations(state,input)
@@ -38,3 +39,10 @@ class Model:
     @number_of_inputs.setter
     def numer_of_inputs(self, value):
         self._number_of_inputs = value
+
+    @property
+    def indices_coordinates(self):
+        return self._indices_coordinates
+    @indices_coordinates.setter
+    def indices_coordinates(self, value):
+        self._indices_coordinates = value
