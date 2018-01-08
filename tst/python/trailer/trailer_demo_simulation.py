@@ -15,7 +15,7 @@ import Cfunctions.IndicatorBoxFunction as indbox
 import bootstrapper as bs
 
 # get the continious system equations
-(system_equations,number_of_states,number_of_inputs) = example_models.get_trailer_model(L=0.5)
+(system_equations,number_of_states,number_of_inputs,coordinates_indices) = example_models.get_trailer_model(L=0.5)
 
 step_size = 0.01
 simulation_time = 5
@@ -24,7 +24,7 @@ number_of_steps = math.ceil(simulation_time / step_size)
 integrator = "RK"
 constraint_input = indbox.IndicatorBoxFunction([-2,-2],[2,2]) # input needs stay within these borders
 model = modelc.Model_continious(system_equations, constraint_input, step_size, number_of_states,\
-                                number_of_inputs, integrator)
+                                    number_of_inputs,coordinates_indices, integrator)
 
 # simulate if for a bit
 initial_state=np.array([0.,0.,math.pi/2])

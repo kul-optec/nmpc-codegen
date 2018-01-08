@@ -22,7 +22,10 @@ def get_chain_model():
     number_of_states = model_params.number_of_states
     number_of_inputs = model_params.dimension
 
-    return (system_equations,number_of_states,number_of_inputs)
+    # X = [x^1 ... x^{M+1} u ]
+    indices_coordinates=np.arange(0,dimension*(number_of_balls+1))
+
+    return (system_equations,number_of_states,number_of_inputs,indices_coordinates)
 
 def get_trailer_model(L):
     number_of_states=3
