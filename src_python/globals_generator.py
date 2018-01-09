@@ -11,7 +11,7 @@ class Globals_generator:
         self.generate_title("Problem specific definitions")
         self.define_variable("DIMENSION_INPUT", nmpc_controller.model.number_of_inputs)
         self.define_variable("DIMENSION_STATE", nmpc_controller.model.number_of_states)
-        self.define_variable("MPC_HORIZON", nmpc_controller.number_of_steps)
+        self.define_variable("MPC_HORIZON", nmpc_controller.horizon)
 
         self.set_data_type(nmpc_controller.data_type)
 

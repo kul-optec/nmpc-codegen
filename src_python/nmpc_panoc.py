@@ -57,13 +57,13 @@ class Nmpc_panoc:
     def __generate_cost_function_singleshot(self):
         """ private function, generates part of the casadi cost function with single shot """
         initial_state = cd.SX.sym('initial_state', self._model.number_of_states, 1)
-        input_all_steps = cd.SX.sym('input_all_steps', self._model.number_of_inputs*self._number_of_steps, 1)
+        input_all_steps = cd.SX.sym('input_all_steps', self._model.number_of_inputs*self._horizon, 1)
 
         cost=cd.SX.sym('cost',1,1)
         cost=0
 
         current_state=initial_state
-        for i in range(1,self._number_of_steps+1):
+        for i in range(1,self._horizon+1):
             input = input_all_steps[(i-1)*self._model.number_of_inputs:i*self._model.number_of_inputs]
             current_state = self._model.get_next_state(current_state,input)
 
@@ -157,11 +157,11 @@ class Nmpc_panoc:
         self._shooting_mode = value
 
     @property
-    def number_of_steps(self):
-        return self._number_of_steps
-    @number_of_steps.setter
-    def number_of_steps(self, value):
-        self._number_of_steps = value
+    def horizon(self):
+        return self._horizon
+    @horizon.setter
+    def horizon(self, value):
+        self._horizon = value
 
     @property
     def model(self):
