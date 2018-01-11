@@ -3,7 +3,6 @@
 #include "casadi_definitions.h"
 
 #include "../casadi/cost_function.c"
-#include "../casadi/cost_function_derivative.c"
 #include "../casadi/cost_function_derivative_combined.c"
 
 #include <stddef.h>
@@ -23,7 +22,6 @@ CasadiFunction* init_buffer_casadi_function( \
 int cleanup_buffer_casadi_function(CasadiFunction* data);
 
 static CasadiFunction* cost_function_data;
-static CasadiFunction* cost_function_derivative_data;
 static CasadiFunction* cost_function_derivative_combined_data;
 #ifdef INTEGRATOR_CASADI
 static CasadiFunction* integrator_data;
@@ -33,25 +31,20 @@ int casadi_interface_init(){
     cost_function_data=init_buffer_casadi_function(cost_function,cost_function_work);
     if(cost_function_data==NULL) goto fail_1;
 
-    cost_function_derivative_data=init_buffer_casadi_function(cost_function_derivative,cost_function_derivative_work);
-    if(cost_function_derivative_data==NULL) goto fail_2;
-
     cost_function_derivative_combined_data=init_buffer_casadi_function(cost_function_derivative_combined,cost_function_derivative_combined_work);
-    if(cost_function_derivative_combined_data==NULL) goto fail_3;
+    if(cost_function_derivative_combined_data==NULL) goto fail_2;
 
     #ifdef INTEGRATOR_CASADI
         integrator_data=init_buffer_casadi_function(integrator,integrator_work);
-        if(integrator_data==NULL) goto fail_4;
+        if(integrator_data==NULL) goto fail_3;
     #endif
 
     return SUCCESS;
 
     #ifdef INTEGRATOR_CASADI
-    fail_4:
+    fail_3:
         cleanup_buffer_casadi_function(cost_function_derivative_combined_data);
     #endif
-    fail_3:
-        cleanup_buffer_casadi_function(cost_function_derivative_data);
     fail_2:
         cleanup_buffer_casadi_function(cost_function_data);
     fail_1:
@@ -59,7 +52,6 @@ int casadi_interface_init(){
 }
 int casadi_interface_cleanup(){
     cleanup_buffer_casadi_function(cost_function_data);
-    cleanup_buffer_casadi_function(cost_function_derivative_data);
     cleanup_buffer_casadi_function(cost_function_derivative_combined_data);
     #ifdef INTEGRATOR_CASADI
     cleanup_buffer_casadi_function(integrator_data);
@@ -102,14 +94,17 @@ real_t casadi_interface_f(const real_t* input){
 
     return *output[0];
 }
-void casadi_interface_df(const real_t* input,real_t* data_output){
-    real_t* output[1] = {data_output};
+
+real_t casadi_interface_f_df(const real_t* input,real_t* data_output){
+    real_t f_value;
+    real_t* output[2] = {&f_value,data_output};
     const real_t* input_function[2]={state,input};
 
-    cost_function_derivative_data->cost_function(input_function,output,\
-        cost_function_data->buffer_int,\
-        cost_function_data->buffer_real,\
+    cost_function_derivative_combined_data->cost_function(input_function,output,\
+        cost_function_derivative_combined_data->buffer_int,\
+        cost_function_derivative_combined_data->buffer_real,\
         MEM_CASADI);
+    return f_value;
 }
 
 

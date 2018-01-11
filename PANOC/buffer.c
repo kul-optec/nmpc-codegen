@@ -24,8 +24,7 @@ int buffer_cleanup(){
 
 int buffer_renew(const real_t* current_location_){
     current_location=current_location_;
-    current_f = casadi_interface_f(current_location);
-    casadi_interface_df(current_location,current_df);
+    current_f = casadi_interface_f_df(current_location,current_df);
     return SUCCESS;
 }
 

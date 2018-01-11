@@ -32,7 +32,7 @@ real_t get_lipschitz(const real_t* current_position){
 
     /* calculate the two gradients and save them in the same variable */
     const real_t* df_current_position=buffer_get_current_df();
-    casadi_interface_df(current_position_delta,df_current_position_delta);
+    casadi_interface_f_df(current_position_delta,df_current_position_delta);
 
     /* 
      * L = norm((df(x+delta)-df(x))/delta) 

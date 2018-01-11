@@ -71,7 +71,7 @@ int test_casadi_interface_df(void){
                       
     casadi_set_state(current_state);
     real_t test_cost_optimal[2];
-    casadi_interface_df(zero_input,test_cost_optimal);
+    casadi_interface_f_df(zero_input,test_cost_optimal);
     /* --------------------- */
 
     /* test on lower current state */
@@ -81,7 +81,7 @@ int test_casadi_interface_df(void){
     
     casadi_set_state(lower_state);
     real_t test_cost_to_low[2];
-    casadi_interface_df(zero_input,test_cost_to_low);
+    casadi_interface_f_df(zero_input,test_cost_to_low);
     /* --------------------- */
 
     /* test on higher current state */
@@ -90,7 +90,7 @@ int test_casadi_interface_df(void){
         
     casadi_set_state(higher_state);
     real_t test_cost_to_high[2];
-    casadi_interface_df(zero_input,test_cost_to_high);
+    casadi_interface_f_df(zero_input,test_cost_to_high);
     /* --------------------- */
 
     printf("{%f %f} \n",test_cost_to_low[0],test_cost_to_low[1]);

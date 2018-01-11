@@ -34,6 +34,10 @@ real_t casadi_interface_f(const real_t* input){
 void casadi_interface_df(const real_t* input,real_t* output){
     df(input,output);
 }
+real_t casadi_interface_f_df(const real_t* input,real_t* output){
+    df(input,output); /* get gradient */
+    return f(input); /* get function value */
+}
 real_t casadi_interface_g(const real_t* input){
     return g(input);
 }
