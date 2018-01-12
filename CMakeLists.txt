@@ -12,7 +12,13 @@ include_directories ("${PROJECT_SOURCE_DIR}/PANOC")
 add_subdirectory (PANOC) # read out the cmakelist file
 
 # add the python interface, this target is excluded from all
-add_library(python_interface SHARED "${PROJECT_SOURCE_DIR}/python_interface/nmpc_python")
+if(WIN32)
+    SET(TIMER_LIB "${PROJECT_SOURCE_DIR}/python_interface/timer_windows.c")
+elseif(UNIX)
+    SET(TIMER_LIB "${PROJECT_SOURCE_DIR}/python_interface/timer_linux.c")
+endif()
+
+add_library(python_interface SHARED "${PROJECT_SOURCE_DIR}/python_interface/nmpc_python" "${TIMER_LIB}")
 target_link_libraries (python_interface PANOC_lib)
 set_property(TARGET python_interface PROPERTY C_STANDARD 90)
 set_property(TARGET python_interface PROPERTY POSITION_INDEPENDENT_CODE ON)
