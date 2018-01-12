@@ -1,6 +1,9 @@
 #ifndef TIMER_H
 #define TIMER_H
 
+#define SECONDS_IN_HOURS 60*60
+#define SECONDS_IN_MINUTES 60
+
 struct Panoc_time{
     int hours;
     int minutes;

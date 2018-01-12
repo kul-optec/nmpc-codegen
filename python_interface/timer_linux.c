@@ -6,9 +6,6 @@
 
 #include "timer.h"
 
-#define SECONDS_IN_HOURS 60*60
-#define SECONDS_IN_MINUTES 60
-
 static struct timespec ts_start,ts_end;
 static struct Panoc_time time_difference;
 static void find_time_difference(void);
