@@ -6,6 +6,10 @@ import subprocess
 import numpy as np
 import sys
 
+class Panoc_time(ctypes.Structure):
+    _fields_ = [("hours", ctypes.c_int),("minutes", ctypes.c_int),("seconds", ctypes.c_int),\
+                ("milli_seconds", ctypes.c_int),("micro_seconds", ctypes.c_int),("nano_seconds", ctypes.c_int)]
+
 class Simulator:
     """ simulator used to interact in python with an controller in c """
     def __init__(self,nmpc_controller):
@@ -37,7 +41,7 @@ class Simulator:
         array_optimal_input = ctypes.c_double * self._nmpc_controller.model.number_of_inputs
         optimal_input = array_optimal_input()
 
-        result = ctypes.c_double
+        result = Panoc_time()
         result = self.nmpc_python_interface.simulate_nmpc_panoc(\
             array_state(*current_state),\
             optimal_input\

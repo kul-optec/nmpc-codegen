@@ -53,7 +53,7 @@ class Bootstrapper_panoc_nmpc:
         Bootstrapper_panoc_nmpc._copy_over_file(src_location,dst_location,overwrite)
 
     def _generate_python_interface(location, location_nmpc_repo, overwrite):
-        src_files = ["nmpc_python.c"]
+        src_files = ["nmpc_python.c","timer.h","timer_linux.c","timer_windows.c"]
 
         for i in range(0, len(src_files)):
             src_location = location_nmpc_repo + "/python_interface/" + src_files[i]
