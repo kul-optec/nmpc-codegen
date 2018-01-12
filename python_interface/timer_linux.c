@@ -15,13 +15,13 @@ void panoc_timer_start(void){
     /* get time at start */
     clock_gettime(CLOCK_MONOTONIC, &ts_start);
 }
-const struct Panoc_time panoc_timer_stop(void){
+const struct Panoc_time* panoc_timer_stop(void){
     /* get current time */
     clock_gettime(CLOCK_MONOTONIC, &ts_end);  
 
     find_time_difference();
 
-    return time_difference;
+    return &time_difference;
 }
 
 static void convert_time_format(const long difference_nano_seconds,const long seconds){

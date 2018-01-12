@@ -19,13 +19,13 @@ void panoc_timer_start(void){
     QueryPerformanceCounter(&t1);
     
 }
-const struct Panoc_time panoc_timer_stop(void){
+const struct Panoc_time* panoc_timer_stop(void){
     /* get current ticks */
     QueryPerformanceCounter(&t2);
 
     find_time_difference();
 
-    return time_difference;
+    return &time_difference;
 }
 
 static void convert_time_format(long int seconds,long int remaining_ticks){

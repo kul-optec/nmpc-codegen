@@ -6,8 +6,8 @@
 
 #define NUMBER_OF_CALCS 100000000
 /*
- * compile Linux: gcc -std=c89 python_interface/timer_linux.c python_interface/test_timer_linux.c  -lm  -g
- * compile winfows MINGW: gcc -std=c89 .\python_interface\timer_windows.c python_interface/test_timer_linux.c  -lm  -g
+ * compile Linux: gcc -std=c89 python_interface/timer_linux.c python_interface/test_timer.c  -lm  -g
+ * compile windows MINGW: gcc -std=c89 .\python_interface\timer_windows.c python_interface/test_timer.c  -lm  -g
  */
 static void print_time(const struct Panoc_time* time_difference);
 int main(char** args,int argc){
@@ -20,8 +20,8 @@ int main(char** args,int argc){
     {
         buffer += sqrt(rand());
     }
-    const struct Panoc_time time_difference = panoc_timer_stop();
-    print_time(&time_difference);
+    const struct Panoc_time* time_difference = panoc_timer_stop();
+    print_time(time_difference);
     return 0;
 }
 
