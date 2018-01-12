@@ -20,7 +20,7 @@ int main(char** args,int argc){
     {
         buffer += sqrt(rand());
     }
-    const struct Panoc_time* time_difference = panoc_timer_stop();
+    struct Panoc_time* time_difference = panoc_timer_stop();
     print_time(time_difference);
     return 0;
 }

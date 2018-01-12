@@ -5,10 +5,33 @@ import platform
 import subprocess
 import numpy as np
 import sys
+class Simulation_data:
+    def __init__(self,panoc_time,optimal_input):
+        self._optimal_input=np.asarray(optimal_input)
+
+        self._hours=panoc_time.hours
+        self._minutes=panoc_time.minutes
+        self._seconds=panoc_time.seconds
+
+        self._milli_seconds=panoc_time.milli_seconds
+        self._micro_seconds=panoc_time.micro_seconds
+        self._nan_seconds=panoc_time.nano_seconds
+
+    @property
+    def optimal_input(self):
+        return self._optimal_input
+
+    @property
+    def time_string(self):
+        return str(self._hours)+":"+str(self._minutes)+":"+str(self._seconds)+"  " \
+               + str(self._milli_seconds)+":"+str(self._micro_seconds)+":"+str(self._nan_seconds)
+
+
 
 class Panoc_time(ctypes.Structure):
-    _fields_ = [("hours", ctypes.c_int),("minutes", ctypes.c_int),("seconds", ctypes.c_int),\
-                ("milli_seconds", ctypes.c_int),("micro_seconds", ctypes.c_int),("nano_seconds", ctypes.c_int)]
+ _fields_ = [("hours", ctypes.c_int),("minutes", ctypes.c_int),("seconds", ctypes.c_int),\
+             ("milli_seconds", ctypes.c_int),("micro_seconds", ctypes.c_int),("nano_seconds", ctypes.c_int)]
+
 
 class Simulator:
     """ simulator used to interact in python with an controller in c """
@@ -41,13 +64,15 @@ class Simulator:
         array_optimal_input = ctypes.c_double * self._nmpc_controller.model.number_of_inputs
         optimal_input = array_optimal_input()
 
-        result = Panoc_time()
-        result = self.nmpc_python_interface.simulate_nmpc_panoc(\
+        # set return type: Panoc_time
+        self.nmpc_python_interface.simulate_nmpc_panoc.restype = ctypes.POINTER(Panoc_time)
+
+        convergence_time = self.nmpc_python_interface.simulate_nmpc_panoc(\
             array_state(*current_state),\
             optimal_input\
             )
 
-        return (result, np.asarray(optimal_input))
+        return Simulation_data(convergence_time[0],optimal_input)
     def simulator_init(self):
         self.compile_interface()
         self.load_library()

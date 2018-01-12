@@ -80,10 +80,12 @@ state = initial_state
 state_history = np.zeros((number_of_states, number_of_steps))
 
 for i in range(1, number_of_steps):
-    (_, optimal_input) = sim.simulate_nmpc(state)
-    print("Step ["+str(i)+"/"+str(number_of_steps)+"]: The optimal input is: [" + str(optimal_input[0]) + "," + str(optimal_input[0]) + "]")
+    result_simulation= sim.simulate_nmpc(state)
+    print("Step ["+str(i)+"/"+str(number_of_steps)+"]: The optimal input is: [" \
+          + str(result_simulation.optimal_input[0]) + "," + str(result_simulation.optimal_input[0]) + "]" \
+          + " time=" + result_simulation.time_string)
 
-    state = np.asarray(model.get_next_state(state, optimal_input))
+    state = np.asarray(model.get_next_state(state, result_simulation.optimal_input))
     state_history[:, i] = np.reshape(state[:], number_of_states)
 
 # cleanup the controller

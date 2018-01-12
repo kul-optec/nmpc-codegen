@@ -14,6 +14,6 @@ struct Panoc_time{
 };
 
 void panoc_timer_start(void);
-const struct Panoc_time* panoc_timer_stop(void);
+struct Panoc_time* panoc_timer_stop(void);
 
 #endif
