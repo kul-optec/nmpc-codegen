@@ -15,7 +15,7 @@ class Simulation_data:
 
         self._milli_seconds=panoc_time.milli_seconds
         self._micro_seconds=panoc_time.micro_seconds
-        self._nan_seconds=panoc_time.nano_seconds
+        self._nano_seconds=panoc_time.nano_seconds
 
     @property
     def optimal_input(self):
@@ -24,7 +24,26 @@ class Simulation_data:
     @property
     def time_string(self):
         return str(self._hours)+":"+str(self._minutes)+":"+str(self._seconds)+"  " \
-               + str(self._milli_seconds)+":"+str(self._micro_seconds)+":"+str(self._nan_seconds)
+               + str(self._milli_seconds)+":"+str(self._micro_seconds)+":"+str(self._nano_seconds)
+
+    @property
+    def hours(self):
+        return self._hours
+    @property
+    def minutes(self):
+        return self._minutes
+    @property
+    def seconds(self):
+        return self._seconds
+    @property
+    def milli_seconds(self):
+        return self._milli_seconds
+    @property
+    def micro_seconds(self):
+        return self._micro_seconds
+    @property
+    def nano_seconds(self):
+        return self._nano_seconds
 
 
 
