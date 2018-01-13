@@ -2,6 +2,8 @@
 ## What is this?
 This project is still under construction but the goal is to generate an MPC controller. The user will provide the dynamics of the system, a number of conditions and some MPC parameters in python. The program will then generate an NMPC controller in c89 code that can be used on embedded devices.
 
+More information in the  [user manual](toturial.pdf) and the used [example script](toturial_nmpc_codegen.py).
+
 ## What do I need?
 - GNU toolchain with gcc
 - python 3 with casadi and numpy installed on it
