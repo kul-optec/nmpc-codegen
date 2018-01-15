@@ -76,7 +76,7 @@ class Nmpc_panoc:
         self._cost_function = cd.Function('cost_function', [initial_state, input_all_steps], [cost])
         self._cost_function_derivative_combined = cd.Function('cost_function_derivative_combined',
                                                         [initial_state, input_all_steps],
-                                                        [cost, cd.jacobian(cost, input_all_steps)])
+                                                        [cost, cd.gradient(cost, input_all_steps)])
 
         self.__translate_casadi_to_c(self._cost_function, filename="cost_function.c")
         self.__translate_casadi_to_c(self._cost_function_derivative_combined, filename="cost_function_derivative_combined.c")
