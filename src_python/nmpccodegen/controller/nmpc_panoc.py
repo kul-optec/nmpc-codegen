@@ -12,7 +12,7 @@ class Nmpc_panoc:
 
         self._stage_cost=stage_cost
 
-        self._number_of_steps=10
+        self._horizon=10
         self._shooting_mode="single shot"
 
         self._lbgfs_buffer_size=10
