@@ -6,7 +6,6 @@ import nmpccodegen.models as models
 import nmpccodegen.controller as controller
 import nmpccodegen.Cfunctions as cfunctions
 
-
 import math
 import ctypes
 import numpy as np
@@ -24,7 +23,7 @@ location_nmpc_repo = "."
 output_locationcontroller = location_nmpc_repo + "/test_controller_builds"
 trailer_controller_location = output_locationcontroller + "/" + controller_name + "/"
 
-tools.Bootstrapper.bootstrap(location_nmpc_repo, output_locationcontroller, controller_name, python_interface_enabled=True)
+tools.Bootstrapper.bootstrap(output_locationcontroller, controller_name, python_interface_enabled=True)
 ## -----------------------------------------------------------------
 
 # get the continuous system equations from the existing library
