@@ -1,5 +1,5 @@
-import model as m
-import integrators as ig
+from . import model as m
+from . import integrators as ig
 
 class Model_continious(m.Model):
     def __init__(self,system_equations,g,step_size,number_of_states,number_of_inputs,coordinates_indices,integrator):

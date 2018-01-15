@@ -1,4 +1,4 @@
-from Cfunctions.Function import *
+from .Function import Cfunction
 
 class ProximalFunction(Cfunction):
     def __init__(self,prox):

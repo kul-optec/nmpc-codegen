@@ -2,7 +2,7 @@ import casadi as cd
 import numpy as np
 import os
 from pathlib import Path
-import globals_generator as gg
+from .globals_generator import Globals_generator
 
 class Nmpc_panoc:
     """ Defines a nmpc problem of the shape min f(x)+ g(x) """
@@ -23,7 +23,7 @@ class Nmpc_panoc:
         self._integrator_casadi=False
 
         # generate the dynamic_globals file
-        self._globals_generator = gg.Globals_generator(self._location_lib + "globals/globals_dyn.h")
+        self._globals_generator = Globals_generator(self._location_lib + "globals/globals_dyn.h")
 
         # at first assume no obstacles
         self._obstacle=[]

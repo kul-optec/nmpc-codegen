@@ -3,36 +3,36 @@ from pathlib import Path
 from shutil import copyfile
 import platform
 
-class Bootstrapper_panoc_nmpc:
+class Bootstrapper:
     """bootstraps and nmpc enviroment"""
     def bootstrap(location_nmpc_repo,location,controller_name,python_interface_enabled):
         """ bootstrap the nmpc at location nmpc """
         print("GENERATING folders for controller:"+controller_name)
-        Bootstrapper_panoc_nmpc._bootstrap_folders(location,controller_name)
+        Bootstrapper._bootstrap_folders(location,controller_name)
         location_controller = location+"/"+controller_name
 
         overwrite = True
         print("GENERATING PANOC")
-        Bootstrapper_panoc_nmpc._generate_PANOC_lib(location_controller,location_nmpc_repo,overwrite)
+        Bootstrapper._generate_PANOC_lib(location_controller,location_nmpc_repo,overwrite)
         print("GENERATING static globals")
-        Bootstrapper_panoc_nmpc._generate_static_globals(location_controller, location_nmpc_repo,overwrite)
+        Bootstrapper._generate_static_globals(location_controller, location_nmpc_repo,overwrite)
         if(python_interface_enabled):
             print("GENERATING python interface")
-            Bootstrapper_panoc_nmpc._generate_python_interface(location_controller, location_nmpc_repo,overwrite)
+            Bootstrapper._generate_python_interface(location_controller, location_nmpc_repo,overwrite)
             print("GENERATING Build system")
-            Bootstrapper_panoc_nmpc._generate_build_system(location_controller, location_nmpc_repo,overwrite)
+            Bootstrapper._generate_build_system(location_controller, location_nmpc_repo,overwrite)
             # if all the files are there generate the make files using Cmake
-            Bootstrapper_panoc_nmpc._make_build_system(location+"/"+controller_name)
+            Bootstrapper._make_build_system(location+"/"+controller_name)
 
     def _bootstrap_folders(location,controller_name):
         """ bootstrap the nmpc at location nmpc """
         lib_location = location + "/"+controller_name
-        Bootstrapper_panoc_nmpc._create_folder_if_not_exist(lib_location)
-        Bootstrapper_panoc_nmpc._create_folder_if_not_exist(lib_location+"/casadi")
-        Bootstrapper_panoc_nmpc._create_folder_if_not_exist(lib_location + "/globals")
-        Bootstrapper_panoc_nmpc._create_folder_if_not_exist(lib_location + "/include")
-        Bootstrapper_panoc_nmpc._create_folder_if_not_exist(lib_location + "/PANOC")
-        Bootstrapper_panoc_nmpc._create_folder_if_not_exist(lib_location + "/python_interface")
+        Bootstrapper._create_folder_if_not_exist(lib_location)
+        Bootstrapper._create_folder_if_not_exist(lib_location+"/casadi")
+        Bootstrapper._create_folder_if_not_exist(lib_location + "/globals")
+        Bootstrapper._create_folder_if_not_exist(lib_location + "/include")
+        Bootstrapper._create_folder_if_not_exist(lib_location + "/PANOC")
+        Bootstrapper._create_folder_if_not_exist(lib_location + "/python_interface")
     def _generate_PANOC_lib(location,location_nmpc_repo,overwrite):
         src_files = ["buffer.c","buffer.h","casadi_definitions.h","lbfgs.h","lbfgs.c","lipschitz.c","lipschitz.h",\
                      "matrix_operations.h","matrix_operations.c","nmpc.c","panoc.c","panoc.h",\
@@ -41,16 +41,16 @@ class Bootstrapper_panoc_nmpc:
         for i in range(0,len(src_files)):
             src_location=location_nmpc_repo+"/PANOC/"+src_files[i]
             dst_location = location + "/PANOC/" + src_files[i]
-            Bootstrapper_panoc_nmpc._copy_over_file(src_location,dst_location,overwrite)
+            Bootstrapper._copy_over_file(src_location,dst_location,overwrite)
 
         src_location = location_nmpc_repo + "/include/" + "nmpc.h"
         dst_location = location + "/include/" + "nmpc.h"
-        Bootstrapper_panoc_nmpc._copy_over_file(src_location, dst_location, overwrite)
+        Bootstrapper._copy_over_file(src_location, dst_location, overwrite)
 
     def _generate_static_globals(location,location_nmpc_repo,overwrite):
         src_location = location_nmpc_repo + "/globals/" + "globals.h"
         dst_location = location + "/globals/" + "globals.h"
-        Bootstrapper_panoc_nmpc._copy_over_file(src_location,dst_location,overwrite)
+        Bootstrapper._copy_over_file(src_location,dst_location,overwrite)
 
     def _generate_python_interface(location, location_nmpc_repo, overwrite):
         src_files = ["nmpc_python.c","timer.h","timer_linux.c","timer_windows.c"]
@@ -58,16 +58,16 @@ class Bootstrapper_panoc_nmpc:
         for i in range(0, len(src_files)):
             src_location = location_nmpc_repo + "/python_interface/" + src_files[i]
             dst_location = location + "/python_interface/" + src_files[i]
-            Bootstrapper_panoc_nmpc._copy_over_file(src_location, dst_location, overwrite)
+            Bootstrapper._copy_over_file(src_location, dst_location, overwrite)
 
     def _generate_build_system(location,location_nmpc_repo,overwrite):
         src_location = location_nmpc_repo + "/minimum_build_system/" + "CMakeLists_root.txt"
         dst_location = location + "/CMakeLists.txt"
-        Bootstrapper_panoc_nmpc._copy_over_file(src_location,dst_location,overwrite)
+        Bootstrapper._copy_over_file(src_location,dst_location,overwrite)
 
         src_location = location_nmpc_repo + "/minimum_build_system/" + "CMakeLists_panoc.txt"
         dst_location = location + "/PANOC/" + "CMakeLists.txt"
-        Bootstrapper_panoc_nmpc._copy_over_file(src_location, dst_location, overwrite)
+        Bootstrapper._copy_over_file(src_location, dst_location, overwrite)
 
     def _create_folder_if_not_exist(location):
         # check if the folder excists

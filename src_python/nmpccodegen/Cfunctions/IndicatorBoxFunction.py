@@ -1,8 +1,9 @@
-import Cfunctions.ProximalFunction
-import Cfunctions.Function
-import Cfunctions.source_file_operations as sfo
+from .ProximalFunction import ProximalFunction
+from .Function import Cfunction
+from .source_file_operations import Source_file_generator
 
-class IndicatorBoxFunctionProx(Cfunctions.Function.Cfunction):
+
+class IndicatorBoxFunctionProx(Cfunction):
     def __init__(self,lower_limits,upper_limits):
         """constructor box function"""
         self._lower_limits=lower_limits
@@ -13,7 +14,7 @@ class IndicatorBoxFunctionProx(Cfunctions.Function.Cfunction):
                   +str(self._dimension))
 
     def generate_c_code(self, location):
-        source_file = sfo.Source_file_generator(location,"proxg")
+        source_file = Source_file_generator(location,"proxg")
         source_file.open()
         source_file.start_for("i","MPC_HORIZON",indent=1)
 
@@ -35,7 +36,7 @@ class IndicatorBoxFunctionProx(Cfunctions.Function.Cfunction):
         source_file.close_for(indent=1)
         source_file.close()
 
-class IndicatorBoxFunction(Cfunctions.ProximalFunction.ProximalFunction):
+class IndicatorBoxFunction(ProximalFunction):
     def __init__(self,lower_limits,upper_limits):
         super().__init__(IndicatorBoxFunctionProx(lower_limits, upper_limits))
         """constructor box function"""
@@ -47,7 +48,7 @@ class IndicatorBoxFunction(Cfunctions.ProximalFunction.ProximalFunction):
                   +str(self._dimension))
 
     def generate_c_code(self, location):
-        source_file = sfo.Source_file_generator(location,"g")
+        source_file = Source_file_generator(location,"g")
         source_file.open()
         source_file.start_for("i","MPC_HORIZON",indent=1)
 

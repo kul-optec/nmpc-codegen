@@ -1,6 +1,5 @@
 import time
 
-
 class Globals_generator:
     def __init__(self,location_globals):
         self._location_globals=location_globals
