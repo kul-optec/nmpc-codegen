@@ -1,22 +1,17 @@
 import sys
 sys.path.insert(0, '../../../src_python')
-import nmpc_panoc as npc
-import model_continious as modelc
-import example_models # this contains the chain example
-import stage_costs
-import math
+import nmpccodegen as nmpc
+import nmpccodegen.tools as tools
+import nmpccodegen.models as models
+import nmpccodegen.controller as controller
+import nmpccodegen.Cfunctions as cfunctions
 
-import ctypes
-import simulator
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-import Cfunctions.IndicatorBoxFunction as indbox
-import bootstrapper as bs
 import sys
 import time
-
-
 
 def generate_controller(controller_name,reference_state,display_figure=True):
     ## -- GENERATE STATIC FILES --
@@ -26,29 +21,29 @@ def generate_controller(controller_name,reference_state,display_figure=True):
     # controller_name = "trailer_simple_controller"
     trailer_controller_location=location+"/"+ controller_name + "/"
 
-    bs.Bootstrapper_panoc_nmpc.bootstrap(location_nmpc_repo, location, controller_name,python_interface_enabled=True)
+    tools.Bootstrapper.bootstrap(location, controller_name,python_interface_enabled=True)
     ## -----------------------------------------------------------------
 
     # get the continious system equations
-    (system_equations,number_of_states,number_of_inputs,coordinates_indices) = example_models.get_trailer_model(L=0.5)
+    (system_equations,number_of_states,number_of_inputs,coordinates_indices) = nmpc.example_models.get_trailer_model(L=0.5)
 
     step_size = 0.05
     simulation_time = 10
     number_of_steps = math.ceil(simulation_time / step_size)
 
     integrator = "RK"
-    constraint_input = indbox.IndicatorBoxFunction([-1,-1],[1,1]) # input needs stay within these borders
-    model = modelc.Model_continious(system_equations, constraint_input, step_size, number_of_states,\
+    constraint_input = cfunctions.IndicatorBoxFunction([-1,-1],[1,1]) # input needs stay within these borders
+    model = models.Model_continious(system_equations, constraint_input, step_size, number_of_states,\
                                     number_of_inputs,coordinates_indices, integrator)
 
     Q = np.diag([1.,100.,1.])
     R = np.eye(model.number_of_inputs, model.number_of_inputs)*1.
 
     # reference_state=np.array([2,2,0])
-    stage_cost = stage_costs.Stage_cost_QR_reference(model,Q,R,reference_state)
+    stage_cost = controller.stage_costs.Stage_cost_QR_reference(model,Q,R,reference_state)
 
     # define the controller
-    trailer_controller = npc.Nmpc_panoc(trailer_controller_location,model,stage_cost )
+    trailer_controller = controller.Nmpc_panoc(trailer_controller_location,model,stage_cost )
     trailer_controller.horizon = 100
     trailer_controller.step_size = step_size
     trailer_controller.integrator_casadi = True
@@ -59,7 +54,7 @@ def generate_controller(controller_name,reference_state,display_figure=True):
 
     # -- simulate controller --
     # setup a simulator to test
-    sim = simulator.Simulator(trailer_controller)
+    sim = tools.Simulator(trailer_controller)
 
     # init the controller
     sim.simulator_init()
@@ -69,11 +64,13 @@ def generate_controller(controller_name,reference_state,display_figure=True):
     state_history = np.zeros((number_of_states,number_of_steps))
 
     for i in range(1,number_of_steps):
-        (test, optimal_input) = sim.simulate_nmpc(state)
-        print("The optimal input is: [" + str(optimal_input[0]) + "," + str(optimal_input[0]) + "]")
+        result_simulation = sim.simulate_nmpc(state)
+        print("Step [" + str(i) + "/" + str(number_of_steps) + "]: The optimal input is: [" \
+              + str(result_simulation.optimal_input[0]) + "," + str(result_simulation.optimal_input[0]) + "]" \
+              + " time=" + result_simulation.time_string)
         sys.stdout.flush()
 
-        state = np.asarray(model.get_next_state(state,optimal_input))
+        state = np.asarray(model.get_next_state(state,result_simulation.optimal_input))
         state_history[:,i] = np.reshape(state[:],number_of_states)
 
     # cleanup the controller
