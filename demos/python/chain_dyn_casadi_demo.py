@@ -39,3 +39,4 @@ for i in range(1,number_of_steps):
 final_positions = np.concatenate(\
     (np.zeros((dimension,1)),np.reshape(current_state[0:dimension*(number_of_balls+1)],(number_of_balls+1,dimension)).T)\
 ,axis=1)
+
