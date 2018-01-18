@@ -7,7 +7,7 @@ import sys
 
 
 class Bootstrapper:
-    """bootstraps and nmpc enviroment"""
+    """ bootstraps an nmpc environment """
     def bootstrap(location,controller_name,python_interface_enabled):
         location_nmpc_repo = Bootstrapper._get_repo_location()
         """ bootstrap the nmpc at location nmpc """

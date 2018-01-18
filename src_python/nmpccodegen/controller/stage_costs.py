@@ -5,6 +5,7 @@ class Stage_cost_QR:
         self._R=R
         self._model=model
     def stage_cost(self,state,input,iteration_index):
+        """ calculate and return stage cost """
         # As state and input are of the stype csadi.SX we can't just do vector matrix product
         # Everything must be written out in basic operations
         stage_cost=0
@@ -24,6 +25,7 @@ class Stage_cost_QR_reference:
         self._model=model
         self._state_reference = state_reference
     def stage_cost(self,state,input,iteration_index):
+        """ calculate and return stage cost """
         # As state and input are of the stype csadi.SX we can't just do vector matrix product
         # Everything must be written out in basic operations
         stage_cost=0

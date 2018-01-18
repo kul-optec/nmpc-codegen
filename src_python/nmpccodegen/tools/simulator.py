@@ -57,7 +57,8 @@ class Simulator:
     def __init__(self,nmpc_controller):
         self._nmpc_controller=nmpc_controller
 
-    def load_library(self):
+    def _load_library(self):
+        """ private function:load the compiled library into Python """
         try:
             if (platform.system() == 'Linux'):
                 print("Compiling python interface for Linux")
@@ -93,12 +94,12 @@ class Simulator:
 
         return Simulation_data(convergence_time[0],optimal_input)
     def simulator_init(self):
-        self.compile_interface()
-        self.load_library()
+        self._compile_interface()
+        self._load_library()
         self.nmpc_python_interface.simulation_init()
     def simulator_cleanup(self):
         self.nmpc_python_interface.simulation_cleanup()
-    def compile_interface(self):
+    def _compile_interface(self):
         cwd = os.getcwd()
         try:
             os.chdir(self._nmpc_controller.location)
