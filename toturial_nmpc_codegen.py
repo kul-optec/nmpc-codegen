@@ -52,7 +52,7 @@ stage_cost = controller.Stage_cost_QR_reference(model, Q, R, reference_state)
 trailer_controller = controller.Nmpc_panoc(trailer_controller_location, model, stage_cost)
 trailer_controller.horizon = horizon # NMPC parameter
 trailer_controller.integrator_casadi = True # optional  feature that can generate the integrating used  in the cost function
-trailer_controller.panoc_max_steps = 500 # the maximum amount of iterations the PANOC algorithm is allowed to do.
+trailer_controller.panoc_max_steps = 1000 # the maximum amount of iterations the PANOC algorithm is allowed to do.
 
 # add an obstacle, a two dimensional rectangle
 obstacle_weight = 10000000000000.
@@ -81,7 +81,7 @@ for i in range(1, number_of_steps):
     result_simulation= sim.simulate_nmpc(state)
     print("Step ["+str(i)+"/"+str(number_of_steps)+"]: The optimal input is: [" \
           + str(result_simulation.optimal_input[0]) + "," + str(result_simulation.optimal_input[0]) + "]" \
-          + " time=" + result_simulation.time_string)
+          + " time=" + result_simulation.time_string + " number of panoc iterations=" + str(result_simulation.panoc_interations))
 
     state = np.asarray(model.get_next_state(state, result_simulation.optimal_input))
     state_history[:, i] = np.reshape(state[:], number_of_states)
