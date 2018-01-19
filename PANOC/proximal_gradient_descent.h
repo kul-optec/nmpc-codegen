@@ -21,6 +21,8 @@ real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location
  */
 int proximal_gradient_descent_get_residual(const real_t* input,real_t* output);
 int proximal_gradient_descent_get_current_residual(real_t* residual);
+
 real_t proximal_gradient_descent_get_gamma(void);
+const real_t proximal_gradient_descent_get_current_residual_inf_norm(void);
 
 #endif // !PROXIMAL_GRADIENT_DESCENT_H

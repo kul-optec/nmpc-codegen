@@ -28,6 +28,18 @@ real_t vector_norm1(const real_t* vector,const size_t vector_size){
     return norm;
 }
 
+real_t vector_norm_inf(const real_t* vector,const size_t vector_size){
+    real_t norm=0;
+
+    size_t i=0;
+    for ( i = 0; i < vector_size ; i++)
+    {
+        if(norm<ABS(vector[i]))
+            norm = ABS(vector[i]);
+    }
+    return norm;
+}
+
 
 /* copy vector1 into vector2 */
 void vector_copy(const real_t* vector1,real_t* vector2,const size_t size_vector){

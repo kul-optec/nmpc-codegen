@@ -19,6 +19,7 @@ static size_t dimension;
 /* variables safed between direction calls */
 static size_t iteration_index=0; /* is 0 at first and 1 after first time you call get direction */
 static real_t linesearch_gamma=0; /* linesearch parameter */
+static real_t last_current_residual_inf_norm=0;
 
 /* variables used by each iteration */
 static real_t* new_location;
@@ -135,7 +136,13 @@ int proximal_gradient_descent_get_current_residual(real_t* residual){
     const real_t* current_location = buffer_get_current_location();
     vector_sub(current_location,new_location,dimension,residual);
     vector_real_mul(residual,dimension,1/linesearch_gamma,residual);
+    /* calculate the inf-norm and safe it */
+    last_current_residual_inf_norm=vector_norm_inf(residual,dimension);
     return SUCCESS;
+}
+
+const real_t proximal_gradient_descent_get_current_residual_inf_norm(void){
+    return last_current_residual_inf_norm;
 }
 
 /*

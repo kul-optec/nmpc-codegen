@@ -33,6 +33,11 @@
     #define TRUE 1
     #define FALSE 0
 
+    /* stop condition residual nmpc */
+    #ifndef MIN_RESIDUAL
+        #define MIN_RESIDUAL
+    #endif
+
 
     /* 
     * ---------------------------------
