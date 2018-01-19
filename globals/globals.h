@@ -35,7 +35,12 @@
 
     /* stop condition residual nmpc */
     #ifndef MIN_RESIDUAL
-        #define MIN_RESIDUAL
+        #define MIN_RESIDUAL pow(10,-3)
+    #endif
+
+    /* minimum amount of steps Panoc always should execute */
+    #ifndef PANOC_MIN_STEPS
+        #define PANOC_MIN_STEPS 10
     #endif
 
 

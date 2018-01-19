@@ -18,9 +18,11 @@ void simulation_init(){
 struct Panoc_time* simulate_nmpc_panoc(real_t* current_state,real_t* optimal_inputs){
     panoc_timer_start();
 
-    npmc_solve(current_state,optimal_inputs);
+    int number_of_interations = npmc_solve(current_state,optimal_inputs);
 
     time_difference = panoc_timer_stop();
+
+    time_difference->panoc_interations=number_of_interations;
 
     return time_difference;
 }

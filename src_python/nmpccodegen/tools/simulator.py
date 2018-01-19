@@ -17,6 +17,8 @@ class Simulation_data:
         self._micro_seconds=panoc_time.micro_seconds
         self._nano_seconds=panoc_time.nano_seconds
 
+        self._panoc_interations=panoc_time.panoc_interations
+
     @property
     def optimal_input(self):
         return self._optimal_input
@@ -45,11 +47,17 @@ class Simulation_data:
     def nano_seconds(self):
         return self._nano_seconds
 
+    @property
+    def panoc_interations(self):
+        return self._panoc_interations
+
 
 
 class Panoc_time(ctypes.Structure):
  _fields_ = [("hours", ctypes.c_int),("minutes", ctypes.c_int),("seconds", ctypes.c_int),\
-             ("milli_seconds", ctypes.c_int),("micro_seconds", ctypes.c_int),("nano_seconds", ctypes.c_int)]
+             ("milli_seconds", ctypes.c_int),("micro_seconds", ctypes.c_int),("nano_seconds", ctypes.c_int),\
+             ("panoc_interations", ctypes.c_int)
+             ]
 
 
 class Simulator:

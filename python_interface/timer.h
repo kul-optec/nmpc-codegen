@@ -11,6 +11,7 @@ struct Panoc_time{
     int milli_seconds;
     int micro_seconds;
     int nano_seconds;
+    int panoc_interations;
 };
 
 void panoc_timer_start(void);

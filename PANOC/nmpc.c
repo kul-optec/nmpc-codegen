@@ -4,6 +4,7 @@
 #include"../include/nmpc.h"
 #include "panoc.c"
 #include "casadi_interface.h"
+#include "math.h"
 
 static real_t* current_input;
 static real_t* new_input;
@@ -46,19 +47,29 @@ int npmc_solve(const real_t* current_state,real_t* optimal_inputs){
     /* 
      * take implicitly the previous inputs as the starting position for the algorithm 
      */
-    size_t i;
-    for (i= 0; i < PANOC_MAX_STEPS; i++)
+    
+    int i_panoc;
+    real_t residual=1;
+    for (i_panoc= 0; i_panoc < PANOC_MAX_STEPS ; i_panoc++)
     {
-        panoc_get_new_location(current_input,new_input);
+        if(i_panoc > PANOC_MIN_STEPS && residual<MIN_RESIDUAL){
+            /* if more then PANOC_MIN_STEPS steps are passed 
+               and residual is low stop iterating */
+            break;
+        }
+        residual = panoc_get_new_location(current_input,new_input);
 
         /* set the new_input as input for the next iteration */
         switch_input_current_new();
     }
     /* only return the optimal input */
+    size_t i;
     for (i = 0; i < DIMENSION_INPUT; i++)
     {
         optimal_inputs[i]=current_input[i];
     }
     panoc_reset_cycli();
-    return SUCCESS;
+    if(i_panoc==PANOC_MAX_STEPS)
+        return i_panoc;
+    return i_panoc-1;
 }
