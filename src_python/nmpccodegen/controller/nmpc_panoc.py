@@ -18,7 +18,9 @@ class Nmpc_panoc:
         self._lbgfs_buffer_size=10
         self._data_type = "double precision"
 
-        self._panoc_max_steps=10
+        self._panoc_max_steps=20
+        self._panoc_min_steps=10
+        self._min_residual=-5 #chose 10^{-5} as max residual#
 
         self._integrator_casadi=False
 
@@ -201,6 +203,21 @@ class Nmpc_panoc:
     @location.setter
     def location(self, value):
         self._location_lib = value
+        
+    @property
+    def panoc_min_steps(self):
+        return self._panoc_min_steps
+    @panoc_min_steps.setter
+    def panoc_min_steps(self, value):
+        self._panoc_min_steps = value
+    
+    @property
+    def min_residual(self):
+        return self._min_residual
+    @min_residual.setter
+    def min_residual(self, value):
+        self._min_residual = value
+
 
     @property
     def cost_function(self):
