@@ -38,7 +38,3 @@ target_link_libraries(bin/panoc_poly_test problem_set)
 add_executable(bin/casadi_interface_test src/casadi_interface_test.c)
 target_link_libraries (bin/casadi_interface_test PANOC_lib)
 target_link_libraries(bin/casadi_interface_test m) # link with the math lib, some toolchains need this
-
-add_executable(bin/nmpc_panoc_test src/nmpc_panoc_test.c)
-target_link_libraries (bin/nmpc_panoc_test PANOC_lib)
-target_link_libraries(bin/nmpc_panoc_test m) # link with the math lib, some toolchains need this
