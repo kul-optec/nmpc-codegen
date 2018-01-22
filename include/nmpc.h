@@ -6,6 +6,9 @@
 
 int nmpc_init();
 int nmpc_cleanup();
-int npmc_solve(const real_t* current_state,real_t* optimal_inputs);
+int npmc_solve( const real_t* current_state,
+                const real_t* state_reference,
+                const real_t* input_reference,
+                real_t* optimal_inputs);
 
 #endif

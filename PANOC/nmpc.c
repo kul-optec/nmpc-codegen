@@ -41,8 +41,11 @@ void switch_input_current_new(){
     new_input=buffer;
 
 }
-int npmc_solve(const real_t* current_state,real_t* optimal_inputs){
-    casadi_set_state(current_state);
+int npmc_solve( const real_t* current_state,
+                const real_t* state_reference,
+                const real_t* input_reference,
+                real_t* optimal_inputs){ 
+    casadi_prepare_cost_function(current_state,state_reference,input_reference);
 
     /* 
      * take implicitly the previous inputs as the starting position for the algorithm 

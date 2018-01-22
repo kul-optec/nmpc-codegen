@@ -62,8 +62,8 @@ class Panoc_time(ctypes.Structure):
 
 class Simulator:
     """ simulator used to interact in python with an controller in c """
-    def __init__(self,nmpc_controller):
-        self._nmpc_controller=nmpc_controller
+    def __init__(self,nmpc_controller_location):
+        self._nmpc_controller_location=nmpc_controller_location
 
     def _load_library(self):
         """ private function:load the compiled library into Python """
@@ -71,11 +71,11 @@ class Simulator:
             if (platform.system() == 'Linux'):
                 print("Compiling python interface for Linux")
                 extension_lib = '.so'
-                lib_location = self._nmpc_controller.location + "libpython_interface" + extension_lib
+                lib_location = self._nmpc_controller_location + "libpython_interface" + extension_lib
                 self.nmpc_python_interface = ctypes.CDLL(lib_location)
             elif (platform.system() == 'Windows'):
                 extension_lib = '.dll'
-                lib_location = self._nmpc_controller.location + "libpython_interface" + extension_lib
+                lib_location = self._nmpc_controller_location + "libpython_interface" + extension_lib
                 print("Compiling python interface for Windows: " + lib_location)
                 self.nmpc_python_interface = ctypes.windll.LoadLibrary(lib_location)
             else:
@@ -85,11 +85,17 @@ class Simulator:
             print("Failed to load the dll, are you sure python and the toolchain are compatible?")
             print("check if they both are either 32bit or both 64 bit")
         sys.stdout.flush()
-    def simulate_nmpc(self,current_state):
+    def simulate_nmpc(self,current_state,state_reference,input_reference):
         length_state = len(current_state)
-        array_state = ctypes.c_double * length_state
+        length_input = len(input_reference)
 
-        array_optimal_input = ctypes.c_double * self._nmpc_controller.model.number_of_inputs
+        # construct the array pointers
+        array_state = ctypes.c_double * length_state
+        array_state_reference = ctypes.c_double * length_state
+        array_input_reference = ctypes.c_double * length_input
+
+        # construct an actual new array, and save a pointer to it
+        array_optimal_input = ctypes.c_double * length_input
         optimal_input = array_optimal_input()
 
         # set return type: Panoc_time
@@ -97,6 +103,8 @@ class Simulator:
 
         convergence_time = self.nmpc_python_interface.simulate_nmpc_panoc(\
             array_state(*current_state),\
+            array_state_reference(*state_reference),\
+            array_input_reference(*input_reference),\
             optimal_input\
             )
 
@@ -110,7 +118,7 @@ class Simulator:
     def _compile_interface(self):
         cwd = os.getcwd()
         try:
-            os.chdir(self._nmpc_controller.location)
+            os.chdir(self._nmpc_controller_location)
             os.system("make clean python_interface")
         finally:
             os.chdir(cwd)

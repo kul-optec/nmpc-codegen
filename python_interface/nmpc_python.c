@@ -7,7 +7,8 @@
 void simulation_init();
 void simulation_cleanup();
 static struct Panoc_time* time_difference;
-struct Panoc_time* simulate_nmpc_panoc(real_t* current_state,real_t* optimal_inputs);
+struct Panoc_time* simulate_nmpc_panoc(real_t* current_state,real_t* optimal_inputs,
+                                        real_t* state_reference,real_t* input_reference);
 /*
  * Simulates the controller and fill optimal_input with the optimal input.
  * -> returns the time till convergence
@@ -15,10 +16,14 @@ struct Panoc_time* simulate_nmpc_panoc(real_t* current_state,real_t* optimal_inp
 void simulation_init(){
     nmpc_init();
 }
-struct Panoc_time* simulate_nmpc_panoc(real_t* current_state,real_t* optimal_inputs){
+struct Panoc_time* simulate_nmpc_panoc( real_t* current_state,
+                                        real_t* optimal_inputs,
+                                        real_t* state_reference,
+                                        real_t* input_reference
+                                        ){
     panoc_timer_start();
 
-    int number_of_interations = npmc_solve(current_state,optimal_inputs);
+    int number_of_interations = npmc_solve(current_state,optimal_inputs,state_reference,input_reference);
 
     time_difference = panoc_timer_stop();
 

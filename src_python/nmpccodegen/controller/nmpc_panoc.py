@@ -59,8 +59,10 @@ class Nmpc_panoc:
     def __generate_cost_function_singleshot(self):
         """ private function, generates part of the casadi cost function with single shot """
         initial_state = cd.SX.sym('initial_state', self._model.number_of_states, 1)
-        input_all_steps = cd.SX.sym('input_all_steps', self._model.number_of_inputs*self._horizon, 1)
+        state_reference = cd.SX.sym('state_reference', self._model.number_of_states, 1)
+        input_reference = cd.SX.sym('input_reference', self._model.number_of_inputs, 1)
 
+        input_all_steps = cd.SX.sym('input_all_steps', self._model.number_of_inputs*self._horizon, 1)
         cost=cd.SX.sym('cost',1,1)
         cost=0
 
@@ -69,15 +71,16 @@ class Nmpc_panoc:
             input = input_all_steps[(i-1)*self._model.number_of_inputs:i*self._model.number_of_inputs]
             current_state = self._model.get_next_state(current_state,input)
 
-            cost = cost + self._stage_cost.stage_cost(current_state,input,i)
+            cost = cost + self._stage_cost.stage_cost(current_state,input,i,state_reference,input_reference)
             cost = cost + self.__generate_cost_obstacles(current_state)
 
-        self.__setup_casadi_functions_and_generate_c(initial_state,input_all_steps,cost)
+        self.__setup_casadi_functions_and_generate_c(initial_state,input_all_steps,state_reference,input_reference,cost)
 
-    def __setup_casadi_functions_and_generate_c(self,initial_state,input_all_steps,cost):
-        self._cost_function = cd.Function('cost_function', [initial_state, input_all_steps], [cost])
+    def __setup_casadi_functions_and_generate_c(self,initial_state,input_all_steps,
+                                                state_reference,input_reference,cost):
+        self._cost_function = cd.Function('cost_function', [initial_state, input_all_steps,state_reference,input_reference], [cost])
         self._cost_function_derivative_combined = cd.Function('cost_function_derivative_combined',
-                                                        [initial_state, input_all_steps],
+                                                        [initial_state, input_all_steps,state_reference,input_reference],
                                                         [cost, cd.gradient(cost, input_all_steps)])
 
         self.__translate_casadi_to_c(self._cost_function, filename="cost_function.c")
