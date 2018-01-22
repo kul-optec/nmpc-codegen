@@ -117,6 +117,12 @@ class Simulator:
         self.nmpc_python_interface.get_last_full_solution.restype = ctypes.POINTER(ctypes.c_double)
 
         full_solution = self.nmpc_python_interface.get_last_full_solution()
+    def set_weight_obstacle(self,index_obstacle,weight_obstacle):
+
+        index_obstacle_ctype = ctypes.c_int(index_obstacle)
+        weight_obstacle_ctype = ctypes.c_double(weight_obstacle)
+
+        self.nmpc_python_interface.simulation_set_weight_obstacles(index_obstacle_ctype,weight_obstacle_ctype)
     def simulator_init(self):
         self._compile_interface()
         self._load_library()

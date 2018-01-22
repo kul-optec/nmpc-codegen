@@ -75,6 +75,14 @@
     /* set the casadi mem argument in function call at zero */
     #define MEM_CASADI 0 
 
+    #ifndef DEFAULT_OBSTACLE_WEIGHT
+        #define DEFAULT_OBSTACLE_WEIGHT 1
+    #endif
+
+    #ifndef NUMBER_OF_OBSTACLES
+        #define NUMBER_OF_OBSTACLES 0
+    #endif // !NUMBER_OF_OBSTACLES
+
     /* ---------------------------------
     * lbgfs solver definitions
     * ---------------------------------

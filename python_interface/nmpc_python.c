@@ -39,3 +39,10 @@ const real_t* get_last_full_solution(){
 void simulation_cleanup(){
     nmpc_cleanup();
 }
+
+real_t simulation_get_weight_obstacles(int index_obstacle){
+    return nmpc_get_weight_obstacles(index_obstacle);
+}
+int simulation_set_weight_obstacles(int index_obstacle,real_t weight){
+    return nmpc_set_weight_obstacles(index_obstacle,weight);
+}

@@ -33,7 +33,7 @@ tools.Bootstrapper.bootstrap(output_locationcontroller, controller_name, python_
 step_size = 0.05
 simulation_time = 10
 number_of_steps = math.ceil(simulation_time / step_size)
-horizon = 10
+horizon = 20
 
 integrator = "RK" # select a Runga-Kutta  integrator
 constraint_input = cfunctions.IndicatorBoxFunction([-1, -1], [1, 1])  # input needs stay within these borders
@@ -55,13 +55,13 @@ trailer_controller.panoc_max_steps = 300 # the maximum amount of iterations the 
 trailer_controller.min_residual=-5
 
 # add an obstacle, a two dimensional rectangle
-obstacle_weight = 1000.
+# obstacle_weight = 1000.
 x_up = 1.
 x_down = 0.5
 y_up = 0.4
 y_down = 0.2
 obstacle = controller.Basic_obstacles.generate_rec_object(x_up, x_down, y_up, y_down)
-trailer_controller.add_obstacle(obstacle, obstacle_weight)
+trailer_controller.add_obstacle(obstacle)
 
 # generate the dynamic code
 trailer_controller.generate_code()
@@ -72,6 +72,8 @@ sim = tools.Simulator(trailer_controller.location)
 
 # init the controller
 sim.simulator_init()
+
+sim.set_weight_obstacle(0,1000.)
 
 initial_state = np.array([0.01, 0., 0.])
 reference_state = np.array([2, 0.5, 0])
@@ -87,6 +89,8 @@ for i in range(1, number_of_steps):
 
     state = np.asarray(model.get_next_state(state, result_simulation.optimal_input))
     state_history[:, i] = np.reshape(state[:], number_of_states)
+    if i<14 :
+        sim.set_weight_obstacle(0,(2**i))
 
 # cleanup the controller
 sim.simulator_cleanup()

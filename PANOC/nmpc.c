@@ -78,3 +78,10 @@ int npmc_solve( const real_t* current_state,
 const real_t* nmpc_get_last_full_solution(void){
     return current_input;
 }
+
+real_t nmpc_get_weight_obstacles(int index_obstacle){
+    return casadi_get_weight_obstacles(index_obstacle);
+}
+int nmpc_set_weight_obstacles(int index_obstacle,real_t weight){
+    return casadi_set_weight_obstacles(index_obstacle,weight);
+}
