@@ -109,6 +109,14 @@ class Simulator:
             )
 
         return Simulation_data(convergence_time[0],optimal_input)
+    def simulate_nmpc_full(self,current_state,state_reference,input_reference):
+        # simulate the controller
+        sim_data = self.simulate_nmpc(current_state,state_reference,input_reference)
+
+        # get the full solution
+        self.nmpc_python_interface.get_last_full_solution.restype = ctypes.POINTER(ctypes.c_double)
+
+        full_solution = self.nmpc_python_interface.get_last_full_solution()
     def simulator_init(self):
         self._compile_interface()
         self._load_library()

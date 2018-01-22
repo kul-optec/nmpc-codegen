@@ -9,7 +9,7 @@
 static real_t* current_input;
 static real_t* new_input;
 
-int nmpc_init(){
+int nmpc_init(void){
     if(panoc_init()==FAILURE) goto fail_1;
     current_input=calloc(DIMENSION_INPUT*MPC_HORIZON,sizeof(real_t)); /* start with the zero input */
     if(current_input==NULL) goto fail_2;
@@ -28,18 +28,17 @@ int nmpc_init(){
     fail_1:
         return FAILURE;
 }
-int nmpc_cleanup(){
+int nmpc_cleanup(void){
     panoc_cleanup();
     free(current_input);
     free(new_input);
     return SUCCESS;
 }
-void switch_input_current_new(){
+static void switch_input_current_new(void){
     real_t* buffer;
     buffer=current_input;
     current_input=new_input;
     new_input=buffer;
-
 }
 int npmc_solve( const real_t* current_state,
                 const real_t* state_reference,
@@ -75,4 +74,7 @@ int npmc_solve( const real_t* current_state,
     if(i_panoc==PANOC_MAX_STEPS)
         return i_panoc;
     return i_panoc-1;
+}
+const real_t* nmpc_get_last_full_solution(void){
+    return current_input;
 }

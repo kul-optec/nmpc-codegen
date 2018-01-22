@@ -10,6 +10,13 @@ int simple_test_integrator(void);
 int check_positions(const real_t* state,const real_t* required_state);
 
 static size_t number_of_masses=4;
+static real_t state_reference[DIMENSION_STATE]={0.1932, -5.9190 , 0.3874,-8.8949,0.6126,-8.8949,0.8068,-5.9190 \
+                ,1. , 0., \
+                0.,0., 0.,0.,0.,0.,0.,0.};
+static real_t input_reference[20]={ 0,0,0,0,0,
+                                    0,0,0,0,0,
+                                    0,0,0,0,0,
+                                    0,0,0,0,0};
 
 int main(){
     return test_casadi_interface_f()+\
@@ -31,19 +38,19 @@ int test_casadi_interface_f(void){
                 ,1. , 0., \
                 0.,0., 0.,0.,0.,0.,0.,0.};
 
-    casadi_set_state(current_state);
+    casadi_prepare_cost_function(current_state,state_reference,input_reference);
     real_t test_cost_optimal = casadi_interface_f(zero_input);
 
     real_t lower_state[DIMENSION_STATE]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     vector_add_ntimes(lower_state,current_state,18,0.8,lower_state);
     
-    casadi_set_state(lower_state);
+    casadi_prepare_cost_function(current_state,state_reference,input_reference);
     real_t test_cost_to_low = casadi_interface_f(zero_input);
 
     real_t higher_state[DIMENSION_STATE]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     vector_add_ntimes(higher_state,current_state,18,1.5,higher_state);
     
-    casadi_set_state(higher_state);
+    casadi_prepare_cost_function(current_state,state_reference,input_reference);
     real_t test_cost_to_high = casadi_interface_f(zero_input);
 
     printf("test of f");
@@ -69,7 +76,7 @@ int test_casadi_interface_df(void){
                       0,0,0,0,0,
                       0,0,0,0,0};
                       
-    casadi_set_state(current_state);
+    casadi_prepare_cost_function(current_state,state_reference,input_reference);
     real_t test_cost_optimal[2];
     casadi_interface_f_df(zero_input,test_cost_optimal);
     /* --------------------- */
@@ -79,7 +86,7 @@ int test_casadi_interface_df(void){
     vector_add_ntimes(lower_state,current_state,18,0.8,lower_state);
     
     
-    casadi_set_state(lower_state);
+    casadi_prepare_cost_function(current_state,state_reference,input_reference);
     real_t test_cost_to_low[2];
     casadi_interface_f_df(zero_input,test_cost_to_low);
     /* --------------------- */
@@ -88,7 +95,7 @@ int test_casadi_interface_df(void){
     real_t higher_state[DIMENSION_STATE]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     vector_add_ntimes(higher_state,current_state,18,1.5,higher_state);
         
-    casadi_set_state(higher_state);
+    casadi_prepare_cost_function(current_state,state_reference,input_reference);
     real_t test_cost_to_high[2];
     casadi_interface_f_df(zero_input,test_cost_to_high);
     /* --------------------- */
