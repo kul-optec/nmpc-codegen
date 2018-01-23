@@ -1,4 +1,5 @@
 import numpy as np
+import casadi as cd
 import os
 
 def integrator_explicit_euler(x,step_size,function_system):
@@ -16,8 +17,7 @@ def integrator_RK(x,step_size,function_system):
 def integrator_RK_lib(x,step_size,function_system,key_name):
     """ integrate using an integration tableau from ./integrator_tableaus """
     script_location = os.path.dirname(os.path.realpath(__file__))
-    integrator_tab_location = script_location+"/integrator_tableaus/"+key_name+"npz"
-    print("using integrator from file "+integrator_tab_location)
+    integrator_tab_location = os.path.join(os.path.join(script_location,"integrator_tableaus"),key_name+".npz")
 
     # get the 3 matrices A,b,c that are commonly used with RK schemes
     # c | A
@@ -27,5 +27,31 @@ def integrator_RK_lib(x,step_size,function_system,key_name):
     b = integrator_tab['b']
     c = integrator_tab['c']
 
-    # TODO use scheme
+    (N,M)=A.shape
+    if(len(x.shape)==1):
+        (N_x,) = x.shape
+        x=cd.reshape(x,(N_x,1))
+    else:
+        (N_x,_) = x.shape
+
+    k=cd.SX.sym('k', N_x,N)
+    # k=np.zeros((N_x,N))
+
+    for i in range(0,N):
+        x_local=np.zeros((N_x,1))
+        for j in range(0,i):
+            x_local += (A[i,j]*cd.reshape(k[:,j],(N_x,1)))
+        x_local*=step_size
+        x_local += x
+
+        y=function_system(x_local)
+        k[:,i] = y
+
+    x_new=np.zeros((N_x,1))
+    for i in range(0,N):
+        x_new +=b[i]*cd.reshape(k[:,i],(N_x,1))
+    x_new *= step_size
+    x_new +=x
+
+    return x_new
 

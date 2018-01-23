@@ -35,7 +35,7 @@ simulation_time = 10
 number_of_steps = math.ceil(simulation_time / step_size)
 horizon = 20
 
-integrator = "RK" # select a Runga-Kutta  integrator
+integrator = "FE" # select a Runga-Kutta  integrator (FE is forward euler)
 constraint_input = cfunctions.IndicatorBoxFunction([-1, -1], [1, 1])  # input needs stay within these borders
 model = models.Model_continious(system_equations, constraint_input, step_size, number_of_states, \
                                 number_of_inputs, coordinates_indices, integrator)
@@ -87,7 +87,7 @@ for i in range(1, number_of_steps):
           + str(result_simulation.optimal_input[0]) + "," + str(result_simulation.optimal_input[0]) + "]" \
           + " time=" + result_simulation.time_string + " number of panoc iterations=" + str(result_simulation.panoc_interations))
 
-    state = np.asarray(model.get_next_state(state, result_simulation.optimal_input))
+    state = model.get_next_state_numpy(state, result_simulation.optimal_input)
     state_history[:, i] = np.reshape(state[:], number_of_states)
     if i<14 :
         sim.set_weight_obstacle(0,(2**i))

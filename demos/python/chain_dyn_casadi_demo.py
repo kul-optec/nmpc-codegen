@@ -27,16 +27,21 @@ number_of_steps= math.ceil(simulation_time/step_size)
 dimension=2
 number_of_balls = 4
 
-integrator="RK"
+integrator="RK44"
 g=0 # is not used here so just put it on zero
 model =models.Model_continious(system_equations,g,step_size,number_of_states,number_of_inputs,coordinates_indices,integrator)
 
 current_state = model.get_next_state(initial_state,input)
 for i in range(1,number_of_steps):
-    new_current_state =model.get_next_state(current_state,input)
+    new_current_state =model.get_next_state_numpy(current_state,input)
     current_state=new_current_state
 
 final_positions = np.concatenate(\
     (np.zeros((dimension,1)),np.reshape(current_state[0:dimension*(number_of_balls+1)],(number_of_balls+1,dimension)).T)\
 ,axis=1)
 
+print(final_positions)
+
+plt.figure(1)
+plt.plot(final_positions[0,:],final_positions[1,:])
+plt.show()

@@ -14,9 +14,13 @@ def save_integrator(key_name):
         print("Saving "+RK.name+" to file "+str(key_name)+".npz")
 
         # an integrator tablaeu exists out of 3 matrices:
-        A=np.asarray(RK.A)
-        b=np.asarray(RK.b)
-        c=np.asarray(RK.c)
+        #A=np.asarray(RK.A)
+        #b=np.asarray(RK.b)
+        #c=np.asarray(RK.c)
+	
+        A=np.array(RK.A.tolist()).astype(np.float64)
+        b=np.array(RK.b.tolist()).astype(np.float64)
+        c=np.array(RK.c.tolist()).astype(np.float64)
 
         output_file="./integrator_tableaus/"+str(key_name)
 
