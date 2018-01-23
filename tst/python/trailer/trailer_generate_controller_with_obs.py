@@ -71,7 +71,8 @@ def generate_controller_with_obs(controller_name,reference_state,Q,obstacle,obst
         result_simulation = sim.simulate_nmpc(state)
         print("Step [" + str(i) + "/" + str(number_of_steps) + "]: The optimal input is: [" \
               + str(result_simulation.optimal_input[0]) + "," + str(result_simulation.optimal_input[0]) + "]" \
-              + " time=" + result_simulation.time_string)
+              + " time=" + result_simulation.time_string + " number of panoc iterations=" + str(
+            result_simulation.panoc_interations))
         sys.stdout.flush()
 
         state = np.asarray(model.get_next_state(state,result_simulation.optimal_input))

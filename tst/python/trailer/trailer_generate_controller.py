@@ -47,7 +47,8 @@ def generate_controller(controller_name,reference_state,display_figure=True):
     trailer_controller.horizon = 100
     trailer_controller.step_size = step_size
     trailer_controller.integrator_casadi = True
-    trailer_controller.panoc_max_steps=100
+    trailer_controller.panoc_max_steps=100000
+    trailer_controller._lbgfs_buffer_size = 50
 
     # generate the code
     trailer_controller.generate_code()
@@ -67,7 +68,8 @@ def generate_controller(controller_name,reference_state,display_figure=True):
         result_simulation = sim.simulate_nmpc(state)
         print("Step [" + str(i) + "/" + str(number_of_steps) + "]: The optimal input is: [" \
               + str(result_simulation.optimal_input[0]) + "," + str(result_simulation.optimal_input[0]) + "]" \
-              + " time=" + result_simulation.time_string)
+              + " time=" + result_simulation.time_string + " number of panoc iterations=" + str(
+            result_simulation.panoc_interations))
         sys.stdout.flush()
 
         state = np.asarray(model.get_next_state(state,result_simulation.optimal_input))

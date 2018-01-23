@@ -53,6 +53,7 @@ trailer_controller = controller.Nmpc_panoc(trailer_controller_location, model, s
 trailer_controller.horizon = horizon # NMPC parameter
 trailer_controller.integrator_casadi = True # optional  feature that can generate the integrating used  in the cost function
 trailer_controller.panoc_max_steps = 1000 # the maximum amount of iterations the PANOC algorithm is allowed to do.
+trailer_controller._lbgfs_buffer_size=100
 
 # add an obstacle, a two dimensional rectangle
 obstacle_weight = 10000000000000.
