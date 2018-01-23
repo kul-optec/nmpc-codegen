@@ -29,7 +29,6 @@ class Nmpc_panoc:
 
         # at first assume no obstacles
         self._obstacle=[]
-        self._obstacle_weights = []
 
     def generate_code(self):
         """ Generate code controller """
@@ -59,8 +58,11 @@ class Nmpc_panoc:
     def __generate_cost_function_singleshot(self):
         """ private function, generates part of the casadi cost function with single shot """
         initial_state = cd.SX.sym('initial_state', self._model.number_of_states, 1)
+        state_reference = cd.SX.sym('state_reference', self._model.number_of_states, 1)
+        input_reference = cd.SX.sym('input_reference', self._model.number_of_inputs, 1)
+        obstacle_weights = cd.SX.sym('obstacle_weights', len(self._obstacle), 1)
+        
         input_all_steps = cd.SX.sym('input_all_steps', self._model.number_of_inputs*self._horizon, 1)
-
         cost=cd.SX.sym('cost',1,1)
         cost=0
 
@@ -69,15 +71,17 @@ class Nmpc_panoc:
             input = input_all_steps[(i-1)*self._model.number_of_inputs:i*self._model.number_of_inputs]
             current_state = self._model.get_next_state(current_state,input)
 
-            cost = cost + self._stage_cost.stage_cost(current_state,input,i)
-            cost = cost + self.__generate_cost_obstacles(current_state)
+            cost = cost + self._stage_cost.stage_cost(current_state,input,i,state_reference,input_reference)
+            cost = cost + self.__generate_cost_obstacles(current_state,obstacle_weights)
 
-        self.__setup_casadi_functions_and_generate_c(initial_state,input_all_steps,cost)
+        self.__setup_casadi_functions_and_generate_c(initial_state,input_all_steps,state_reference,input_reference,obstacle_weights,cost)
 
-    def __setup_casadi_functions_and_generate_c(self,initial_state,input_all_steps,cost):
-        self._cost_function = cd.Function('cost_function', [initial_state, input_all_steps], [cost])
+    def __setup_casadi_functions_and_generate_c(self,initial_state,input_all_steps,
+                                                state_reference,input_reference,
+                                                obstacle_weights,cost):
+        self._cost_function = cd.Function('cost_function', [initial_state, input_all_steps,state_reference,input_reference,obstacle_weights], [cost])
         self._cost_function_derivative_combined = cd.Function('cost_function_derivative_combined',
-                                                        [initial_state, input_all_steps],
+                                                        [initial_state, input_all_steps,state_reference,input_reference,obstacle_weights],
                                                         [cost, cd.gradient(cost, input_all_steps)])
 
         self.__translate_casadi_to_c(self._cost_function, filename="cost_function.c")
@@ -124,14 +128,13 @@ class Nmpc_panoc:
     def __generate_cost_function_multipleshot(self,location):
         """ private function, generates part of the casadi cost function with multiple shot"""
         raise NotImplementedError
-    def __generate_cost_obstacles(self,state):
-        number_of_obstacles=len(self._obstacle)
-        if(number_of_obstacles==0):
+    def __generate_cost_obstacles(self,state,obstacle_weights):
+        if(self.number_of_obstacles==0):
             return 0.
         else:
             cost = 0.
-            for i in range(0,number_of_obstacles):
-                cost += self._obstacle_weights[i]*self._obstacle[i].evaluate_cost(state[self._model.indices_coordinates])
+            for i in range(0,self.number_of_obstacles):
+                cost += obstacle_weights[i]*self._obstacle[i].evaluate_cost(state[self._model.indices_coordinates])
 
             return cost
     def generate_minimum_lib(self,location,replace):
@@ -145,9 +148,8 @@ class Nmpc_panoc:
             else:
                 print("ERROR folder lib already excist, remove the folder or put repace on true")
 
-    def add_obstacle(self,obstacle,weight):
+    def add_obstacle(self,obstacle):
         self._obstacle.append(obstacle)
-        self._obstacle_weights.append(weight)
     @property
     def shooting_mode(self):
         return self._shooting_mode
@@ -218,6 +220,9 @@ class Nmpc_panoc:
     def min_residual(self, value):
         self._min_residual = value
 
+    @property
+    def number_of_obstacles(self):
+        return len(self._obstacle)
 
     @property
     def cost_function(self):

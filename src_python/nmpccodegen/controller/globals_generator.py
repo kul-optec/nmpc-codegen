@@ -13,6 +13,9 @@ class Globals_generator:
         self._define_variable("DIMENSION_STATE", nmpc_controller.model.number_of_states)
         self._define_variable("MPC_HORIZON", nmpc_controller.horizon)
 
+        self._define_variable("NUMBER_OF_OBSTACLES", nmpc_controller.number_of_obstacles)
+        self._define_variable("DEFAULT_OBSTACLE_WEIGHT", 1)
+
         self.set_data_type(nmpc_controller.data_type)
 
         self._generate_title("lbgfs solver definitions")

@@ -33,7 +33,7 @@ tools.Bootstrapper.bootstrap(output_locationcontroller, controller_name, python_
 step_size = 0.05
 simulation_time = 10
 number_of_steps = math.ceil(simulation_time / step_size)
-horizon = 10
+horizon = 20
 
 integrator = "RK" # select a Runga-Kutta  integrator
 constraint_input = cfunctions.IndicatorBoxFunction([-1, -1], [1, 1])  # input needs stay within these borders
@@ -45,47 +45,52 @@ Q = np.diag([1., 100., 1.])
 R = np.eye(model.number_of_inputs, model.number_of_inputs) * 1.
 
 # the stage cost is defined two lines,different kinds of stage costs are available to the user.
-reference_state = np.array([2, 0.5, 0])
-stage_cost = controller.Stage_cost_QR_reference(model, Q, R, reference_state)
+stage_cost = controller.Stage_cost_QR(model, Q, R)
 
 # define the controller
 trailer_controller = controller.Nmpc_panoc(trailer_controller_location, model, stage_cost)
 trailer_controller.horizon = horizon # NMPC parameter
 trailer_controller.integrator_casadi = True # optional  feature that can generate the integrating used  in the cost function
-trailer_controller.panoc_max_steps = 1000 # the maximum amount of iterations the PANOC algorithm is allowed to do.
-trailer_controller._lbgfs_buffer_size=100
+trailer_controller.panoc_max_steps = 300 # the maximum amount of iterations the PANOC algorithm is allowed to do.
+trailer_controller.min_residual=-5
 
 # add an obstacle, a two dimensional rectangle
-obstacle_weight = 10000000000000.
+# obstacle_weight = 1000.
 x_up = 1.
 x_down = 0.5
 y_up = 0.4
 y_down = 0.2
 obstacle = controller.Basic_obstacles.generate_rec_object(x_up, x_down, y_up, y_down)
-trailer_controller.add_obstacle(obstacle, obstacle_weight)
+trailer_controller.add_obstacle(obstacle)
 
 # generate the dynamic code
 trailer_controller.generate_code()
 
 # -- simulate controller --
 # setup a simulator to test
-sim = tools.Simulator(trailer_controller)
+sim = tools.Simulator(trailer_controller.location)
 
 # init the controller
 sim.simulator_init()
 
+sim.set_weight_obstacle(0,1000.)
+
 initial_state = np.array([0.01, 0., 0.])
+reference_state = np.array([2, 0.5, 0])
+reference_input = np.array([0, 0])
 state = initial_state
 state_history = np.zeros((number_of_states, number_of_steps))
 
 for i in range(1, number_of_steps):
-    result_simulation= sim.simulate_nmpc(state)
+    result_simulation= sim.simulate_nmpc(state,reference_state,reference_input)
     print("Step ["+str(i)+"/"+str(number_of_steps)+"]: The optimal input is: [" \
           + str(result_simulation.optimal_input[0]) + "," + str(result_simulation.optimal_input[0]) + "]" \
           + " time=" + result_simulation.time_string + " number of panoc iterations=" + str(result_simulation.panoc_interations))
 
     state = np.asarray(model.get_next_state(state, result_simulation.optimal_input))
     state_history[:, i] = np.reshape(state[:], number_of_states)
+    if i<14 :
+        sim.set_weight_obstacle(0,(2**i))
 
 # cleanup the controller
 sim.simulator_cleanup()

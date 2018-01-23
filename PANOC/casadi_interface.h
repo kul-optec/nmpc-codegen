@@ -17,11 +17,17 @@ typedef struct {
 
 int casadi_interface_init();
 int casadi_interface_cleanup();
-int casadi_set_state(const real_t* current_state);
+int casadi_prepare_cost_function(   const real_t* current_state,
+                                    const real_t* _state_reference,
+                                    const real_t* _input_reference);
 #ifdef INTEGRATOR_CASADI
 int casadi_integrate(const real_t* state,const real_t* input,real_t* new_state);
 #endif
 size_t casadi_interface_get_dimension();
+
+/* obstacle related functions */
+real_t casadi_get_weight_obstacles(int index_obstacle);/* returns zero if index was out of range */
+int casadi_set_weight_obstacles(int index_obstacle,real_t weight);/* returns failure if the index is out of range */
 
 /* cost functions */
 real_t casadi_interface_f(const real_t* input);
