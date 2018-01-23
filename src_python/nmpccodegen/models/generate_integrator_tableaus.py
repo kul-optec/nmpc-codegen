@@ -11,7 +11,7 @@ def save_integrator(key_name):
     """ save the integrator if its explicit """
     RK=loadRKM(key_name)
     if(RK.is_explicit()):
-        print("Saving "+RK.name+" to file "+str())
+        print("Saving "+RK.name+" to file "+str(key_name)+".npz")
 
         # an integrator tablaeu exists out of 3 matrices:
         A=RK.A
