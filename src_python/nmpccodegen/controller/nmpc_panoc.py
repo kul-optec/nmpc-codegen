@@ -75,7 +75,39 @@ class Nmpc_panoc:
             cost = cost + self.__generate_cost_obstacles(current_state,obstacle_weights)
 
         self.__setup_casadi_functions_and_generate_c(initial_state,input_all_steps,state_reference,input_reference,obstacle_weights,cost)
+    def __generate_cost_function_multipleshot(self):
+        """ private function, generates part of the casadi cost function with multiple shot"""
+        initial_state = cd.SX.sym('initial_state', self._model.number_of_states*self._horizon, 1)
+        state_reference = cd.SX.sym('state_reference', self._model.number_of_states, 1)
+        input_reference = cd.SX.sym('input_reference', self._model.number_of_inputs, 1)
+        obstacle_weights = cd.SX.sym('obstacle_weights', len(self._obstacle), 1)
 
+        input_all_steps = cd.SX.sym('input_all_steps', self._model.number_of_inputs * self._horizon, 1)
+        cost = cd.SX.sym('cost', 1, 1)
+        cost = 0
+
+        for i in range(1, self._horizon + 1):
+            input = input_all_steps[(i - 1) * self._model.number_of_inputs:i * self._model.number_of_inputs]
+            current_init_state = initial_state[(i - 1) * self._model.number_of_states:i * self._model.number_of_states]
+
+            next_state_bar = self._model.get_next_state(current_init_state,input)
+
+            cost = cost + self._stage_cost.stage_cost(next_state_bar, input, i, state_reference, input_reference)
+            cost = cost + self.__generate_cost_obstacles(next_state_bar, obstacle_weights)
+
+            # add a soft constraint for the continuity
+            if i > 1 :
+                cost = cost + \
+                       1000*(\
+                           cd.sum1(\
+                                (previous_next_state_bar-current_init_state)**2\
+                            )\
+                        )
+
+            previous_next_state_bar = next_state_bar
+
+        self.__setup_casadi_functions_and_generate_c(initial_state, input_all_steps, state_reference, input_reference,
+                                                     obstacle_weights, cost)
     def __setup_casadi_functions_and_generate_c(self,initial_state,input_all_steps,
                                                 state_reference,input_reference,
                                                 obstacle_weights,cost):
@@ -125,9 +157,6 @@ class Nmpc_panoc:
                 if "}" in line:
                     in_file = False
 
-    def __generate_cost_function_multipleshot(self,location):
-        """ private function, generates part of the casadi cost function with multiple shot"""
-        raise NotImplementedError
     def __generate_cost_obstacles(self,state,obstacle_weights):
         if(self.number_of_obstacles==0):
             return 0.

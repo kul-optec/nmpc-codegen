@@ -75,7 +75,7 @@ def generate_controller_with_obs(controller_name,reference_state,Q,obstacle,obst
             result_simulation.panoc_interations))
         sys.stdout.flush()
 
-        state = np.asarray(model.get_next_state(state,result_simulation.optimal_input))
+        state = model.get_next_state_numpy(state,result_simulation.optimal_input)
         state_history[:,i] = np.reshape(state[:],number_of_states)
 
     # cleanup the controller

@@ -87,11 +87,12 @@ class Simulator:
         sys.stdout.flush()
     def simulate_nmpc(self,current_state,state_reference,input_reference):
         length_state = len(current_state)
+        length_state_reference = len(state_reference)
         length_input = len(input_reference)
 
         # construct the array pointers
         array_state = ctypes.c_double * length_state
-        array_state_reference = ctypes.c_double * length_state
+        array_state_reference = ctypes.c_double * length_state_reference
         array_input_reference = ctypes.c_double * length_input
 
         # construct an actual new array, and save a pointer to it
@@ -109,14 +110,23 @@ class Simulator:
             )
 
         return Simulation_data(convergence_time[0],optimal_input)
-    def simulate_nmpc_full(self,current_state,state_reference,input_reference):
+    def simulate_nmpc_multistep_solution(self,current_state,state_reference,input_reference,number_of_steps):
         # simulate the controller
         sim_data = self.simulate_nmpc(current_state,state_reference,input_reference)
+        input_size=len(input_reference)
 
         # get the full solution
         self.nmpc_python_interface.get_last_full_solution.restype = ctypes.POINTER(ctypes.c_double)
 
         full_solution = self.nmpc_python_interface.get_last_full_solution()
+
+        return_values = np.zeros((input_size,number_of_steps))
+        for i in range(0,number_of_steps*input_size):
+            i_collum = i%input_size
+            i_row = int(i/input_size)
+            return_values[i_collum,i_row]=full_solution[i]
+
+        return (sim_data,return_values)
     def set_weight_obstacle(self,index_obstacle,weight_obstacle):
 
         index_obstacle_ctype = ctypes.c_int(index_obstacle)
