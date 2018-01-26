@@ -3,6 +3,7 @@ import numpy as np
 import os
 from pathlib import Path
 from .globals_generator import Globals_generator
+from .casadi_code_generator import Casadi_code_generator as ccg
 
 class Nmpc_panoc:
     """ Defines a nmpc problem of the shape min f(x)+ g(x) """
@@ -53,7 +54,7 @@ class Nmpc_panoc:
 
         integrator = cd.Function('integrator', [state, input], [self._model.get_next_state(state,input)])
 
-        self.__translate_casadi_to_c(integrator, filename="integrator.c")
+        ccg.translate_casadi_to_c(integrator,self._location_lib, filename="integrator.c")
 
     def __generate_cost_function_singleshot(self):
         """ private function, generates part of the casadi cost function with single shot """
@@ -74,7 +75,7 @@ class Nmpc_panoc:
             cost = cost + self._stage_cost.stage_cost(current_state,input,i,state_reference,input_reference)
             cost = cost + self.__generate_cost_obstacles(current_state,obstacle_weights)
 
-        self.__setup_casadi_functions_and_generate_c(initial_state,input_all_steps,state_reference,input_reference,obstacle_weights,cost)
+        ccg.setup_casadi_functions_and_generate_c(initial_state,input_all_steps,state_reference,input_reference,obstacle_weights,cost,self._location_lib)
     def __generate_cost_function_multipleshot(self):
         """ private function, generates part of the casadi cost function with multiple shot"""
         initial_state = cd.SX.sym('initial_state', self._model.number_of_states*self._horizon, 1)
@@ -96,9 +97,10 @@ class Nmpc_panoc:
             cost = cost + self.__generate_cost_obstacles(next_state_bar, obstacle_weights)
 
             # add a soft constraint for the continuity
+            weight_continuity = 1
             if i > 1 :
                 cost = cost + \
-                       1000*(\
+                       weight_continuity*(\
                            cd.sum1(\
                                 (previous_next_state_bar-current_init_state)**2\
                             )\
@@ -108,54 +110,6 @@ class Nmpc_panoc:
 
         self.__setup_casadi_functions_and_generate_c(initial_state, input_all_steps, state_reference, input_reference,
                                                      obstacle_weights, cost)
-    def __setup_casadi_functions_and_generate_c(self,initial_state,input_all_steps,
-                                                state_reference,input_reference,
-                                                obstacle_weights,cost):
-        self._cost_function = cd.Function('cost_function', [initial_state, input_all_steps,state_reference,input_reference,obstacle_weights], [cost])
-        self._cost_function_derivative_combined = cd.Function('cost_function_derivative_combined',
-                                                        [initial_state, input_all_steps,state_reference,input_reference,obstacle_weights],
-                                                        [cost, cd.gradient(cost, input_all_steps)])
-
-        self.__translate_casadi_to_c(self._cost_function, filename="cost_function.c")
-        self.__translate_casadi_to_c(self._cost_function_derivative_combined, filename="cost_function_derivative_combined.c")
-    def __translate_casadi_to_c(self,casadi_function,filename):
-        # check if the buffer file excists, should never be the case, but check anyway
-        buffer_file_name="buffer"
-        file = Path(buffer_file_name)
-        if (file.exists()):
-            os.remove(buffer_file_name)
-
-        # generate the casadi function in C to a buffer file
-        casadi_function.generate(buffer_file_name)
-        file_name_costfunction = self._location_lib + "casadi/"+filename
-
-        # check if the file already exists
-        file = Path(file_name_costfunction)
-        if(file.exists()):
-            print(file_name_costfunction+ " already exists: removing file...")
-            os.remove(file_name_costfunction)
-
-        # move the function to the right location
-        open(file_name_costfunction, 'a').close()
-
-        prototype_function = "(const real_t** arg, real_t** res, int* iw, real_t* w, int mem) {"
-        self.__copy_over_function_to_file("buffer.c",file_name_costfunction,prototype_function)
-
-        prototype_function = "(int *sz_arg, int* sz_res, int *sz_iw, int *sz_w) {"
-        self.__copy_over_function_to_file("buffer.c", file_name_costfunction, prototype_function)
-
-        os.remove("buffer.c")
-    def __copy_over_function_to_file(self,source,destination,function_name):
-        in_file=False
-        destination_file = open(destination, 'a')
-        with open(source, 'r') as inF:
-            for line in inF:
-                if function_name in line:
-                    in_file=True
-                if in_file:
-                    destination_file.write(line)
-                if "}" in line:
-                    in_file = False
 
     def __generate_cost_obstacles(self,state,obstacle_weights):
         if(self.number_of_obstacles==0):
@@ -166,17 +120,6 @@ class Nmpc_panoc:
                 cost += obstacle_weights[i]*self._obstacle[i].evaluate_cost(state[self._model.indices_coordinates])
 
             return cost
-    def generate_minimum_lib(self,location,replace):
-        """ Generate a lib with minimum amount of files  """
-        file = Path(location)
-        if (file.exists()):
-            print(location + " already exists")
-            if replace==True:
-                os.remove(location)
-                # TODO copy over all the necessary files !
-            else:
-                print("ERROR folder lib already excist, remove the folder or put repace on true")
-
     def add_obstacle(self,obstacle):
         self._obstacle.append(obstacle)
     @property
