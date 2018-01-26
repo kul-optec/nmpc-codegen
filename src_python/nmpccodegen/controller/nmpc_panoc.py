@@ -75,7 +75,10 @@ class Nmpc_panoc:
             cost = cost + self._stage_cost.stage_cost(current_state,input,i,state_reference,input_reference)
             cost = cost + self.__generate_cost_obstacles(current_state,obstacle_weights)
 
-        ccg.setup_casadi_functions_and_generate_c(initial_state,input_all_steps,state_reference,input_reference,obstacle_weights,cost,self._location_lib)
+        (self._cost_function, self._cost_function_derivative_combined) = \
+            ccg.setup_casadi_functions_and_generate_c(initial_state,input_all_steps,\
+                                                      state_reference,input_reference,obstacle_weights,cost,\
+                                                      self._location_lib)
     def __generate_cost_function_multipleshot(self):
         """ private function, generates part of the casadi cost function with multiple shot"""
         initial_state = cd.SX.sym('initial_state', self._model.number_of_states*self._horizon, 1)
@@ -108,8 +111,10 @@ class Nmpc_panoc:
 
             previous_next_state_bar = next_state_bar
 
-        self.__setup_casadi_functions_and_generate_c(initial_state, input_all_steps, state_reference, input_reference,
-                                                     obstacle_weights, cost)
+        (self._cost_function, self._cost_function_derivative_combined) = \
+            ccg.setup_casadi_functions_and_generate_c(initial_state, input_all_steps, \
+                                                      state_reference, input_reference, obstacle_weights, cost, \
+                                                      self._location_lib)
 
     def __generate_cost_obstacles(self,state,obstacle_weights):
         if(self.number_of_obstacles==0):
@@ -199,9 +204,6 @@ class Nmpc_panoc:
     @property
     def cost_function(self):
         return self._cost_function
-    @property
-    def cost_function_derivative(self):
-        return self._cost_function_derivative
     @property
     def cost_function_derivative_combined(self):
         return self._cost_function_derivative_combined
