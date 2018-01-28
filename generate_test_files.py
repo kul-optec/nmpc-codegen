@@ -1,19 +1,19 @@
 # import numpy as np
-import casadi as cd
-import numpy as np
+
 import sys
 sys.path.insert(0, './src_python')
-import nmpc_panoc as npc
-import math
-import model_continious as modelc
-import example_models # this contains the chain example
-import math
-import Cfunctions.IndicatorBoxFunction as indbox
-import stage_costs
+import nmpccodegen as nmpc
+import nmpccodegen.tools as tools
+import nmpccodegen.models as models
+import nmpccodegen.controller as controller
+import nmpccodegen.Cfunctions as cfunctions
 
+import math
+import casadi as cd
+import numpy as np
 
 def main():
-    (system_equations, number_of_states, number_of_inputs,indices_coordinates) = example_models.get_chain_model()
+    (system_equations, number_of_states, number_of_inputs,indices_coordinates) = nmpc.example_models.get_chain_model()
     dimension = 2
     number_of_balls = 4
 
@@ -21,9 +21,9 @@ def main():
     simulation_time = 5
     number_of_steps = math.ceil(simulation_time / step_size)
 
-    integrator = "RK"
-    constraint_input = indbox.IndicatorBoxFunction([-2, -2], [2, 2])  # input needs stay within these borders
-    model = modelc.Model_continious(system_equations, constraint_input, step_size, number_of_states, \
+    integrator = "RK44"
+    constraint_input = cfunctions.IndicatorBoxFunction([-2, -2], [2, 2])  # input needs stay within these borders
+    model = models.Model_continious(system_equations, constraint_input, step_size, number_of_states, \
                                     number_of_inputs,indices_coordinates, integrator)
 
     # Q = np.eye(model.number_of_states, model.number_of_states)
@@ -31,11 +31,11 @@ def main():
     R = np.eye(model.number_of_inputs, model.number_of_inputs)
 
     # reference_state=np.array([2,2,0])
-    stage_cost = stage_costs.Stage_cost_QR(model, Q, R)
+    stage_cost = controller.Stage_cost_QR(model, Q, R)
 
     # define the controller
     controller_location = "./"
-    nmpc_controller = npc.Nmpc_panoc(controller_location,model,stage_cost )
+    nmpc_controller = controller.Nmpc_panoc(controller_location,model,stage_cost )
 
     nmpc_controller.horizon = 50
     nmpc_controller.step_size = 0.1
