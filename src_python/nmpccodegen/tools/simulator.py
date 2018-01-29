@@ -88,15 +88,15 @@ class Simulator:
     def simulate_nmpc(self,current_state,state_reference,input_reference):
         length_state = len(current_state)
         length_state_reference = len(state_reference)
-        length_input = len(input_reference)
+        length_input_reference = len(input_reference)
 
         # construct the array pointers
         array_state = ctypes.c_double * length_state
         array_state_reference = ctypes.c_double * length_state_reference
-        array_input_reference = ctypes.c_double * length_input
+        array_input_reference = ctypes.c_double * length_input_reference
 
         # construct an actual new array, and save a pointer to it
-        array_optimal_input = ctypes.c_double * length_input
+        array_optimal_input = ctypes.c_double * length_input_reference
         optimal_input = array_optimal_input()
 
         # set return type: Panoc_time

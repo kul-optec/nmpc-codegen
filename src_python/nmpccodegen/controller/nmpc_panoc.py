@@ -83,18 +83,19 @@ class Nmpc_panoc:
         self._dimension_panoc=self._model.number_of_inputs*self._horizon
     def __generate_cost_function_multipleshot(self):
         """ private function, generates part of the casadi cost function with multiple shot"""
-        initial_state = cd.SX.sym('initial_state', self._model.number_of_states*self._horizon, 1)
+        initial_state = cd.SX.sym('initial_state', self._model.number_of_states, 1)
         state_reference = cd.SX.sym('state_reference', self._model.number_of_states, 1)
         input_reference = cd.SX.sym('input_reference', self._model.number_of_inputs, 1)
         obstacle_weights = cd.SX.sym('obstacle_weights', len(self._obstacle), 1)
 
-        input_all_steps = cd.SX.sym('input_all_steps', self._model.number_of_inputs * self._horizon, 1)
+        input_all_steps = cd.SX.sym('input_all_steps', self._model.number_of_inputs * self._horizon + \
+                                    self._model.number_of_states * (self._horizon-1), 1)
         cost = cd.SX.sym('cost', 1, 1)
         cost = 0
 
+        current_init_state = initial_state
         for i in range(1, self._horizon + 1):
             input = input_all_steps[(i - 1) * self._model.number_of_inputs:i * self._model.number_of_inputs]
-            current_init_state = initial_state[(i - 1) * self._model.number_of_states:i * self._model.number_of_states]
 
             next_state_bar = self._model.get_next_state(current_init_state,input)
 
@@ -112,6 +113,10 @@ class Nmpc_panoc:
                         )
 
             previous_next_state_bar = next_state_bar
+            if i<self._horizon: # don't do this is this is the last loop
+                offset_inputs = self._model.number_of_inputs * self._horizon
+                current_init_state = input_all_steps[offset_inputs+(i-1)*self._model.number_of_states: \
+                    offset_inputs + i * self._model.number_of_states]
 
         (self._cost_function, self._cost_function_derivative_combined) = \
             ccg.setup_casadi_functions_and_generate_c(initial_state, input_all_steps, \
