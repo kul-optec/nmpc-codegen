@@ -35,7 +35,7 @@ simulation_time = 10
 number_of_steps = math.ceil(simulation_time / step_size)
 horizon = 20
 
-integrator = "FE" # select a Runga-Kutta  integrator (FE is forward euler)
+integrator = "RK44" # select a Runga-Kutta  integrator (FE is forward euler)
 constraint_input = cfunctions.IndicatorBoxFunction([-1, -1], [1, 1])  # input needs stay within these borders
 model = models.Model_continious(system_equations, constraint_input, step_size, number_of_states, \
                                 number_of_inputs, coordinates_indices, integrator)

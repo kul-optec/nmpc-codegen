@@ -10,6 +10,7 @@ class Nmpc_panoc:
     def __init__(self, location_lib,model,stage_cost):
         self._location_lib=location_lib # location of the library
         self._model=model
+        self._dimension_panoc=0 # dimension of the panoc problem, should be set so something non-zero
 
         self._stage_cost=stage_cost
 
@@ -79,6 +80,7 @@ class Nmpc_panoc:
             ccg.setup_casadi_functions_and_generate_c(initial_state,input_all_steps,\
                                                       state_reference,input_reference,obstacle_weights,cost,\
                                                       self._location_lib)
+        self._dimension_panoc=self._model.number_of_inputs*self._horizon
     def __generate_cost_function_multipleshot(self):
         """ private function, generates part of the casadi cost function with multiple shot"""
         initial_state = cd.SX.sym('initial_state', self._model.number_of_states*self._horizon, 1)
@@ -115,7 +117,7 @@ class Nmpc_panoc:
             ccg.setup_casadi_functions_and_generate_c(initial_state, input_all_steps, \
                                                       state_reference, input_reference, obstacle_weights, cost, \
                                                       self._location_lib)
-
+        self._dimension_panoc = self._model.number_of_inputs * self._horizon
     def __generate_cost_obstacles(self,state,obstacle_weights):
         if(self.number_of_obstacles==0):
             return 0.
@@ -133,6 +135,10 @@ class Nmpc_panoc:
     @shooting_mode.setter
     def shooting_mode(self, value):
         self._shooting_mode = value
+
+    @property
+    def dimension_panoc(self):
+        return self._dimension_panoc
 
     @property
     def horizon(self):

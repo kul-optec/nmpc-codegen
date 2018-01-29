@@ -11,6 +11,7 @@ class Globals_generator:
         self._generate_title("Problem specific definitions")
         self._define_variable("DIMENSION_INPUT", nmpc_controller.model.number_of_inputs)
         self._define_variable("DIMENSION_STATE", nmpc_controller.model.number_of_states)
+        self._define_variable("DIMENSION_PANOC", nmpc_controller.dimension_panoc)
         self._define_variable("MPC_HORIZON", nmpc_controller.horizon)
 
         self._define_variable("NUMBER_OF_OBSTACLES", nmpc_controller.number_of_obstacles)
@@ -25,6 +26,7 @@ class Globals_generator:
         self._define_variable("PANOC_MAX_STEPS",nmpc_controller.panoc_max_steps)
         self._define_variable("PANOC_MIN_STEPS",nmpc_controller.panoc_min_steps)
         self._define_variable("MIN_RESIDUAL","pow(10,"+str(nmpc_controller.min_residual)+""+")")
+
 
         self._generate_title("Optional features")
         if( nmpc_controller.integrator_casadi):
