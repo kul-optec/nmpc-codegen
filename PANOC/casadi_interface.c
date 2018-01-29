@@ -99,7 +99,7 @@ int casadi_prepare_cost_function(   const real_t* _current_state,
     return SUCCESS;
 }
 size_t casadi_interface_get_dimension(){
-    return DIMENSION_INPUT*MPC_HORIZON;
+    return DIMENSION_PANOC;
 }
 
 /* cost functions */
