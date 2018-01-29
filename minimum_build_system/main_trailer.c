@@ -7,6 +7,9 @@ int main(){
     size_t number_of_steps=100;
     size_t print_limit=10;
 
+    double ref_state[3]={2,0.5,0};
+    double ref_input[3]={0,0};
+
     double state[3]={0,0,0};
     double new_state[3];
     double input[2];
@@ -17,7 +20,7 @@ int main(){
     size_t i;
     for (i = 0; i < number_of_steps; i++)
     {
-        npmc_solve(state,input);
+        npmc_solve(state,ref_state,ref_input,input);
         if(i<print_limit)
             printf("- Optimal input Ux=%f Uy=%f \n",input[0],input[1]);
 
