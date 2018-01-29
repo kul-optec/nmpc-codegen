@@ -10,15 +10,16 @@ static real_t* current_input;
 static real_t* new_input;
 
 int nmpc_init(void){
+    int dimension = casadi_interface_get_dimension();
     if(panoc_init()==FAILURE) goto fail_1;
-    current_input=calloc(DIMENSION_INPUT*MPC_HORIZON,sizeof(real_t)); /* start with the zero input */
+    current_input=calloc(dimension,sizeof(real_t)); /* start with the zero input */
     if(current_input==NULL) goto fail_2;
-    new_input=malloc(DIMENSION_INPUT*MPC_HORIZON*sizeof(real_t));
+    new_input=malloc(dimension*sizeof(real_t));
     if(new_input==NULL) goto fail_3;
-    
-    if(casadi_interface_init()) goto fail_4;
+    if(casadi_interface_init()==FAILURE) goto fail_4;
 
     return SUCCESS;
+    
     fail_4:
         casadi_interface_cleanup();
     fail_3:
