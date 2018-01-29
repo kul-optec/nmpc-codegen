@@ -110,7 +110,7 @@ class Simulator:
             )
 
         return Simulation_data(convergence_time[0],optimal_input)
-    def simulate_nmpc_multistep_solution(self,current_state,state_reference,input_reference,number_of_steps):
+    def simulate_nmpc_multistep_solution(self,current_state,state_reference,input_reference,number_of_steps,number_of_extra_parameters):
         # simulate the controller
         sim_data = self.simulate_nmpc(current_state,state_reference,input_reference)
         input_size=len(input_reference)
@@ -126,7 +126,11 @@ class Simulator:
             i_row = int(i/input_size)
             return_values[i_collum,i_row]=full_solution[i]
 
-        return (sim_data,return_values)
+        extra_values=np.zeros((number_of_extra_parameters,1))
+        for i in range(0,number_of_extra_parameters):
+            extra_values[i]=full_solution[i+number_of_steps*input_size]
+
+        return (sim_data,return_values,extra_values)
     def set_weight_obstacle(self,index_obstacle,weight_obstacle):
 
         index_obstacle_ctype = ctypes.c_int(index_obstacle)

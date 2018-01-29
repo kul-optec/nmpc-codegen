@@ -122,7 +122,7 @@ class Nmpc_panoc:
             ccg.setup_casadi_functions_and_generate_c(initial_state, input_all_steps, \
                                                       state_reference, input_reference, obstacle_weights, cost, \
                                                       self._location_lib)
-        self._dimension_panoc = self._model.number_of_inputs * self._horizon
+        self._dimension_panoc = self._model.number_of_inputs * self._horizon + self._model.number_of_states*(self._horizon-1)
     def __generate_cost_obstacles(self,state,obstacle_weights):
         if(self.number_of_obstacles==0):
             return 0.

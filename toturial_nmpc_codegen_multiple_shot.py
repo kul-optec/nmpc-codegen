@@ -51,7 +51,7 @@ stage_cost = controller.Stage_cost_QR(model, Q, R)
 trailer_controller = controller.Nmpc_panoc(trailer_controller_location, model, stage_cost)
 trailer_controller.horizon = horizon # NMPC parameter
 trailer_controller.integrator_casadi = True # optional  feature that can generate the integrating used  in the cost function
-trailer_controller.panoc_max_steps = 1000 # the maximum amount of iterations the PANOC algorithm is allowed to do.
+trailer_controller.panoc_max_steps = 10000 # the maximum amount of iterations the PANOC algorithm is allowed to do.
 trailer_controller.min_residual=-10
 trailer_controller.shooting_mode="multiple shot"
 
@@ -91,7 +91,7 @@ sim = tools.Simulator(trailer_controller.location)
 sim.simulator_init()
 
 # simulate and get the whole horizon of inputs
-(sim_data,full_solution)= sim.simulate_nmpc_multistep_solution(initial_state,reference_state,reference_input,horizon)
+(sim_data,full_solution,extra_values)= sim.simulate_nmpc_multistep_solution(initial_state,reference_state,reference_input,horizon,(horizon-1)*number_of_states)
 print("solved problem in "+str(sim_data.panoc_interations)+" iterations")
 
 # cleanup the controller
@@ -107,13 +107,16 @@ for i in range(0,horizon):
 print("Final state:")
 print(state)
 
+# get the intermediate states
+inter_states = np.reshape(extra_values.T,(number_of_states,horizon-1))
+
 plt.figure(1)
 plt.subplot(211)
 # plt.plot(initial_states_matrix[0, :], initial_states_matrix[1, :])
 plt.plot(state_history[0, :], state_history[1, :])
 plt.subplot(212)
 plt.plot(state_history[2, :])
-plt.show()
 plt.savefig(controller_name + '.png')
-plt.clf()
-sys.stdout.flush()
+plt.figure(2)
+plt.plot(inter_states[0,:],inter_states[1,:])
+plt.show()
