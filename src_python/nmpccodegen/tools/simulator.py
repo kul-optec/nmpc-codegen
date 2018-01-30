@@ -86,14 +86,7 @@ class Simulator:
             print("check if they both are either 32bit or both 64 bit")
         sys.stdout.flush()
     def simulate_nmpc(self,current_state,state_reference,input_reference):
-        length_state = len(current_state)
-        length_state_reference = len(state_reference)
         length_input_reference = len(input_reference)
-
-        # construct the array pointers
-        array_state = ctypes.c_double * length_state
-        array_state_reference = ctypes.c_double * length_state_reference
-        array_input_reference = ctypes.c_double * length_input_reference
 
         # construct an actual new array, and save a pointer to it
         array_optimal_input = ctypes.c_double * length_input_reference
@@ -102,10 +95,22 @@ class Simulator:
         # set return type: Panoc_time
         self.nmpc_python_interface.simulate_nmpc_panoc.restype = ctypes.POINTER(Panoc_time)
 
+        # get pointers to the numpy arrays
+        c_double_p = ctypes.POINTER(ctypes.c_double)
+
+        current_state = current_state.astype(np.float64)
+        current_state_p = current_state.ctypes.data_as(c_double_p)
+
+        state_reference = state_reference.astype(np.float64)
+        state_reference_p = state_reference.ctypes.data_as(c_double_p)
+
+        input_reference = input_reference.astype(np.float64)
+        input_reference_p = input_reference.ctypes.data_as(c_double_p)
+
         convergence_time = self.nmpc_python_interface.simulate_nmpc_panoc(\
-            array_state(*current_state),\
-            array_state_reference(*state_reference),\
-            array_input_reference(*input_reference),\
+            current_state_p,\
+            state_reference_p,\
+            input_reference_p,\
             optimal_input\
             )
 
