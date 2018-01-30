@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (npmc_minimum)
+project (npmc_minimum C)
 
 # set the compiler with its flags
 SET(CMAKE_C_COMPILER gcc)
