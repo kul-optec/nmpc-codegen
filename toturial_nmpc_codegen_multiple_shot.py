@@ -15,7 +15,7 @@ import math
 import sys
 import time
 
-controller_name="toturial_controller"
+controller_name="toturial_controller_multishot"
 
 ## -- GENERATE STATIC FILES --
 # start by generating the static files and folder of the controller
@@ -74,8 +74,8 @@ initial_state = np.array([0.01, 0., 0.])
 # initial states of the multiple shoot should be a good guess of the traject
 initial_states_matrix=np.zeros((number_of_states,horizon-1))
 for i in range(0,horizon-1):
-    initial_states_matrix[0,i] = 2*(i/(horizon-1))+0.01
-    initial_states_matrix[1,i] = 0.5*(i/(horizon-1))
+    initial_states_matrix[0,i] = 0.5*(i/(horizon-1))+0.01
+    initial_states_matrix[1,i] = 0.1*(i/(horizon-1))
     initial_states_matrix[2, i] = 0
 
 initial_states=np.reshape(initial_states_matrix.T,(number_of_states*(horizon-1),1))
@@ -95,32 +95,28 @@ for i in range(0,number_of_states*(horizon-1)):
     j+=1
 
 # simulate and get the whole horizon of inputs
-(sim_data,full_solution,extra_values)= sim.simulate_nmpc_multistep_solution(initial_state,reference_state,reference_input,horizon,(horizon-1)*number_of_states)
+(sim_data,full_solution)= sim.simulate_nmpc_multistep_solution(initial_state,reference_state,reference_input,number_of_inputs*horizon+(horizon-1)*number_of_states)
 print("solved problem in "+str(sim_data.panoc_interations)+" iterations")
 
 # cleanup the controller
 sim.simulator_cleanup()
 
-# calculate the states using these inputs
-state = initial_state
-state_history = np.zeros((number_of_states, horizon))
-for i in range(0,horizon):
-    state = model.get_next_state_numpy(state,full_solution[:,i])
-    state_history[:,i]=np.ravel(state)
+# print("output full simulation")
+# print(full_solution)
 
-print("Final state:")
-print(state)
+# calculate the states using these inputs
+inputs = np.reshape(full_solution[0:horizon*number_of_inputs],(horizon,number_of_inputs))
+print("The optimal inputs are:")
+print(inputs)
 
 # get the intermediate states
-inter_states = np.reshape(extra_values.T,(number_of_states,horizon-1))
+intermediate_states = np.reshape(full_solution[horizon*number_of_inputs:],(horizon-1,number_of_states))
+print("The intermediate states used by the multiple shot are:")
+print(intermediate_states)
 
 plt.figure(1)
 plt.subplot(211)
-# plt.plot(initial_states_matrix[0, :], initial_states_matrix[1, :])
-plt.plot(state_history[0, :], state_history[1, :])
+plt.plot(intermediate_states[:, 0], intermediate_states[:, 1])
 plt.subplot(212)
-plt.plot(state_history[2, :])
-plt.savefig(controller_name + '.png')
-plt.figure(2)
-plt.plot(inter_states[0,:],inter_states[1,:])
+plt.plot(intermediate_states[:, 2])
 plt.show()
