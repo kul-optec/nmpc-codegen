@@ -131,6 +131,13 @@ class Simulator:
             extra_values[i]=full_solution[i+number_of_steps*input_size]
 
         return (sim_data,return_values,extra_values)
+    def set_init_value_solver(self,value,index):
+        index_ctype = ctypes.c_int(index)
+        value_ctype = ctypes.c_double(value)
+
+        self.nmpc_python_interface.restype = ctypes.c_int
+
+        self.nmpc_python_interface.simulation_set_buffer_solution(value_ctype,index_ctype)
     def set_weight_obstacle(self,index_obstacle,weight_obstacle):
 
         index_obstacle_ctype = ctypes.c_int(index_obstacle)

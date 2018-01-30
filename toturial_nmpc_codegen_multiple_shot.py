@@ -33,7 +33,7 @@ tools.Bootstrapper.bootstrap(output_locationcontroller, controller_name, python_
 step_size = 0.05
 simulation_time = 10
 number_of_steps = math.ceil(simulation_time / step_size)
-horizon = 90
+horizon = 10
 
 integrator = "RK44" # select a Runga-Kutta  integrator (FE is forward euler)
 constraint_input = cfunctions.IndicatorBoxFunction([-1, -1], [1, 1])  # input needs stay within these borders
@@ -72,14 +72,13 @@ trailer_controller.generate_code()
 
 initial_state = np.array([0.01, 0., 0.])
 # initial states of the multiple shoot should be a good guess of the traject
-# initial_states_matrix=np.zeros((number_of_states,horizon))
-# for i in range(0,horizon):
-#     initial_states_matrix[0,i] = 2*(i/(horizon-1))+0.01
-#     initial_states_matrix[1,i] = 0.5*(i/(horizon-1))
-#     initial_states_matrix[2, i] = 0
+initial_states_matrix=np.zeros((number_of_states,horizon-1))
+for i in range(0,horizon-1):
+    initial_states_matrix[0,i] = 2*(i/(horizon-1))+0.01
+    initial_states_matrix[1,i] = 0.5*(i/(horizon-1))
+    initial_states_matrix[2, i] = 0
 
-# initial_states=np.reshape(initial_states_matrix.T,(number_of_states*horizon,1))
-# initial_states=np.zeros((number_of_states*horizon,1))
+initial_states=np.reshape(initial_states_matrix.T,(number_of_states*(horizon-1),1))
 
 reference_state = np.array([2, 0.5, 0])
 reference_input = np.array([0, 0])
@@ -89,6 +88,11 @@ sim = tools.Simulator(trailer_controller.location)
 
 # init the controller
 sim.simulator_init()
+
+j=number_of_inputs*horizon
+for i in range(0,number_of_states*(horizon-1)):
+    sim.set_init_value_solver(initial_states[i],j)
+    j+=1
 
 # simulate and get the whole horizon of inputs
 (sim_data,full_solution,extra_values)= sim.simulate_nmpc_multistep_solution(initial_state,reference_state,reference_input,horizon,(horizon-1)*number_of_states)
