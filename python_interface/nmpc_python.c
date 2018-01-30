@@ -11,6 +11,8 @@ static struct Panoc_time* time_difference;
 const real_t* get_last_full_solution();
 struct Panoc_time* simulate_nmpc_panoc(real_t* current_state,real_t* optimal_inputs,
                                         real_t* state_reference,real_t* input_reference);
+int simulation_set_buffer_solution(real_t value, int index);
+
 /*
  * Simulates the controller and fill optimal_input with the optimal input.
  * -> returns the time till convergence
@@ -45,4 +47,7 @@ real_t simulation_get_weight_obstacles(int index_obstacle){
 }
 int simulation_set_weight_obstacles(int index_obstacle,real_t weight){
     return nmpc_set_weight_obstacles(index_obstacle,weight);
+}
+int simulation_set_buffer_solution(real_t value, int index){
+    return nmpc_set_buffer_solution(value,index);
 }

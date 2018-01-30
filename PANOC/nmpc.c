@@ -86,3 +86,7 @@ real_t nmpc_get_weight_obstacles(int index_obstacle){
 int nmpc_set_weight_obstacles(int index_obstacle,real_t weight){
     return casadi_set_weight_obstacles(index_obstacle,weight);
 }
+int nmpc_set_buffer_solution(real_t value, int index){
+    current_input[index]=value;
+    return SUCCESS;
+}
