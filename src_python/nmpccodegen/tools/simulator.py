@@ -110,27 +110,22 @@ class Simulator:
             )
 
         return Simulation_data(convergence_time[0],optimal_input)
-    def simulate_nmpc_multistep_solution(self,current_state,state_reference,input_reference,number_of_steps,number_of_extra_parameters):
+    def simulate_nmpc_multistep_solution(self,current_state,state_reference,input_reference,dimension_solution):
         # simulate the controller
         sim_data = self.simulate_nmpc(current_state,state_reference,input_reference)
         input_size=len(input_reference)
 
         # get the full solution
-        self.nmpc_python_interface.get_last_full_solution.restype = ctypes.POINTER(ctypes.c_double)
+        array_ctype_full_solution = ctypes.c_double * dimension_solution
+        full_solution_ctype = array_ctype_full_solution()
+        self.nmpc_python_interface.get_last_full_solution(full_solution_ctype)
 
-        full_solution = self.nmpc_python_interface.get_last_full_solution()
+        full_solution = np.zeros((dimension_solution,1))
+        for i in range(0,dimension_solution):
+            full_solution[i] = full_solution_ctype[i]
 
-        return_values = np.zeros((input_size,number_of_steps))
-        for i in range(0,number_of_steps*input_size):
-            i_collum = i%input_size
-            i_row = int(i/input_size)
-            return_values[i_collum,i_row]=full_solution[i]
+        return (sim_data,full_solution)
 
-        extra_values=np.zeros((number_of_extra_parameters,1))
-        for i in range(0,number_of_extra_parameters):
-            extra_values[i]=full_solution[i+number_of_steps*input_size]
-
-        return (sim_data,return_values,extra_values)
     def set_init_value_solver(self,value,index):
         index_ctype = ctypes.c_int(index)
         value_ctype = ctypes.c_double(value)

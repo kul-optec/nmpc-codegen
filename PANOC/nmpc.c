@@ -76,8 +76,14 @@ int npmc_solve( const real_t* current_state,
         return i_panoc;
     return i_panoc-1;
 }
-const real_t* nmpc_get_last_full_solution(void){
-    return current_input;
+int nmpc_get_last_full_solution(real_t* output){
+    size_t i;
+    int dimension = casadi_interface_get_dimension();
+    for ( i = 0; i < dimension ; i++)
+    {
+        output[i]=current_input[i];
+    }
+    return SUCCESS;
 }
 
 real_t nmpc_get_weight_obstacles(int index_obstacle){

@@ -8,7 +8,7 @@ void simulation_init();
 void simulation_cleanup();
 static struct Panoc_time* time_difference;
 
-const real_t* get_last_full_solution();
+int get_last_full_solution(real_t* output);
 struct Panoc_time* simulate_nmpc_panoc(real_t* current_state,real_t* optimal_inputs,
                                         real_t* state_reference,real_t* input_reference);
 int simulation_set_buffer_solution(real_t value, int index);
@@ -35,8 +35,8 @@ struct Panoc_time* simulate_nmpc_panoc( real_t* current_state,
 
     return time_difference;
 }
-const real_t* get_last_full_solution(){
-    return nmpc_get_last_full_solution();
+int get_last_full_solution(real_t* output){
+    return nmpc_get_last_full_solution(output);
 }
 void simulation_cleanup(){
     nmpc_cleanup();
