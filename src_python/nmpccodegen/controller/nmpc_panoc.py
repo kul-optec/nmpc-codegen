@@ -2,8 +2,11 @@ import casadi as cd
 import numpy as np
 import os
 from pathlib import Path
+
 from .globals_generator import Globals_generator
 from .casadi_code_generator import Casadi_code_generator as ccg
+from .nmpc_problem_single_shot import Single_shot_definition
+from .nmpc_problem_multiple_shot import Multiple_shot_definition
 
 class Nmpc_panoc:
     """ Defines a nmpc problem of the shape min f(x)+ g(x) """
@@ -17,7 +20,7 @@ class Nmpc_panoc:
         self._horizon=10
         self._shooting_mode="single shot"
 
-        self._lbgfs_buffer_size=10
+        self._lbgfs_buffer_size=20
         self._data_type = "double precision"
 
         self._panoc_max_steps=20
@@ -49,81 +52,30 @@ class Nmpc_panoc:
             self.__generate_integrator()
 
         self._model.generate_constraint(self._location_lib)
+
     def __generate_integrator(self):
+        """ private function, generates an integrator of the system, usefull for debugging """
         state = cd.SX.sym('istate', self._model.number_of_states, 1)
         input = cd.SX.sym('input', self._model.number_of_inputs , 1)
 
         integrator = cd.Function('integrator', [state, input], [self._model.get_next_state(state,input)])
-
         ccg.translate_casadi_to_c(integrator,self._location_lib, filename="integrator.c")
 
     def __generate_cost_function_singleshot(self):
         """ private function, generates part of the casadi cost function with single shot """
-        initial_state = cd.SX.sym('initial_state', self._model.number_of_states, 1)
-        state_reference = cd.SX.sym('state_reference', self._model.number_of_states, 1)
-        input_reference = cd.SX.sym('input_reference', self._model.number_of_inputs, 1)
-        obstacle_weights = cd.SX.sym('obstacle_weights', len(self._obstacle), 1)
-        
-        input_all_steps = cd.SX.sym('input_all_steps', self._model.number_of_inputs*self._horizon, 1)
-        cost=cd.SX.sym('cost',1,1)
-        cost=0
+        ssd = Single_shot_definition(self)
+        (self._cost_function, self._cost_function_derivative_combined) = ssd.generate_cost_function()
+        self._dimension_panoc=ssd.dimension
 
-        current_state=initial_state
-        for i in range(1,self._horizon+1):
-            input = input_all_steps[(i-1)*self._model.number_of_inputs:i*self._model.number_of_inputs]
-            current_state = self._model.get_next_state(current_state,input)
-
-            cost = cost + self._stage_cost.stage_cost(current_state,input,i,state_reference,input_reference)
-            cost = cost + self.__generate_cost_obstacles(current_state,obstacle_weights)
-
-        (self._cost_function, self._cost_function_derivative_combined) = \
-            ccg.setup_casadi_functions_and_generate_c(initial_state,input_all_steps,\
-                                                      state_reference,input_reference,obstacle_weights,cost,\
-                                                      self._location_lib)
-        self._dimension_panoc=self._model.number_of_inputs*self._horizon
     def __generate_cost_function_multipleshot(self):
-        """ private function, generates part of the casadi cost function with multiple shot"""
-        initial_state = cd.SX.sym('initial_state', self._model.number_of_states, 1)
-        state_reference = cd.SX.sym('state_reference', self._model.number_of_states, 1)
-        input_reference = cd.SX.sym('input_reference', self._model.number_of_inputs, 1)
-        obstacle_weights = cd.SX.sym('obstacle_weights', len(self._obstacle), 1)
-
-        input_all_steps = cd.SX.sym('input_all_steps', self._model.number_of_inputs * self._horizon + \
-                                    self._model.number_of_states * (self._horizon-1), 1)
-        cost = cd.SX.sym('cost', 1, 1)
-        cost = 0
-
-        current_init_state = initial_state
-        for i in range(1, self._horizon + 1):
-            input = input_all_steps[(i - 1) * self._model.number_of_inputs:i * self._model.number_of_inputs]
-
-            next_state_bar = self._model.get_next_state(current_init_state,input)
-
-            cost = cost + self._stage_cost.stage_cost(next_state_bar, input, i, state_reference, input_reference)
-            cost = cost + self.__generate_cost_obstacles(next_state_bar, obstacle_weights)
-
-            # add a soft constraint for the continuity
-            weight_continuity = 1
-            if i > 1 :
-                cost = cost + \
-                       weight_continuity*(\
-                           cd.sum1(\
-                                (previous_next_state_bar-current_init_state)**2\
-                            )\
-                        )
-
-            previous_next_state_bar = next_state_bar
-            if i<self._horizon: # don't do this is this is the last loop
-                offset_inputs = self._model.number_of_inputs * self._horizon
-                current_init_state = input_all_steps[offset_inputs+(i-1)*self._model.number_of_states: \
-                    offset_inputs + i * self._model.number_of_states]
-
-        (self._cost_function, self._cost_function_derivative_combined) = \
-            ccg.setup_casadi_functions_and_generate_c(initial_state, input_all_steps, \
-                                                      state_reference, input_reference, obstacle_weights, cost, \
-                                                      self._location_lib)
+        """ private function, generates part of the casadi cost function with multiple shot """
+        msd = Multiple_shot_definition(self)
+        (self._cost_function, self._cost_function_derivative_combined) = msd.generate_cost_function()
         self._dimension_panoc = self._model.number_of_inputs * self._horizon + self._model.number_of_states*(self._horizon-1)
-    def __generate_cost_obstacles(self,state,obstacle_weights):
+
+    def stage_cost(self,current_state,input,i,state_reference,input_reference):
+        return self._stage_cost.stage_cost(current_state,input,i,state_reference,input_reference)
+    def generate_cost_obstacles(self,state,obstacle_weights):
         if(self.number_of_obstacles==0):
             return 0.
         else:
@@ -134,6 +86,9 @@ class Nmpc_panoc:
             return cost
     def add_obstacle(self,obstacle):
         self._obstacle.append(obstacle)
+    @property
+    def number_of_obstacles(self):
+        return len(self._obstacle)
     @property
     def shooting_mode(self):
         return self._shooting_mode
