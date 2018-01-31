@@ -71,7 +71,7 @@ class Nmpc_panoc:
         """ private function, generates part of the casadi cost function with multiple shot """
         msd = Multiple_shot_definition(self)
         (self._cost_function, self._cost_function_derivative_combined) = msd.generate_cost_function()
-        self._dimension_panoc = self._model.number_of_inputs * self._horizon + self._model.number_of_states*(self._horizon-1)
+        self._dimension_panoc = msd.dimension
 
     def stage_cost(self,current_state,input,i,state_reference,input_reference):
         return self._stage_cost.stage_cost(current_state,input,i,state_reference,input_reference)
