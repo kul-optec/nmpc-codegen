@@ -22,17 +22,16 @@ class IndicatorBoxFunctionProx(Cfunction):
             source_file.write_comment_line(\
                 "check if the value of the border is outside the box, if so go to the nearest point inside the box", \
                 indent=2)
-            source_file.write_line("if(input["+str(dimension)+"]<"+str(self._lower_limits[dimension])+"){",indent=2)
+            source_file.write_line("if(state["+str(dimension)+"]<"+str(self._lower_limits[dimension])+"){",indent=2)
             source_file.set_output(dimension,str(self._lower_limits[dimension]),3)
-            source_file.write_line("}else if(input[" + str(dimension) + "]>" + str(self._upper_limits[dimension]) + "){",
+            source_file.write_line("}else if(state[" + str(dimension) + "]>" + str(self._upper_limits[dimension]) + "){",
                                    indent=2)
             source_file.set_output(dimension, str(self._upper_limits[dimension]), 3)
             source_file.write_line("}else{", 2)
-            source_file.set_output(dimension, "input[" + str(dimension) + "]", 3)
+            source_file.set_output(dimension, "state[" + str(dimension) + "]", 3)
             source_file.write_line("}", 2)
 
-        source_file.write_line("input+="+str(self._dimension)+ ";",2)
-        source_file.write_line("output+="+str(self._dimension)+ ";",2)
+        source_file.write_line("state+="+str(self._dimension)+ ";",2)
         source_file.close_for(indent=1)
         source_file.close()
 
@@ -55,13 +54,13 @@ class IndicatorBoxFunction(ProximalFunction):
         for dimension in range(0,self._dimension):
             source_file.write_comment_line("check if the value of the border is outside the box, if so return zero", \
                                            indent=1)
-            source_file.write_line("if(input["+str(dimension)+"]<"+str(self._lower_limits[dimension])+ \
-                              " || input["+str(dimension)+"]>"+str(self._upper_limits[dimension])+ \
+            source_file.write_line("if(state["+str(dimension)+"]<"+str(self._lower_limits[dimension])+ \
+                              " || state["+str(dimension)+"]>"+str(self._upper_limits[dimension])+ \
                               "){",indent=1)
             source_file.write_line("return LARGE;", indent=2)
             source_file.write_line("}",indent=1)
 
-        source_file.write_line("input+="+str(self._dimension)+ ";",2)
+        source_file.write_line("state+="+str(self._dimension)+ ";",2)
         source_file.close_for(indent=1)
 
         source_file.write_comment_line("if the value's where never outside the box, return zero",indent=1)

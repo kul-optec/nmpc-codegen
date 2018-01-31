@@ -7,7 +7,7 @@
 /* aditional init function used with mock of course */
 int casadi_interface_test_init(size_t dimension_, 
     real_t (*g_)(const real_t* input),
-    void (*proxg_)(const real_t* input, real_t* output),
+    void (*proxg_)(real_t* state),
     real_t (*f_)(const real_t* input),
     void (*df_)(const real_t* input, real_t* output));
 

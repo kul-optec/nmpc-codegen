@@ -18,10 +18,10 @@ class Source_file_generator:
 
         if (self._function_type == "g"):
             print("generating g-type function")
-            self._source_file.write("real_t casadi_interface_g(const real_t* input){\n")
+            self._source_file.write("real_t casadi_interface_g(const real_t* state){\n")
         elif (self._function_type == "proxg"):
             print("generating proxg-type function")
-            self._source_file.write("void casadi_interface_proxg(const real_t* input,real_t* output){\n")
+            self._source_file.write("void casadi_interface_proxg(real_t* state){\n")
         else:
             print("ERROR wrong function_type pick either g or proxg")
             self._source_file.close()
@@ -38,7 +38,7 @@ class Source_file_generator:
     def write_comment_line(self,line,indent):
         self.write_line("/* "+line+" */",indent)
     def set_output(self,output_index,value,indent):
-        self.write_line("output["+str(output_index)+"]="+str(value)+";",indent)
+        self.write_line("state["+str(output_index)+"]="+str(value)+";",indent)
     def close(self):
         self._source_file.write("\n}\n")
 

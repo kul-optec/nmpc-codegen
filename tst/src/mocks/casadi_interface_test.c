@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 static real_t (*g)(const real_t* input);
-static void (*proxg)(const real_t* input, real_t* output);
+static void (*proxg)( real_t* state);
 static real_t (*f)(const real_t* input);
 static void (*df)(const real_t* input, real_t* output);
 
@@ -18,7 +18,7 @@ size_t casadi_interface_get_dimension(){return dimension;}
 /* test init function */
 int casadi_interface_test_init(size_t dimension_, 
     real_t (*g_)(const real_t* input),
-    void (*proxg_)(const real_t* input, real_t* output),
+    void (*proxg_)(real_t* state),
     real_t (*f_)(const real_t* input),
     void (*df_)(const real_t* input, real_t* output)){
     
@@ -41,6 +41,6 @@ real_t casadi_interface_f_df(const real_t* input,real_t* output){
 real_t casadi_interface_g(const real_t* input){
     return g(input);
 }
-void casadi_interface_proxg(const real_t* input,real_t* output){
-    proxg(input,output);
+void casadi_interface_proxg(real_t* state){
+    proxg(state);
 }

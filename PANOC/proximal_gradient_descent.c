@@ -105,9 +105,8 @@ static int proximal_gradient_descent_linesearch(void){
  * This function performs an forward backward step. x=prox(x-gamma*df(x))
  */
 static int proximal_gradient_descent_forward_backward_step(const real_t* location,const real_t* df_location){
-    real_t buffer[dimension];
-    vector_add_ntimes(location,df_location,dimension,-1*linesearch_gamma,buffer); /* buffer = location - gamma * df_location */
-    casadi_interface_proxg(buffer,new_location); /* new_location = proxg(buffer) */
+    vector_add_ntimes(location,df_location,dimension,-1*linesearch_gamma,new_location); /* buffer = location - gamma * df_location */
+    casadi_interface_proxg(new_location); /* new_location = proxg(buffer) */
     vector_sub(location,new_location,dimension,direction); /* find the direction */
     return SUCCESS;
 }

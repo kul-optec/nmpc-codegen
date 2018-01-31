@@ -7,7 +7,7 @@
 /* functions not used by lbfgs test */
 int proximal_gradient_descent_init(size_t dimension, \
     real_t (*g_)(const real_t* input), \
-    void (*proxg_)(const real_t* input, real_t* output),\
+    void (*proxg_)(real_t* state),\
     real_t (*f_)(const real_t* input),\
     void (*df_)(const real_t* input, real_t* output)){return SUCCESS;}
 int proximal_gradient_descent_cleanup(void){return SUCCESS;}

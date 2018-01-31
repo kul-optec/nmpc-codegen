@@ -33,6 +33,6 @@ int casadi_set_weight_obstacles(int index_obstacle,real_t weight);/* returns fai
 real_t casadi_interface_f(const real_t* input);
 real_t casadi_interface_f_df(const real_t* input,real_t* output);
 real_t casadi_interface_g(const real_t* input);
-void casadi_interface_proxg(const real_t* input,real_t* output);
+void casadi_interface_proxg(real_t* state);
 
 #endif
