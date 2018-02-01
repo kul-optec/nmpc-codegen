@@ -21,11 +21,11 @@ CasadiFunction* init_buffer_casadi_function( \
         );
 int cleanup_buffer_casadi_function(CasadiFunction* data);
 
-static CasadiFunction* cost_function_data;
-static CasadiFunction* cost_function_derivative_combined_data;
+/* static CasadiFunction* cost_function_data; */
+/* static CasadiFunction* cost_function_derivative_combined_data; */
 static real_t* obstacle_weights;
 #ifdef INTEGRATOR_CASADI
-static CasadiFunction* integrator_data;
+/* static CasadiFunction* integrator_data; */
 #endif
 
 int casadi_interface_init(){
