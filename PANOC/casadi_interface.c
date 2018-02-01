@@ -1,9 +1,9 @@
 #include "../globals/globals.h"
 
-#include "casadi_definitions.h"
+// #include "casadi_definitions.h"
 
-#include "../casadi/cost_function.c"
-#include "../casadi/cost_function_derivative_combined.c"
+#include "../casadi/cost_function.h"
+#include "../casadi/cost_function_derivative_combined.h"
 
 #include <stddef.h>
 #include <stdlib.h>

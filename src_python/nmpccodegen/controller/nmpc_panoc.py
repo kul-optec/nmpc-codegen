@@ -59,7 +59,7 @@ class Nmpc_panoc:
         input = cd.SX.sym('input', self._model.number_of_inputs , 1)
 
         integrator = cd.Function('integrator', [state, input], [self._model.get_next_state(state,input)])
-        ccg.translate_casadi_to_c(integrator,self._location_lib, filename="integrator.c")
+        ccg.translate_casadi_to_c(integrator,self._location_lib, filename="integrator")
 
     def __generate_cost_function_singleshot(self):
         """ private function, generates part of the casadi cost function with single shot """

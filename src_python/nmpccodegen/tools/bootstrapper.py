@@ -87,6 +87,10 @@ class Bootstrapper:
         dst_location = location + "/PANOC/" + "CMakeLists.txt"
         Bootstrapper._copy_over_file(src_location, dst_location, overwrite)
 
+        src_location = location_nmpc_repo + "/minimum_build_system/" + "CMakeLists_casadi.txt"
+        dst_location = location + "/casadi/" + "CMakeLists.txt"
+        Bootstrapper._copy_over_file(src_location, dst_location, overwrite)
+
     @staticmethod
     def _create_folder_if_not_exist(location):
         # check if the folder excists

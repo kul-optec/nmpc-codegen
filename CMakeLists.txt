@@ -11,6 +11,9 @@ add_definitions(-Wall)
 include_directories ("${PROJECT_SOURCE_DIR}/PANOC")
 add_subdirectory (PANOC) # read out the cmakelist file
 
+include_directories ("${PROJECT_SOURCE_DIR}/casadi")
+add_subdirectory (casadi)
+
 # add the python interface, this target is excluded from all
 if(WIN32)
     SET(TIMER_LIB "${PROJECT_SOURCE_DIR}/python_interface/timer_windows.c")
