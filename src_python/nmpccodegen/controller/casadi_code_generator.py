@@ -26,7 +26,17 @@ class Casadi_code_generator:
             os.remove(buffer_file_name)
 
         # generate the casadi function in C to a buffer file
-        casadi_function.generate(buffer_file_name)
+        opts = dict(verbose=False,
+                    mex=False,
+                    cpp=False,
+                    main=False, 
+                    # casadi_real="double",
+                    codegen_scalars=False, 
+                    with_header=False,                
+                    with_mem=False,
+                    # with_export=False
+                    )
+        casadi_function.generate(buffer_file_name,opts)
         file_name_costfunction = location_lib + "casadi/"+filename
 
         # check if the file already exists
