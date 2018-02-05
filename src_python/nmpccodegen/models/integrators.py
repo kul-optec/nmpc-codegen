@@ -35,7 +35,6 @@ def integrator_RK_lib(x,step_size,function_system,key_name):
         (N_x,_) = x.shape
 
     k=cd.SX.sym('k', N_x,N)
-    # k=np.zeros((N_x,N))
 
     for i in range(0,N):
         x_local=np.zeros((N_x,1))

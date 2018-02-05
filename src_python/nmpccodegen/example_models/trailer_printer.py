@@ -19,6 +19,12 @@ def trailer_print(trailer_states):
 def draw_rectangular_obstacle(x_up,x_down,y_up,y_down):
     """ print an obstacle """
     plt.plot([x_down,x_up,x_up,x_down,x_down,],[y_up,y_up,y_down,y_down,y_up])
+def draw_rectangular_obstacle_around_center(center_coordinates,width,height):
+    x_up = center_coordinates[0] + width / 2
+    x_down = center_coordinates[0] - width / 2
+    y_up = center_coordinates[1] + height / 2
+    y_down = center_coordinates[1] - height / 2
+    return draw_rectangular_obstacle(x_up, x_down, y_up, y_down)
 
 if __name__ == '__main__':
     example = np.array([[0,0,math.pi/4],[0.5,0.5,math.pi/2]])

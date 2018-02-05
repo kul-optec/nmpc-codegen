@@ -65,26 +65,14 @@ class Simulator:
     def __init__(self,nmpc_controller_location):
         self._nmpc_controller_location=nmpc_controller_location
 
-    def _load_library(self):
-        """ private function:load the compiled library into Python """
-        try:
-            if (platform.system() == 'Linux'):
-                print("Compiling python interface for Linux")
-                extension_lib = '.so'
-                lib_location = self._nmpc_controller_location + "libpython_interface" + extension_lib
-                self.nmpc_python_interface = ctypes.CDLL(lib_location)
-            elif (platform.system() == 'Windows'):
-                extension_lib = '.dll'
-                lib_location = self._nmpc_controller_location + "libpython_interface" + extension_lib
-                print("Compiling python interface for Windows: " + lib_location)
-                self.nmpc_python_interface = ctypes.windll.LoadLibrary(lib_location)
-            else:
-                print("ERROR platform can't be detected, using Linux")
-                extension_lib = '.so'
-        except:
-            print("Failed to load the dll, are you sure python and the toolchain are compatible?")
-            print("check if they both are either 32bit or both 64 bit")
-        sys.stdout.flush()
+        self._make_build_system()
+        self._compile_interface()
+        self._load_library()
+        self.nmpc_python_interface.simulation_init()
+
+    def __del__(self):
+        self.nmpc_python_interface.simulation_cleanup()
+
     def simulate_nmpc(self,current_state,state_reference,input_reference):
         length_input_reference = len(input_reference)
 
@@ -144,12 +132,19 @@ class Simulator:
         weight_obstacle_ctype = ctypes.c_double(weight_obstacle)
 
         self.nmpc_python_interface.simulation_set_weight_obstacles(index_obstacle_ctype,weight_obstacle_ctype)
-    def simulator_init(self):
-        self._compile_interface()
-        self._load_library()
-        self.nmpc_python_interface.simulation_init()
-    def simulator_cleanup(self):
-        self.nmpc_python_interface.simulation_cleanup()
+
+    def _make_build_system(self):
+        cwd = os.getcwd()
+        try:
+            os.chdir(self._nmpc_controller_location)
+            if (platform.system() == 'Linux'):
+                os.system("cmake .")
+            elif (platform.system() == 'Windows'):
+                os.system("cmake . -G \"MinGW Makefiles\"")
+            else:
+                print("ERROR Platform not supported use either Linux or Windows")
+        finally:
+            os.chdir(cwd)
     def _compile_interface(self):
         cwd = os.getcwd()
         try:
@@ -157,3 +152,23 @@ class Simulator:
             os.system("make clean python_interface")
         finally:
             os.chdir(cwd)
+    def _load_library(self):
+        """ private function:load the compiled library into Python """
+        self._make_build_system()
+        try:
+            if (platform.system() == 'Linux'):
+                print("Compiling python interface for Linux")
+                extension_lib = '.so'
+                lib_location = self._nmpc_controller_location + "/libpython_interface" + extension_lib
+                self.nmpc_python_interface = ctypes.CDLL(lib_location)
+            elif (platform.system() == 'Windows'):
+                extension_lib = '.dll'
+                lib_location = self._nmpc_controller_location + "/libpython_interface" + extension_lib
+                print("Compiling python interface for Windows: " + lib_location)
+                self.nmpc_python_interface = ctypes.windll.LoadLibrary(lib_location)
+            else:
+                print("ERROR platform can't be detected, using Linux")
+                extension_lib = '.so'
+        except:
+            print("Failed to load the dll, are you sure python and the toolchain are compatible?")
+            print("check if they both are either 32bit or both 64 bit")

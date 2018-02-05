@@ -30,7 +30,7 @@ class Nmpc_panoc:
         self._integrator_casadi=False
 
         # generate the dynamic_globals file
-        self._globals_generator = Globals_generator(self._location_lib + "globals/globals_dyn.h")
+        self._globals_generator = Globals_generator(self._location_lib + "/globals/globals_dyn.h")
 
         # at first assume no obstacles
         self._obstacle=[]

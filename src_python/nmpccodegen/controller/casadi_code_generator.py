@@ -38,7 +38,7 @@ class Casadi_code_generator:
                     )
                     
         casadi_function.generate(filename,opts)
-        file_name_costfunction = location_lib + "casadi/"+filename
+        file_name_costfunction = location_lib + "/casadi/"+filename
 
         # check if the files already exist
         file = Path(file_name_costfunction+".c")
