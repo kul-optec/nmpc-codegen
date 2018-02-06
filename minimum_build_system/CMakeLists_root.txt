@@ -3,9 +3,15 @@ project (npmc_minimum C)
 
 # set the compiler with its flags
 SET(CMAKE_C_COMPILER gcc)
-SET(CMAKE_BUILD_TYPE Debug)
 
-add_definitions(-Wall)
+# if not specified assume release.
+# specify that you want debug with: cmake . -DCMAKE_BUILD_TYPE=Debug
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
+set(CMAKE_C_FLAGS_DEBUG "-g -Wall -Wextra")
+set(CMAKE_C_FLAGS_RELEASE "-O3")
 
 # subdirectory with lib
 include_directories ("${PROJECT_SOURCE_DIR}/PANOC")
