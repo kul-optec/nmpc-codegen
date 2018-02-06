@@ -12,56 +12,57 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
-from demo import prepare_demo_trailer,simulate_demo
+from demo import prepare_demo_trailer,simulate_demo,draw_obstacle_border
 
 if __name__ == '__main__':
     step_size=0.05
 
     # Q and R matrixes determined by the control engineer.
-    Q = np.diag([1., 1., 0.01])*0.2
+    Q = np.diag([1., 1., 0.1])*2
     R = np.diag([1., 1.]) * 0.01
 
     trailer_controller = prepare_demo_trailer(step_size,Q,R)
 
-    trailer_controller.horizon = 50 # NMPC parameter
+    trailer_controller.horizon = 40 # NMPC parameter
     trailer_controller.integrator_casadi = True # optional  feature that can generate the integrating used  in the cost function
-    trailer_controller.panoc_max_steps = 5000 # the maximum amount of iterations the PANOC algorithm is allowed to do.
+    trailer_controller.panoc_max_steps = 2000 # the maximum amount of iterations the PANOC algorithm is allowed to do.
     trailer_controller.min_residual=-3
-    trailer_controller.lbgfs_buffer_size = 10
+    trailer_controller.lbgfs_buffer_size = 50
 
     # construct upper rectangular
-    rectangular_up = obstacles.Obstacle_rectangular(np.array([1,0.5]),0.4,0.5)
-
-    # construct lower rectangular
-    rectangular_down = obstacles.Obstacle_rectangular(np.array([1, -0.2]), 0.4, 0.5)
-
-    # construct circle
-    circle = obstacles.Obstacle_circle(np.array([0.2,0.2]),0.2)
+    costum_obstacle = obstacles.Obstacle_nonconvex_constraints()
+    h_0 = lambda x: x[1] - 2.*math.sin(-x[0]/2.)
+    h_1 = lambda x: 3.*math.sin(x[0]/2 -1) - x[1]
+    h_2 = lambda x: x[0] - 1
+    h_3 = lambda x: 8 - x[0]
+    costum_obstacle.add_constraint(h_0)
+    costum_obstacle.add_constraint(h_1)
+    costum_obstacle.add_constraint(h_2)
+    costum_obstacle.add_constraint(h_3)
 
     # add obstacles to controller
-    trailer_controller.add_obstacle(rectangular_up)
-    trailer_controller.add_obstacle(rectangular_down)
-    trailer_controller.add_obstacle(circle)
+    trailer_controller.add_obstacle(costum_obstacle)
 
     # generate the dynamic code
     trailer_controller.generate_code()
 
     # simulate everything
-    initial_state = np.array([-0.1, -0.1,math.pi/4])
-    reference_state = np.array([1.5, 0.4, 0])
+    initial_state = np.array([7, -1,-math.pi])
+    reference_state = np.array([1.5, -2., -math.pi])
     reference_input = np.array([0, 0])
 
-    obstacle_weights = [10.,10.,2000.]
+    obstacle_weights = [1e14]
 
     state_history = simulate_demo(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights)
 
     plt.figure(0)
     example_models.trailer_print(state_history)
-    circle.plot()
-    rectangular_up.plot()
-    rectangular_down.plot()
-    plt.xlim([0, 1.6])
-    plt.ylim([-0.5, 1.])
+    h_0_border = lambda x: 2.*math.sin(-x/2.)
+    h_1_border = lambda x: 3.*math.sin(x/2. -1.)
+    draw_obstacle_border(h_0_border,[1,8],100)
+    draw_obstacle_border(h_1_border, [1, 8], 100)
+    plt.xlim([0, 9])
+    plt.ylim([-3, 4])
     plt.xlabel('x')
     plt.xlabel('y')
     plt.title('Trailer')

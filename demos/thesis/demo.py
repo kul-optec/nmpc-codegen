@@ -9,6 +9,7 @@ import nmpccodegen.example_models as example_models
 
 import numpy as np
 import math
+import matplotlib.pyplot as plt
 
 def prepare_demo_trailer(step_size,Q,R):
     "construct a simple demo controller"
@@ -60,3 +61,13 @@ def simulate_demo(trailer_controller,initial_state,reference_state,reference_inp
     print(state)
 
     return state_history
+
+def draw_obstacle_border(h,xlim,number_of_points):
+    x = np.asarray(np.linspace(xlim[0],xlim[1],number_of_points))
+    y=np.asarray(np.zeros((number_of_points,1)))
+
+    for i in range(0,number_of_points):
+        y[i]=h(x[i])
+
+    plt.plot(x,y)
+

@@ -3,7 +3,7 @@ import casadi as cd
 
 class Obstacle_polyhedral(Obstacle):
     def __init__(self,a,b):
-        """ construct obstable of form a[i,:]^Tb +b , for all i """
+        """ construct obstacle of form a[i,:]^Tb +b , for all i """
         self._a=a
         self._b=b
 
