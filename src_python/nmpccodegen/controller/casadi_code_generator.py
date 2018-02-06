@@ -38,13 +38,17 @@ class Casadi_code_generator:
                     )
                     
         casadi_function.generate(filename,opts)
-        file_name_costfunction = location_lib + "casadi/"+filename
+        file_name_costfunction = location_lib + "/casadi/"+filename
 
-        # check if the file already exists
-        file = Path(file_name_costfunction)
+        # check if the files already exist
+        file = Path(file_name_costfunction+".c")
         if(file.exists()):
-            print(file_name_costfunction+ " already exists: removing file...")
-            os.remove(file_name_costfunction)
+            print(file_name_costfunction+".c"+ " already exists: removing file...")
+            os.remove(file_name_costfunction+".c")
+        file = Path(file_name_costfunction + ".h")
+        if (file.exists()):
+            print(file_name_costfunction + ".h" + " already exists: removing file...")
+            os.remove(file_name_costfunction + ".h")
 
         # move the function to the right location
         # open(file_name_costfunction, 'a').close() # create empty file

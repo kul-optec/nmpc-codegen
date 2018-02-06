@@ -12,8 +12,8 @@ class Model:
         return self._system_equations(state,input)
 
     def generate_constraint(self,location):
-        self._input_constraint.generate_c_code(location+"casadi/g.c")
-        self._input_constraint.prox.generate_c_code(location + "casadi/proxg.c")
+        self._input_constraint.generate_c_code(location+"/casadi/g.c")
+        self._input_constraint.prox.generate_c_code(location + "/casadi/proxg.c")
 
     @property
     def system_equations(self):

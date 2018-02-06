@@ -8,25 +8,22 @@ import sys
 
 class Bootstrapper:
     """ bootstraps an nmpc environment """
-    def bootstrap(location,controller_name,python_interface_enabled):
+    def bootstrap(output_location_controller,python_interface_enabled):
         location_nmpc_repo = Bootstrapper._get_repo_location()
         """ bootstrap the nmpc at location nmpc """
-        print("GENERATING folders for controller:"+controller_name)
-        Bootstrapper._bootstrap_folders(location,controller_name)
-        location_controller = location+"/"+controller_name
+        print("GENERATING output folders of controller:")
+        Bootstrapper._bootstrap_folders(output_location_controller)
 
         overwrite = True
         print("GENERATING PANOC")
-        Bootstrapper._generate_PANOC_lib(location_controller,location_nmpc_repo,overwrite)
+        Bootstrapper._generate_PANOC_lib(output_location_controller,location_nmpc_repo,overwrite)
         print("GENERATING static globals")
-        Bootstrapper._generate_static_globals(location_controller, location_nmpc_repo,overwrite)
+        Bootstrapper._generate_static_globals(output_location_controller, location_nmpc_repo,overwrite)
         if(python_interface_enabled):
             print("GENERATING python interface")
-            Bootstrapper._generate_python_interface(location_controller, location_nmpc_repo,overwrite)
+            Bootstrapper._generate_python_interface(output_location_controller, location_nmpc_repo,overwrite)
             print("GENERATING Build system")
-            Bootstrapper._generate_build_system(location_controller, location_nmpc_repo,overwrite)
-            # if all the files are there generate the make files using Cmake
-            Bootstrapper._make_build_system(location+"/"+controller_name)
+            Bootstrapper._generate_build_system(output_location_controller, location_nmpc_repo,overwrite)
 
     @staticmethod
     def _get_repo_location():
@@ -37,9 +34,8 @@ class Bootstrapper:
         return repo_location
 
     @staticmethod
-    def _bootstrap_folders(location,controller_name):
+    def _bootstrap_folders(lib_location):
         """ bootstrap the nmpc at location nmpc """
-        lib_location = location + "/"+controller_name
         Bootstrapper._create_folder_if_not_exist(lib_location)
         Bootstrapper._create_folder_if_not_exist(lib_location+"/casadi")
         Bootstrapper._create_folder_if_not_exist(lib_location + "/globals")
@@ -116,17 +112,3 @@ class Bootstrapper:
                     print(dst_location + ": file already exists, leaving it in place")
             else:
                 copyfile(src_location, dst_location)
-
-    @staticmethod
-    def _make_build_system(location):
-        cwd = os.getcwd()
-        try:
-            os.chdir(location)
-            if (platform.system() == 'Linux'):
-                os.system("cmake .")
-            elif(platform.system() == 'Windows'):
-                os.system("cmake . -G \"MinGW Makefiles\"")
-            else:
-                print("ERROR Platform not supported use either Linux or Windows")
-        finally:
-            os.chdir(cwd)

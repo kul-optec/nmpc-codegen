@@ -11,11 +11,7 @@ class Model_continious(m.Model):
         """ integrate the continous system with one step using the selected integrator """
         system_equation = lambda state: super(Model_continious, self).system_equations(state, input)
         return ig.integrator_RK_lib(state, super(Model_continious,self).step_size, system_equation,self._integrator)
-        # if (self._integrator == "RK"):
-        #     system_equation = lambda state: super(Model_continious,self).system_equations(state, input)
-        #     return ig.integrator_RK(state, super(Model_continious,self).step_size, system_equation)
-        # else:
-        #     raise NotImplementedError
+
     def get_next_state_numpy(self,state,input):
         number_of_state=super(Model_continious,self).number_of_states
         new_state=np.zeros((number_of_state,1))
