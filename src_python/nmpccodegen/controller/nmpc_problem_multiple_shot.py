@@ -27,7 +27,7 @@ class Multiple_shot_definition:
             cost = cost + self._controller.generate_cost_obstacles(next_state_bar, obstacle_weights)
 
             # add a soft constraint for the continuity
-            weight_continuity = 0
+            weight_continuity = 10
             if i > 1 :
                 cost = cost + \
                        weight_continuity*(\

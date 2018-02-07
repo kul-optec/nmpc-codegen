@@ -4,7 +4,9 @@ import nmpccodegen as nmpc
 import nmpccodegen.tools as tools
 import nmpccodegen.models as models
 import nmpccodegen.controller as controller
+import nmpccodegen.controller.obstacles as obstacles
 import nmpccodegen.Cfunctions as cfunctions
+import nmpccodegen.example_models as example_models
 
 import math
 import ctypes
@@ -15,15 +17,10 @@ import math
 import sys
 import time
 
-controller_name="toturial_controller_multishot"
-
 ## -- GENERATE STATIC FILES --
 # start by generating the static files and folder of the controller
-location_nmpc_repo = "."
-output_locationcontroller = location_nmpc_repo + "/test_controller_builds"
-trailer_controller_location = output_locationcontroller + "/" + controller_name + "/"
-
-tools.Bootstrapper.bootstrap(output_locationcontroller, controller_name, python_interface_enabled=True)
+trailer_controller_location = "./test_controller_builds/tutorial_controller_multishot"
+tools.Bootstrapper.bootstrap(trailer_controller_location, python_interface_enabled=True)
 ## -----------------------------------------------------------------
 
 # get the continuous system equations from the existing library
@@ -57,12 +54,8 @@ trailer_controller.shooting_mode="multiple shot"
 
 # add an obstacle, a two dimensional rectangle
 # obstacle_weight = 1000.
-x_up = 1.
-x_down = 0.5
-y_up = 0.4
-y_down = 0.2
-obstacle = controller.Basic_obstacles.generate_rec_object(x_up, x_down, y_up, y_down)
-# trailer_controller.add_obstacle(obstacle)
+rectangle = obstacles.Obstacle_rectangular(np.array([0.75,0.3]),0.5,0.2)
+# trailer_controller.add_obstacle(rectangle)
 
 # generate the dynamic code
 trailer_controller.generate_code()
@@ -81,13 +74,10 @@ for i in range(0,horizon-1):
 initial_states=np.reshape(initial_states_matrix.T,(number_of_states*(horizon-1),1))
 
 reference_state = np.array([2, 0.5, 0])
-reference_input = np.array([0, 0])
+reference_input = np.array([0, 0])*0.01
 
 # setup a simulator to test
 sim = tools.Simulator(trailer_controller.location)
-
-# init the controller
-sim.simulator_init()
 
 j=number_of_inputs*horizon
 for i in range(0,number_of_states*(horizon-1)):
@@ -97,9 +87,6 @@ for i in range(0,number_of_states*(horizon-1)):
 # simulate and get the whole horizon of inputs
 (sim_data,full_solution)= sim.simulate_nmpc_multistep_solution(initial_state,reference_state,reference_input,number_of_inputs*horizon+(horizon-1)*number_of_states)
 print("solved problem in "+str(sim_data.panoc_interations)+" iterations")
-
-# cleanup the controller
-sim.simulator_cleanup()
 
 # print("output full simulation")
 # print(full_solution)
@@ -114,9 +101,12 @@ intermediate_states = np.reshape(full_solution[horizon*number_of_inputs:],(horiz
 print("The intermediate states used by the multiple shot are:")
 print(intermediate_states)
 
-plt.figure(1)
-plt.subplot(211)
-plt.plot(intermediate_states[:, 0], intermediate_states[:, 1])
-plt.subplot(212)
-plt.plot(intermediate_states[:, 2])
+plt.figure(0)
+example_models.trailer_print(intermediate_states.T)
+# rectangle.plot()
+plt.xlim([0, 2.5])
+plt.ylim([0, 0.7])
+plt.xlabel('x')
+plt.xlabel('y')
+plt.title('Trailer parcour')
 plt.show()
