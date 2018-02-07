@@ -11,7 +11,7 @@ real_t vector_norm2(const real_t* vector,const size_t vector_size){
     real_t norm=0;
     size_t i;
     for(i=0;i<vector_size;i++){
-        norm += pow(vector[i],2);
+        norm += vector[i]*vector[i];
     }
     return sqrt(norm);
 }
