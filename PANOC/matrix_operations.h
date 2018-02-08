@@ -5,7 +5,8 @@
 #include "stddef.h"
 #include "math.h"
  
-/* 2 norm with preprocessor */
+/* squared with preprocessor */
+#define sq(x) ((x)*(x))
 
 
 /* copy vector1 into vector2 */

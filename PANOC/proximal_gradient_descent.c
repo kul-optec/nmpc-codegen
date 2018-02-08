@@ -154,7 +154,7 @@ static int proximal_gradient_descent_check_linesearch(void){
     const real_t f_current_location=buffer_get_current_f();
     const real_t f_new_location=casadi_interface_f(new_location);
 
-    const real_t norm_direction_gamma = pow(vector_norm2(direction,dimension),2); /* direction=gamma*r in paper */
+    const real_t norm_direction_gamma = sq(vector_norm2(direction,dimension)); /* direction=gamma*r in paper */
 
     if(f_new_location>f_current_location - inner_product_df_direction + ( 1/(2*linesearch_gamma) )*norm_direction_gamma )
         return FAILURE;
@@ -174,7 +174,7 @@ real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location
 
     proximal_gradient_descent_forward_backward_step(location, df_location); /* this will fill the new_direction variable */
     const real_t g_new_location=casadi_interface_g(new_location);
-    const real_t norm_direction = pow(vector_norm2(direction,dimension),2);
+    const real_t norm_direction = sq(vector_norm2(direction,dimension));
 
     const real_t forward_backward_envelop = f_location + g_new_location \
      - inner_product(df_location,direction,dimension) \

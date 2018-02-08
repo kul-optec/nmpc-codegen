@@ -68,7 +68,7 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
 
     /* precompute FBE used in linesearch check, static fields ! */
     FBE_current_location = proximal_gradient_descent_forward_backward_envelop(current_location);
-    direction_norm=pow(vector_norm2(forward_backward_step,dimension),2);
+    direction_norm=sq(vector_norm2(forward_backward_step,dimension));
 
     tau=1;
     panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
@@ -88,7 +88,7 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
 
 int panoc_check_linesearch_condition(real_t* new_location,const real_t linesearch_gamma){
     const real_t FBE_potential_new_location = proximal_gradient_descent_forward_backward_envelop(new_location);
-    const real_t factor = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*pow(linesearch_gamma,3));
+    const real_t factor = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*sq(linesearch_gamma)*linesearch_gamma);
 
     if(FBE_potential_new_location<=FBE_current_location-factor*direction_norm){
         return SUCCESS; 
