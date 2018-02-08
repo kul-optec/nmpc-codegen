@@ -144,7 +144,7 @@ const real_t* lbfgs_get_direction(void){
          */
         vector_minus(q,direction,dimension); /* set the direction */
     }else{
-        size_t buffer_limit; /* how much of the buffer should i use in this iteration? */
+        int buffer_limit; /* how much of the buffer should i use in this iteration? */
         if(iteration_index<buffer_size){
             buffer_limit=iteration_index;
         }else{

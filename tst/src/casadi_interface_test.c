@@ -157,7 +157,7 @@ int simple_test_integrator(void){
 }
 
 int check_positions(const real_t* state,const real_t* required_state){
-    int i;int return_value=SUCCESS;
+    size_t i;int return_value=SUCCESS;
     for (i = 0; i < number_of_masses; i++)
     {
         printf(" mass%d [%f , %f] ",i,state[i*2],state[i*2+1]);

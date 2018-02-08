@@ -6,6 +6,7 @@ SET(CMAKE_C_COMPILER gcc)
 SET(CMAKE_BUILD_TYPE Debug)
 
 add_definitions(-Wall)
+add_definitions(-Wextra)
 
 # subdirectories with libraries
 include_directories ("${PROJECT_SOURCE_DIR}/PANOC")

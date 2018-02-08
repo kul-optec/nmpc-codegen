@@ -140,7 +140,7 @@ int proximal_gradient_descent_get_current_residual(real_t* residual){
     return SUCCESS;
 }
 
-const real_t proximal_gradient_descent_get_current_residual_inf_norm(void){
+real_t proximal_gradient_descent_get_current_residual_inf_norm(void){
     return last_current_residual_inf_norm;
 }
 

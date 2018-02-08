@@ -57,7 +57,7 @@ int panoc_cleanup(){
 /*
  * Solve the actually MPC problem, return the optimal inputs
  */
-const real_t panoc_get_new_location(const real_t* current_location,real_t* new_location){  
+real_t panoc_get_new_location(const real_t* current_location,real_t* new_location){  
     buffer_renew(current_location);
     const real_t* forward_backward_step = proximal_gradient_descent_get_direction(); /* in paper this is r*gamma */
     const real_t linesearch_gamma = proximal_gradient_descent_get_gamma();
@@ -110,5 +110,6 @@ real_t panoc_get_tau(void){return tau;}
 
 int panoc_reset_cycli(void){
     proximal_gradient_descent_reset_iteration_counters();
+    lbfgs_reset_iteration_counters();
     return SUCCESS;
 }

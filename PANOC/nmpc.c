@@ -66,7 +66,7 @@ int npmc_solve( const real_t* current_state,
         switch_input_current_new();
     }
     /* only return the optimal input */
-    size_t i;
+    int i;
     for (i = 0; i < DIMENSION_INPUT; i++)
     {
         optimal_inputs[i]=current_input[i];
@@ -77,7 +77,7 @@ int npmc_solve( const real_t* current_state,
     return i_panoc-1;
 }
 int nmpc_get_last_full_solution(real_t* output){
-    size_t i;
+    int i;
     int dimension = casadi_interface_get_dimension();
     for ( i = 0; i < dimension ; i++)
     {
