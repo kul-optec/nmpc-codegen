@@ -30,7 +30,7 @@ tools.Bootstrapper.bootstrap(trailer_controller_location, python_interface_enabl
 step_size = 0.05
 simulation_time = 10
 number_of_steps = math.ceil(simulation_time / step_size)
-horizon = 10
+horizon = 40
 
 integrator = "RK44" # select a Runga-Kutta  integrator (FE is forward euler)
 constraint_input = cfunctions.IndicatorBoxFunction([-1, -1], [1, 1])  # input needs stay within these borders
@@ -38,8 +38,8 @@ model = models.Model_continious(system_equations, constraint_input, step_size, n
                                 number_of_inputs, coordinates_indices, integrator)
 
 # Q and R matrixes determined by the control engineer.
-Q = np.diag([10., 10000., 1.])
-R = np.eye(model.number_of_inputs, model.number_of_inputs) * 1.
+Q = np.diag([10., 100., 1.])
+R = np.eye(model.number_of_inputs, model.number_of_inputs) * 0.01
 
 # the stage cost is defined two lines,different kinds of stage costs are available to the user.
 stage_cost = controller.Stage_cost_QR(model, Q, R)
@@ -49,7 +49,7 @@ trailer_controller = controller.Nmpc_panoc(trailer_controller_location, model, s
 trailer_controller.horizon = horizon # NMPC parameter
 trailer_controller.integrator_casadi = True # optional  feature that can generate the integrating used  in the cost function
 trailer_controller.panoc_max_steps = 10000 # the maximum amount of iterations the PANOC algorithm is allowed to do.
-trailer_controller.min_residual=-10
+trailer_controller.min_residual=-3
 trailer_controller.shooting_mode="multiple shot"
 
 # add an obstacle, a two dimensional rectangle
