@@ -12,6 +12,7 @@ static int proximal_gradient_descent_check_linesearch(void);
 static int proximal_gradient_descent_forward_backward_step(const real_t* location,const real_t* df_location);
 static int proximal_gradient_descent_push(void);
 static int proximal_gradient_descent_linesearch(void);
+static real_t proximal_gradient_descent_forward_backward_envelop_precomputed_forward_backward_step(const real_t f_location,const real_t* df_location);
 
 /* values set by the init function */
 static size_t dimension;
@@ -26,6 +27,11 @@ static real_t* new_location;
 static real_t* direction;
 static real_t* new_location_FBE;
 static real_t* direction_FBE;
+
+/* precomputed forward_backward_envelop's calculated with residual because its cheaper then */
+static real_t forward_backward_envelop_lbfgs;
+static real_t forward_backward_envelop_current_location;
+
 
 int proximal_gradient_descent_init(void){
     dimension=casadi_interface_get_dimension();
@@ -116,14 +122,22 @@ static int proximal_gradient_descent_forward_backward_step(const real_t* locatio
  */
 int proximal_gradient_descent_get_residual(const real_t* location,real_t* residual){
     proximal_gradient_descent_push(); /* undo changes to the state of this entity */
-
-    real_t df_location[dimension];
-    casadi_interface_f_df(location,df_location); /* get current gradient (at location) */
+    /* 
+     * Use the buffer to evaluate the gradient so it can be reused with the first FBE step.
+     * And possibly as the next current_df if tau is 1 and the steps exists purely out of lbfgs
+     */
+    buffer_evaluate_lbfgs_new_location(location);
+    const real_t* df_location=buffer_get_lbfgs_new_location_df();
+    real_t f_location=buffer_get_lbfgs_new_location_f();
 
     proximal_gradient_descent_forward_backward_step(location,df_location);
     vector_sub(location,new_location,dimension,residual);
     vector_real_mul(residual,dimension,1/linesearch_gamma,residual);
 
+    /* 
+     * Calculate the first FBE(x^{k+1}) used on th left side in the linesearch in panoc.c
+     */
+    forward_backward_envelop_lbfgs = proximal_gradient_descent_forward_backward_envelop_precomputed_forward_backward_step(f_location,df_location);
     proximal_gradient_descent_push(); /* undo changes to the state of this entity */
     return SUCCESS;
 }
@@ -135,8 +149,15 @@ int proximal_gradient_descent_get_current_residual(real_t* residual){
     const real_t* current_location = buffer_get_current_location();
     vector_sub(current_location,new_location,dimension,residual);
     vector_real_mul(residual,dimension,1/linesearch_gamma,residual);
+
     /* calculate the inf-norm and safe it */
     last_current_residual_inf_norm=vector_norm_inf(residual,dimension);
+
+    /* calculate the forward backward envelop and save it */
+    const real_t f_current_location=buffer_get_current_f();
+    const real_t* df_current_location=buffer_get_current_df();
+    forward_backward_envelop_current_location = \
+        proximal_gradient_descent_forward_backward_envelop_precomputed_forward_backward_step(f_current_location,df_current_location);
     return SUCCESS;
 }
 
@@ -161,6 +182,18 @@ static int proximal_gradient_descent_check_linesearch(void){
     else
         return SUCCESS;
 }
+/*
+ * return the precomputed forward backward envelop of the current location
+ */
+real_t proximal_gradient_descent_get_current_forward_backward_envelop(void){
+    return forward_backward_envelop_current_location;
+}
+/*
+ * return the precomputed forward backward envelop of a pure lbfgs step (tau=1)
+ */
+real_t proximal_gradient_descent_get_lbfgs_forward_backward_envelop(void){
+    return forward_backward_envelop_lbfgs;
+}
 
 /*
  * calculate the forward backward envelop using the internal gamma
@@ -173,6 +206,16 @@ real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location
     const real_t f_location=casadi_interface_f_df(location,df_location);
 
     proximal_gradient_descent_forward_backward_step(location, df_location); /* this will fill the new_direction variable */
+    real_t forward_backward_envelop = proximal_gradient_descent_forward_backward_envelop_precomputed_forward_backward_step(f_location,df_location);
+
+    proximal_gradient_descent_push(); /* undo changes to the state of this entity */
+    return forward_backward_envelop;
+}
+
+/*
+ * calculate the forward backward envelop using internal forwardbackward step
+ */
+static real_t proximal_gradient_descent_forward_backward_envelop_precomputed_forward_backward_step(const real_t f_location,const real_t* df_location){
     const real_t g_new_location=casadi_interface_g(new_location);
     const real_t norm_direction = sq(vector_norm2(direction,dimension));
 
@@ -180,7 +223,6 @@ real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location
      - inner_product(df_location,direction,dimension) \
      + (1/(linesearch_gamma*2))*norm_direction;
 
-    proximal_gradient_descent_push(); /* undo changes to the state of this entity */
     return forward_backward_envelop;
 }
 

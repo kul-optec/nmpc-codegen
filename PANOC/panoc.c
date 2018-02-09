@@ -8,6 +8,8 @@
 #include"casadi_interface.h"
 #include"buffer.h"
 
+#define iteration_index_pure_lbfgs_step 0
+
 /* variables set once by init */
 static size_t dimension;
 
@@ -17,8 +19,8 @@ static real_t FBE_current_location;
 static real_t direction_norm;
 
 /* functions used internally */
-int panoc_check_linesearch_condition(real_t* new_location, const real_t linesearch_gamma);
-int panoc_get_new_potential_location(const  real_t* forward_backward_step,
+static int panoc_check_linesearch_condition(int index_iteration,real_t* new_location, const real_t linesearch_gamma);
+static int panoc_get_new_potential_location(const  real_t* forward_backward_step,
     const real_t* direction_residue,const real_t tau,real_t* potential_new_location);
 
 /*
@@ -61,19 +63,18 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
     buffer_renew(current_location);
     const real_t* forward_backward_step = proximal_gradient_descent_get_direction(); /* in paper this is r*gamma */
     const real_t linesearch_gamma = proximal_gradient_descent_get_gamma();
-    // const real_t sigma = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*linesearch_gamma);
 
     const real_t* direction_residue = lbfgs_get_direction();
     const real_t residual_inf_norm=proximal_gradient_descent_get_current_residual_inf_norm();
 
     /* precompute FBE used in linesearch check, static fields ! */
-    FBE_current_location = proximal_gradient_descent_forward_backward_envelop(current_location);
+    FBE_current_location = proximal_gradient_descent_get_current_forward_backward_envelop();
     direction_norm=sq(vector_norm2(forward_backward_step,dimension));
 
     tau=1;
     panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
     int i=0;
-    for(i=0;i<FBE_LINESEARCH_MAX_ITERATIONS && panoc_check_linesearch_condition(new_location,linesearch_gamma)==FAILURE;i++){
+    for(i=0;i<FBE_LINESEARCH_MAX_ITERATIONS && panoc_check_linesearch_condition(i,new_location,linesearch_gamma)==FAILURE;i++){
             tau=tau/2;
             panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
     }
@@ -86,18 +87,33 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
     return residual_inf_norm;
 }
 
-int panoc_check_linesearch_condition(real_t* new_location,const real_t linesearch_gamma){
-    const real_t FBE_potential_new_location = proximal_gradient_descent_forward_backward_envelop(new_location);
+static int panoc_check_linesearch_condition(int index_iteration,real_t* new_location,const real_t linesearch_gamma){
+    /*
+     * If this is the first time you call the check_line_condition:
+     *      use the precomputed FBE as your only using lbfgs
+     */
+    real_t FBE_potential_new_location;
+    if(index_iteration==iteration_index_pure_lbfgs_step )
+        FBE_potential_new_location = proximal_gradient_descent_get_lbfgs_forward_backward_envelop();
+    else 
+        FBE_potential_new_location = proximal_gradient_descent_forward_backward_envelop(new_location);
+
     const real_t factor = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*sq(linesearch_gamma)*linesearch_gamma);
 
     if(FBE_potential_new_location<=FBE_current_location-factor*direction_norm){
+        /* 
+         * SUCCESS means that the linesearch will stop, 
+         * check if i should reuse something next iteration 
+         */
+        if(index_iteration==iteration_index_pure_lbfgs_step) /* linesearch succeeds with pure lbfgs step, reuse the function evaluation */
+            buffer_set_lbfgs_as_precomputed();
         return SUCCESS; 
     }
     return FAILURE;
 }
 
 /* find potential new location x=x-(1-tau)*forward_backward_step+tau*direction_residue */
-int panoc_get_new_potential_location(const  real_t* forward_backward_step,
+static int panoc_get_new_potential_location(const  real_t* forward_backward_step,
     const real_t* direction_residue,const real_t tau,real_t* potential_new_location){
 
     const real_t* current_location = buffer_get_current_location();

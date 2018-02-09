@@ -126,7 +126,9 @@ int lbfgs_reset_iteration_counters(void){
  */ 
 const real_t* lbfgs_get_direction(void){
     const real_t* current_location = buffer_get_current_location();
-    real_t q[dimension];proximal_gradient_descent_get_current_residual(q);
+    real_t gradient_current_location[dimension];proximal_gradient_descent_get_current_residual(gradient_current_location); /* find df(x) */
+    real_t q[dimension];vector_copy(gradient_current_location,q,dimension);
+    
 
     /* 
      * If the residual is about zero then this is a fixed point, 
@@ -186,7 +188,7 @@ const real_t* lbfgs_get_direction(void){
 
     vector_sub(new_location,current_location,dimension,s[buffer_size]); /* set s */
     
-    real_t gradient_current_location[dimension];proximal_gradient_descent_get_current_residual(gradient_current_location);/* find df(x) */
+    /* real_t gradient_current_location[dimension]; already contains df(x) */
     real_t gradient_new_location[dimension];proximal_gradient_descent_get_residual(new_location,gradient_new_location); /* find df(new_x) */
 
     vector_sub(gradient_new_location,gradient_current_location,dimension,y[buffer_size]); /* set y=df(new_x) - df(x) */

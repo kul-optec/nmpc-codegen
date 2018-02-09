@@ -25,4 +25,13 @@ int proximal_gradient_descent_get_current_residual(real_t* residual);
 real_t proximal_gradient_descent_get_gamma(void);
 real_t proximal_gradient_descent_get_current_residual_inf_norm(void);
 
+/*
+ * return the precomputed forward backward envelop of the current location
+ */
+real_t proximal_gradient_descent_get_current_forward_backward_envelop(void);
+/*
+ * return the precomputed forward backward envelop of a pure lbfgs step (tau=1)
+ */
+real_t proximal_gradient_descent_get_lbfgs_forward_backward_envelop(void);
+
 #endif // !PROXIMAL_GRADIENT_DESCENT_H
