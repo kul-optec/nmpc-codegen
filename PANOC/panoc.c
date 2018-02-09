@@ -8,7 +8,7 @@
 #include"casadi_interface.h"
 #include"buffer.h"
 
-#define iteration_index_pure_lbfgs_step 0
+#define INTERATION_INDEX_PURE_LBFGS_STEP 0
 
 /* variables set once by init */
 static size_t dimension;
@@ -93,7 +93,7 @@ static int panoc_check_linesearch_condition(int index_iteration,real_t* new_loca
      *      use the precomputed FBE as your only using lbfgs
      */
     real_t FBE_potential_new_location;
-    if(index_iteration==iteration_index_pure_lbfgs_step )
+    if(index_iteration==INTERATION_INDEX_PURE_LBFGS_STEP )
         FBE_potential_new_location = proximal_gradient_descent_get_lbfgs_forward_backward_envelop();
     else 
         FBE_potential_new_location = proximal_gradient_descent_forward_backward_envelop(new_location);
@@ -105,7 +105,7 @@ static int panoc_check_linesearch_condition(int index_iteration,real_t* new_loca
          * SUCCESS means that the linesearch will stop, 
          * check if i should reuse something next iteration 
          */
-        if(index_iteration==iteration_index_pure_lbfgs_step) /* linesearch succeeds with pure lbfgs step, reuse the function evaluation */
+        if(index_iteration==INTERATION_INDEX_PURE_LBFGS_STEP) /* linesearch succeeds with pure lbfgs step, reuse the function evaluation */
             buffer_set_lbfgs_as_precomputed();
         return SUCCESS; 
     }
