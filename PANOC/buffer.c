@@ -62,6 +62,9 @@ int buffer_set_lbfgs_as_precomputed(void){
     current_df=lbfgs_new_location_df;
     lbfgs_new_location_df=buffer_pointer;
 
+    /* let buffer know it should renew in next iteration */
+    precomputed_evaluations=TRUE; 
+
     return SUCCESS;
 }
 
