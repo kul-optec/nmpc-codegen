@@ -31,6 +31,7 @@ int buffer_init(void){
 int buffer_cleanup(void){
     free(lbfgs_new_location_df);
     free(current_df);
+    precomputed_evaluations=FALSE;
     return SUCCESS;
 }
 int buffer_renew(const real_t* current_location_){
