@@ -65,10 +65,15 @@ int proximal_gradient_descent_init(void){
 int proximal_gradient_descent_cleanup(void){
     free(new_location);
     free(direction);
+    free(new_location_FBE);
+    free(direction_FBE);
     proximal_gradient_descent_reset_iteration_counters();
     return SUCCESS;
 }
 
+/*
+ * Reset iteration index and gamma, call me if your starting with a new problem
+ */
 int proximal_gradient_descent_reset_iteration_counters(void){
     iteration_index=0;
     linesearch_gamma=0;
@@ -230,6 +235,9 @@ real_t proximal_gradient_descent_get_gamma(void){
     return linesearch_gamma;
 }
 
+/*
+ * Replace the new_location and direction arrays with 2 arrays used to compute the FBE
+ */
 static int proximal_gradient_descent_push(void){
     real_t* buffer;
     
