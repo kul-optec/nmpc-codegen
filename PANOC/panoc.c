@@ -1,3 +1,20 @@
+/*
+ * The panoc algorithm uses a combination of proximal gradient and lbfgs. The
+ * linesearch is performed using an smoothed version of the problem called the
+ * forward backward envelop, or short FBE.
+ * 
+ * Every iteration a linesearch(backtracking) on the combination is executed:
+ * New direction = -(1-tau)*(direction gradient) + tau*(downward direction lbfgs)
+ * 
+ * tau=2^i with i as small as possible, we want to use as much lbfgs as possible so that
+ * the linesearch condition FBE(new) = FBE(old) - constant*||direction||
+ * 
+ * Keep in mind that lbfgs has super linear convergence and proximal gradient has sub-linear 
+ * convergence. In the beginning the proximal gradient is dominant, but after a while the lbfgs 
+ * will be dominant.
+ * 
+ * More information on the panoc algorithm: ftp://ftp.esat.kuleuven.be/pub/stadius/athemeli/18-03.pdf 
+ */
 #include"panoc.h"
 #include"math.h"
 #include<stdlib.h>
@@ -112,7 +129,9 @@ static int panoc_check_linesearch_condition(int index_iteration,real_t* new_loca
     return FAILURE;
 }
 
-/* find potential new location x=x-(1-tau)*forward_backward_step+tau*direction_residue */
+/* 
+ * find potential new location x=x-(1-tau)*forward_backward_step+tau*direction_residue 
+ */
 static int panoc_get_new_potential_location(const  real_t* forward_backward_step,
     const real_t* direction_residue,const real_t tau,real_t* potential_new_location){
 
@@ -124,6 +143,9 @@ static int panoc_get_new_potential_location(const  real_t* forward_backward_step
 
 real_t panoc_get_tau(void){return tau;}
 
+/*
+ * call this function from nmpc at the end to reset the buffers/counters
+ */
 int panoc_reset_cycli(void){
     proximal_gradient_descent_reset_iteration_counters();
     lbfgs_reset_iteration_counters();
