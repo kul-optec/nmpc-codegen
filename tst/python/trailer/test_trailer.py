@@ -11,17 +11,23 @@ import numpy as np
 class TestTrailerController(unittest.TestCase):
     def test_move_up(self):
         reference_state=np.array([0,2,0])
-        current_state = generate_controller("trailer_move_up",reference_state,display_figure=False)
+        horizon = 50
+        panoc_max_steps = 3000
+        current_state = generate_controller("trailer_move_up",reference_state,horizon,panoc_max_steps,display_figure=False)
         self.check_with_reference(reference_state,current_state,accuracy=0.01)
 
     def test_move_right(self):
         reference_state=np.array([2,0,0])
-        current_state = generate_controller("trailer_move_right",reference_state,display_figure=False)
+        horizon = 50
+        panoc_max_steps = 1000
+        current_state = generate_controller("trailer_move_right",reference_state,horizon,panoc_max_steps,display_figure=False)
         self.check_with_reference(reference_state,current_state,accuracy=0.01)
 
     def test_move_diag(self):
         reference_state=np.array([2,0,0])
-        current_state = generate_controller("trailer_move_diag",reference_state,display_figure=False)
+        horizon = 50
+        panoc_max_steps = 1000
+        current_state = generate_controller("trailer_move_diag",reference_state,horizon,panoc_max_steps,display_figure=False)
         self.check_with_reference(reference_state,current_state,accuracy=0.01)
 
     def test_move_diag_obs(self):
