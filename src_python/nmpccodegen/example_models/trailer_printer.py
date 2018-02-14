@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
-def trailer_print(trailer_states):
+def trailer_print(trailer_states,color="k"):
     """ print out the states of a trailer """
     # trailer_states = np array of shape (number_of_states,number_of_steps)
     (number_of_states, number_of_steps) = np.shape(trailer_states)
@@ -14,7 +14,7 @@ def trailer_print(trailer_states):
         dx = math.cos(trailer_states[2, i])*size
         dy = math.sin(trailer_states[2, i])*size
 
-        plt.arrow(x, y, dx, dy, fc="k", ec="k", head_width=0.005, head_length=0.01)
+        plt.arrow(x, y, dx, dy, fc=color, ec=color, head_width=0.005, head_length=0.01)
 
 def draw_rectangular_obstacle(x_up,x_down,y_up,y_down):
     """ print an obstacle """

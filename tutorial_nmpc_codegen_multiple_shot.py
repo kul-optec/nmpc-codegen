@@ -54,7 +54,7 @@ trailer_controller.shooting_mode="multiple shot"
 
 # add an obstacle, a two dimensional rectangle
 # obstacle_weight = 1000.
-rectangle = obstacles.Obstacle_rectangular(np.array([0.75,0.3]),0.5,0.2)
+# rectangle = obstacles.Obstacle_rectangular(np.array([0.75,0.3]),0.5,0.2)
 # trailer_controller.add_obstacle(rectangle)
 
 # generate the dynamic code
@@ -101,12 +101,23 @@ intermediate_states = np.reshape(full_solution[horizon*number_of_inputs:],(horiz
 print("The intermediate states used by the multiple shot are:")
 print(intermediate_states)
 
+# use the inputs to simulate the system
+state = initial_state
+state_history = np.zeros((number_of_states, horizon))
+for i in range(0, horizon):
+    optimal_input=inputs[i,:].T
+    state = model.get_next_state_numpy(state, optimal_input)
+
+    state_history[:, i] = np.reshape(state[:], number_of_states)
+
 plt.figure(0)
-example_models.trailer_print(intermediate_states.T)
+example_models.trailer_print(intermediate_states.T,color="r")
+example_models.trailer_print(state_history,color="g")
 # rectangle.plot()
 plt.xlim([0, 2.5])
 plt.ylim([0, 0.7])
 plt.xlabel('x')
 plt.xlabel('y')
 plt.title('Trailer parcour')
+
 plt.show()
