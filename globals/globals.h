@@ -1,4 +1,5 @@
 #include <math.h>
+#include <float.h>
 /* 
  * This file contains properties configurable by the user
  */
