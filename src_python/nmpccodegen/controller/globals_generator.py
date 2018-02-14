@@ -75,7 +75,7 @@ class Globals_generator:
             self.generate_comment("data types have different absolute value functions")
             self._define_variable("ABS(x)", "fabsf(x)")
             self.generate_comment("Machine accuracy of IEEE float")
-            self._define_variable("MACHINE_ACCURACY", "pow(10,-8)")
+            self._define_variable("MACHINE_ACCURACY", "FLT_EPSILON")
             self.generate_comment("large number use with things like indicator functions")
             self._define_variable("LARGE", "100000")
         elif(data_type=="double precision"):
@@ -83,8 +83,8 @@ class Globals_generator:
             self._define_variable("real_t", "double")
             self.generate_comment("data types have different absolute value functions")
             self._define_variable("ABS(x)", "fabs(x)")
-            self.generate_comment("Machine accuracy of IEEE float")
-            self._define_variable("MACHINE_ACCURACY", "pow(10,-16)")
+            self.generate_comment("Machine accuracy of IEEE double")
+            self._define_variable("MACHINE_ACCURACY", "DBL_EPSILON")
             self.generate_comment("large number use with things like indicator functions")
             self._define_variable("LARGE", "10000000000")
         else:
