@@ -21,7 +21,7 @@ class Obstacle_rectangular(Obstacle):
         b = np.array([x_up, -x_down, y_up, -y_down])
         return Obstacle_polyhedral(a, b).evaluate_cost(coordinates_state)
     def plot(self):
-        rectangular = plt.patches.Rectangle((self._center_coordinates[0],self._center_coordinates[1]),self._width,self._height,fill=False)
+        rectangular = plt.patches.Rectangle((self._center_coordinates[0]- self._width / 2,self._center_coordinates[1]- self._height / 2),self._width,self._height,fill=False)
         ax = plt.pyplot.gca()
         ax.add_patch(rectangular)
 
