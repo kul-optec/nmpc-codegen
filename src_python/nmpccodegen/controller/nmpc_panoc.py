@@ -83,7 +83,7 @@ class Nmpc_panoc:
         return self._stage_cost.evaluate_cost(current_state,input,i,state_reference,input_reference)
 
     def generate_cost_obstacles(self,state,obstacle_weights):
-        if(self.number_of_obstacles==0):
+        if(self.number_of_obstacles is 0):
             return 0.
         else:
             cost = 0.
