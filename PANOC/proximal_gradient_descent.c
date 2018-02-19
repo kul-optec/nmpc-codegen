@@ -136,8 +136,8 @@ int proximal_gradient_descent_get_residual(const real_t* location,real_t* residu
     real_t f_location=buffer_get_lbfgs_new_location_f();
 
     proximal_gradient_descent_forward_backward_step(location,df_location);
-    vector_sub(location,new_location,dimension,residual);
-    vector_real_mul(residual,dimension,1/linesearch_gamma,residual);
+    /* calculate the residual, as in normalize the current direction */
+    vector_real_mul(direction,dimension,1/linesearch_gamma,residual);
 
     /* 
      * Calculate the first FBE(x^{k+1}) used on th left side in the linesearch in panoc.c
