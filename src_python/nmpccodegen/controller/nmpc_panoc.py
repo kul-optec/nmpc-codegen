@@ -10,12 +10,16 @@ from .nmpc_problem_multiple_shot import Multiple_shot_definition
 
 class Nmpc_panoc:
     """ Defines a nmpc problem of the shape min f(x)+ g(x) """
-    def __init__(self, location_lib,model,stage_cost):
+    def __init__(self, location_lib,model,stage_cost,terminal_cost=None):
         self._location_lib=location_lib # location of the library
         self._model=model
         self._dimension_panoc=0 # dimension of the panoc problem, should be set so something non-zero
 
         self._stage_cost=stage_cost
+        if(terminal_cost==None):
+            self._terminal_cost=stage_cost
+        else:
+            self._terminal_cost=terminal_cost
 
         self._horizon=10
         self._shooting_mode="single shot"
@@ -74,7 +78,10 @@ class Nmpc_panoc:
         self._dimension_panoc = msd.dimension
 
     def stage_cost(self,current_state,input,i,state_reference,input_reference):
-        return self._stage_cost.stage_cost(current_state,input,i,state_reference,input_reference)
+        if(i==self._horizon-1):
+            return self._terminal_cost.evaluate_cost(current_state,input,i,state_reference,input_reference)
+        return self._stage_cost.evaluate_cost(current_state,input,i,state_reference,input_reference)
+
     def generate_cost_obstacles(self,state,obstacle_weights):
         if(self.number_of_obstacles==0):
             return 0.
