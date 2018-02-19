@@ -78,8 +78,14 @@ int npmc_solve( const real_t* current_state,
         }
         residual = panoc_get_new_location(current_input,new_input);
 
-        /* set the new_input as input for the next iteration */
-        switch_input_current_new();
+        /*
+         * if the residual was larger then the machine accuracy
+         * -> set the new_input as input for the next iteration 
+         * WARNING: if the residual was smaller then the machine 
+         *  accuracy you might get NaN thats why we won't use it
+         */
+        if(residual>MACHINE_ACCURACY)
+            switch_input_current_new();
     }
     /* only return the optimal input */
     int i;
