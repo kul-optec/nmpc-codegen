@@ -28,7 +28,7 @@ class Nmpc_panoc:
         self._data_type = "double precision"
 
         self._panoc_max_steps=20
-        self._panoc_min_steps=10
+        self._panoc_min_steps=0
         self._min_residual=-5 #chose 10^{-5} as max residual#
 
         self._integrator_casadi=False
