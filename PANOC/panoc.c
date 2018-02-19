@@ -115,7 +115,7 @@ static int panoc_check_linesearch_condition(int index_iteration,real_t* new_loca
     else 
         FBE_potential_new_location = proximal_gradient_descent_forward_backward_envelop(new_location);
 
-    const real_t factor = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*sq(linesearch_gamma)*linesearch_gamma);
+    const real_t factor = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*linesearch_gamma);
 
     if(FBE_potential_new_location<=FBE_current_location-factor*direction_norm){
         /* 
