@@ -151,9 +151,8 @@ int proximal_gradient_descent_get_residual(const real_t* location,real_t* residu
  * returns the residual using the previous forward backward step, R(x) = 1/gamma[ x- proxg(x-df(x)*gamma)]
  */
 int proximal_gradient_descent_get_current_residual(real_t* residual){
-    const real_t* current_location = buffer_get_current_location();
-    vector_sub(current_location,new_location,dimension,residual);
-    vector_real_mul(residual,dimension,1/linesearch_gamma,residual);
+    /* calculate the residual, as in normalize the current direction */
+    vector_real_mul(direction,dimension,1/linesearch_gamma,residual);
 
     /* calculate the inf-norm and safe it */
     last_current_residual_inf_norm=vector_norm_inf(residual,dimension);
