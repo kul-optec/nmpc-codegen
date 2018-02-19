@@ -35,19 +35,20 @@ int checkIfSolutionIsReached(void){
     
     real_t current_location[DIMENSION]={0.5,0.5};
 
-    printf("test1: starting in location x1=0.5 x2=0.5 \n");
+    printf("test1: starting in location x1=0.5 x2=0.5 with cost=%f\n",f_poly(current_location));
 
     size_t i;
-    for ( i = 0; i < 100; i++)
+    for ( i = 0; i < 50; i++)
     {
         buffer_renew(current_location);
         const real_t* direction = lbfgs_get_direction();
         vector_add(current_location,direction,DIMENSION,current_location);
         print_location(current_location);
     }
+    printf("the final cost is=%f \n",f_poly(current_location));
     lbfgs_cleanup();
     buffer_cleanup();
-    if(ABS(current_location[0]<pow(10,-1))&&ABS(current_location[1])<pow(10,-1)){
+    if(ABS(f_poly(current_location))<pow(10,-5)){
         printf("end of test1:SUCCESS --- \n");
         return SUCCESS;
     }else{
@@ -89,5 +90,5 @@ int check2thdegreepolynomial(void){
 }
 
 void print_location(const real_t* location){
-    printf("x1=%f x2=%f \n",location[0],location[1]);
+    printf("x1=%f x2=%f with cost=%1.16f \n",location[0],location[1],f_poly(location));
 }
