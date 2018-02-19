@@ -37,9 +37,6 @@ def generate_controller_with_obs(trailer_controller_location,reference_state,Q,R
     model = models.Model_continious(system_equations, constraint_input, step_size, number_of_states,\
                                     number_of_inputs,coordinates_indices, integrator)
 
-
-    # matrix Q is in the function prototype
-
     # reference_state=np.array([2,2,0])
     stage_cost = controller.Stage_cost_QR(model, Q, R)
 
@@ -48,7 +45,7 @@ def generate_controller_with_obs(trailer_controller_location,reference_state,Q,R
     trailer_controller.horizon = horizon
     trailer_controller.step_size = step_size
     trailer_controller.integrator_casadi = True
-    trailer_controller.panoc_max_steps= 100000
+    trailer_controller.panoc_max_steps= 1000
     trailer_controller._lbgfs_buffer_size = 20
     trailer_controller.min_residual = -5
 
@@ -110,32 +107,32 @@ def main():
                                                  rectangular_width, rectangular_height)
 
 
-    Q = np.diag([10., 100., 1.])
-    R = np.diag([1., 1.]) * 0.01
+    Q = np.diag([1., 10., 1.])
+    R = np.diag([1., 1.]) * 0.001
     obstacle_weight = 10000000.
-    horizon = 50
+    horizon = 100
 
     reference_state = np.array([2, 0.5, 0])
-    current_state = generate_controller_with_obs(trailer_move_diag_obs_location_, reference_state, Q,R, \
-                                                 rectangular_obstacle_1 , obstacle_weight,\
-                                                 horizon,display_figure=True,index_figure=0)
+    # current_state = generate_controller_with_obs(trailer_move_diag_obs_location_, reference_state, Q,R, \
+    #                                              rectangular_obstacle_1 , obstacle_weight,\
+    #                                              horizon,display_figure=True,index_figure=0)
 
     # TEST 2
-    rectangular_center_coordinates = np.array([0.75, 0.])
-    rectangular_width = 0.5
-    rectangular_height = 0.4
-    rectangular_obstacle_2 = obstacles.Obstacle_rectangular(rectangular_center_coordinates, \
-                                                            rectangular_width, rectangular_height)
+    rectangular_center_coordinates_2 = np.array([1, 0.])
+    rectangular_width_2 = 0.5
+    rectangular_height_2 = 0.2
+    rectangular_obstacle_2 = obstacles.Obstacle_rectangular(rectangular_center_coordinates_2, \
+                                                            rectangular_width_2, rectangular_height_2)
 
-    Q = np.diag([1., 100., 1.])*1.
+    Q = np.diag([70., 10., 1.])*1.
     R = np.diag([1., 1.]) * 0.01
-    obstacle_weight = 10000000.
-    horizon = 50
+    obstacle_weight = 1000000000.
+    horizon = 100
 
-    reference_state = np.array([2, 0, 0])
-    # current_state = generate_controller_with_obs(trailer_move_right_obs_location_, reference_state, Q, R,\
-    #                                       rectangular_obstacle_2,obstacle_weight,horizon,\
-    #                                       display_figure=True,index_figure=1)
+    reference_state = np.array([3, 0, 0])
+    current_state = generate_controller_with_obs(trailer_move_right_obs_location_, reference_state, Q, R,\
+                                          rectangular_obstacle_2,obstacle_weight,horizon,\
+                                          display_figure=True,index_figure=1)
 
 
 
