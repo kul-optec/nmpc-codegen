@@ -11,7 +11,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 
-def prepare_demo_trailer(step_size,Q,R):
+def prepare_demo_trailer(step_size,Q,R,Q_terminal=None,R_terminal=None):
     "construct a simple demo controller"
 
     # generate static files
@@ -27,17 +27,19 @@ def prepare_demo_trailer(step_size,Q,R):
     model = models.Model_continious(system_equations, constraint_input, step_size, number_of_states, \
                                     number_of_inputs, coordinates_indices, integrator)
 
-    # the stage cost is defined two lines,different kinds of stage costs are available to the user.
+    # define the contro
     stage_cost = controller.Stage_cost_QR(model, Q, R)
-
-    # define the controller
-    trailer_controller = controller.Nmpc_panoc(trailer_controller_output_location, model, stage_cost)
+    if(Q_terminal is None):
+        trailer_controller = controller.Nmpc_panoc(trailer_controller_output_location, model, stage_cost)
+    else:
+        terminal_cost = controller.Stage_cost_QR(model, Q_terminal, R_terminal)
+        trailer_controller = controller.Nmpc_panoc(trailer_controller_output_location, model, stage_cost,terminal_cost)
 
     return trailer_controller
 
 def simulate_demo(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights):
     # -- simulate controller --
-    simulation_time = 2
+    simulation_time = 3
     number_of_steps = math.ceil(simulation_time / trailer_controller.model.step_size)
     # setup a simulator to test
     sim = tools.Simulator(trailer_controller.location)
