@@ -10,7 +10,7 @@
 #include "example_problems.h"
 
 static const real_t theoretical_solution[]={0,0};
-static int degree=5;
+static size_t degree=5;
 int checkIfSolutionIsReached(void);
 int checkIfSolutionIsReached2(void);
 int checkIfSolutionIsReached_problem2(void);
@@ -44,7 +44,7 @@ int checkIfSolutionIsReached(void){
         f_poly,
         df_poly);
 
-    size_t numer_of_iterations=10;
+    size_t numer_of_iterations=5;
     
     real_t* current_location=malloc(dimension*sizeof(real_t));
     current_location[0]=0.5;current_location[1]=0.5;
@@ -64,11 +64,12 @@ int checkIfSolutionIsReached(void){
             /* print out the location */
             print_location_2D(current_location);
     }
+    real_t final_cost = f_poly(current_location);
     free(current_location);
     free(next_location);
     panoc_cleanup();
 
-    if(current_location[0]<0.14){ /* theoretical value is about 0.133333 */
+    if(final_cost<0.01){ /* theoretical value is about 0.133333 */
         printf("end of test1:SUCCESS --- \n");
         return SUCCESS;
     }else{
@@ -89,7 +90,7 @@ int checkIfSolutionIsReached2(void){
         f_poly,
         df_poly);
 
-    size_t numer_of_iterations=50;
+    size_t numer_of_iterations=3;
     
     real_t* current_location=malloc(dimension*sizeof(real_t));
     current_location[0]=1;current_location[1]=1;
@@ -109,19 +110,16 @@ int checkIfSolutionIsReached2(void){
             /* print out the location */
             print_location_2D(current_location);
     }
-
-    real_t error_x1 = ABS(current_location[0]+0.83);
-    real_t error_x2 = ABS(current_location[1]+0.83);
-
+    real_t final_cost = f_poly(current_location);
     free(current_location);
     free(next_location);
     panoc_cleanup();   
 
-    if(error_x1<0.1  && error_x2<0.1){
+    if(final_cost<0.01){
         printf("end of test2:SUCCESS --- \n");
         return SUCCESS;
     }else{
-        printf("--> error on x: x1=%f and x2=%f \n",error_x1,error_x2);
+        printf("--> error on x: x1=%f and x2=%f \n",current_location[0],current_location[1]);
         printf("end of test2:FAILURE --- \n");
         return FAILURE;
     }  
@@ -149,19 +147,26 @@ int checkIfSolutionIsReached_problem2(void){
     size_t i;
     for ( i = 0; i < numer_of_iterations; i++)
     {
-            panoc_get_new_location(current_location,next_location);
+            real_t residual = panoc_get_new_location(current_location,next_location);
             /* move the next location to the current location */
-            real_t* buffer=current_location;
-            current_location=next_location;
-            next_location=buffer;
-            /* print out the location */
-            print_location(current_location);
+            if(residual>MACHINE_ACCURACY){
+                real_t* buffer=current_location;
+                current_location=next_location;
+                next_location=buffer;
+                /* print out the location */
+                print_location(current_location);
+            }else{
+                printf("--> Residual is too small to continue \n");
+                break;
+            }
     }
+    /* real_t final_cost = f_poly(current_location); */
+    real_t final_location = current_location[0];
     free(current_location);
     free(next_location);
     panoc_cleanup();
 
-    if(ABS(current_location[0])<1 && ABS(current_location[1])<1){
+    if(final_location==1 ){
         printf("end of test3:SUCCESS --- \n");
         return SUCCESS;
     }else{
@@ -195,13 +200,18 @@ int checkIfSolutionIsReached_problem3(void){
     size_t i;
     for ( i = 0; i < numer_of_iterations; i++)
     {
-            panoc_get_new_location(current_location,next_location);
-            /* move the next location to the current location */
-            real_t* buffer=current_location;
-            current_location=next_location;
-            next_location=buffer;
-            /* print out the location */
-            print_location(current_location);
+            real_t residual = panoc_get_new_location(current_location,next_location);
+            if(residual>MACHINE_ACCURACY){
+                /* move the next location to the current location */
+                real_t* buffer=current_location;
+                current_location=next_location;
+                next_location=buffer;
+                /* print out the location */
+                print_location(current_location);
+            }else{
+                printf("--> Residual is too small to continue \n");
+                break;
+            }
     }
     free(current_location);
     free(next_location);
@@ -216,8 +226,8 @@ int checkIfSolutionIsReached_problem3(void){
     }  
 }
 void print_location_2D(const real_t* location){
-    printf("x1=%f x2=%f tau=%f \n",location[0],location[1],panoc_get_tau());
+    printf("x1=%f x2=%f tau=%f cost=%f \n",location[0],location[1],panoc_get_tau(),f_poly(location));
 }
 void print_location(const real_t* location){
-    printf("x=%f tau=%f \n",location[0],panoc_get_tau());
+    printf("x=%f tau=%f cost=%f \n",location[0],panoc_get_tau(),f_poly(location));
 }

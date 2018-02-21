@@ -16,11 +16,6 @@
         #define ABS(x) fabs(x)
     #endif
 
-    /* the machine accuracy double*/
-    #ifndef MACHINE_ACCURACY
-        #define MACHINE_ACCURACY pow(10,-16)
-    #endif
-
     /* large number */
     #ifndef LARGE
         #define LARGE 10000000000
@@ -36,7 +31,7 @@
 
     /* stop condition residual nmpc */
     #ifndef MIN_RESIDUAL
-        #define MIN_RESIDUAL pow(10,-3)
+        #define MIN_RESIDUAL (1e-3)
     #endif
 
     /* minimum amount of steps Panoc always should execute */
@@ -61,10 +56,10 @@
     * ---------------------------------
     */
     #ifndef DELTA_LIPSCHITZ
-        #define DELTA_LIPSCHITZ pow(10,-10)
+        #define DELTA_LIPSCHITZ (1e-10)
     #endif
     #ifndef DELTA_LIPSCHITZ_SAFETY_VALUE
-        #define DELTA_LIPSCHITZ_SAFETY_VALUE pow(10,-6)
+        #define DELTA_LIPSCHITZ_SAFETY_VALUE (1e-6)
     #endif
 
 
@@ -77,7 +72,7 @@
     #define MEM_CASADI 0 
 
     #ifndef DEFAULT_OBSTACLE_WEIGHT
-        #define DEFAULT_OBSTACLE_WEIGHT 1
+        #define DEFAULT_OBSTACLE_WEIGHT 1.0
     #endif
 
     #ifndef NUMBER_OF_OBSTACLES
@@ -98,7 +93,7 @@
     #endif
 
     #ifndef LBGFS_SAFETY_SMALL_VALUE
-        #define LBGFS_SAFETY_SMALL_VALUE pow(10,-12)
+        #define LBGFS_SAFETY_SMALL_VALUE (10e-12)
     #endif
 
 #endif

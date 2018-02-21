@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 /* a polynomial as f */
-int f_poly_init(size_t dimension,int degree );
+int f_poly_init(size_t dimension,size_t degree );
 real_t f_poly(const real_t* input);
 void df_poly(const real_t* input,real_t* output);
 

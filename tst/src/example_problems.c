@@ -10,9 +10,9 @@ real_t sign(real_t x);
 
 /* a polynomial as f */
 static size_t f_poly_dimension;
-static int f_poly_degree;
+static size_t f_poly_degree;
 
-int f_poly_init(size_t dimension,int degree ){
+int f_poly_init(size_t dimension,size_t degree ){
     f_poly_dimension=dimension;
     f_poly_degree = degree;
     return SUCCESS;
@@ -23,7 +23,15 @@ real_t f_poly(const real_t* input){
     real_t output=0;
     for (i = 0; i < f_poly_dimension; i++)
     {
-        output+= pow(input[i],f_poly_degree);
+        size_t exponent = f_poly_degree-1;
+        real_t base = input[i];
+
+        size_t j;real_t part_output=base;
+        for (j = 0; j < exponent-1; j++)
+        {
+             part_output = part_output * base; 
+        }
+        output+= part_output;
     }
     return output;
 }
@@ -32,7 +40,14 @@ void df_poly(const real_t* input,real_t* output){
     size_t i;
     for (i = 0; i < f_poly_dimension; i++)
     {
-        output[i]= f_poly_degree*pow(input[i],f_poly_degree-1);
+        size_t exponent = f_poly_degree-1;
+        real_t base = input[i];
+
+        size_t j;output[i]=base;
+        for (j = 0; j < exponent-1; j++)
+        {
+             output[i] = output[i] * base; 
+        }
     }
 }
 

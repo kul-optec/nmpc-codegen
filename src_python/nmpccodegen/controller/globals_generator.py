@@ -25,7 +25,7 @@ class Globals_generator:
         self._generate_title("NMPC-PANOC solver definitions")
         self._define_variable("PANOC_MAX_STEPS",nmpc_controller.panoc_max_steps)
         self._define_variable("PANOC_MIN_STEPS",nmpc_controller.panoc_min_steps)
-        self._define_variable("MIN_RESIDUAL","pow(10,"+str(nmpc_controller.min_residual)+""+")")
+        self._define_variable("MIN_RESIDUAL","(1e"+str(nmpc_controller.min_residual)+")")
 
 
         self._generate_title("Optional features")

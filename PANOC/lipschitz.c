@@ -10,9 +10,10 @@
  * delta= max{small number,10^{-6}*u_0}
  */
 real_t get_lipschitz_get_delta(const real_t* current_position){
-    if(DELTA_LIPSCHITZ>vector_norm2(current_position,casadi_interface_get_dimension())*DELTA_LIPSCHITZ_SAFETY_VALUE)
+    real_t safety_value_delta = vector_norm2(current_position,casadi_interface_get_dimension())*DELTA_LIPSCHITZ_SAFETY_VALUE;
+    if(DELTA_LIPSCHITZ>safety_value_delta)
         return DELTA_LIPSCHITZ;
-    else return vector_norm2(current_position,casadi_interface_get_dimension())*DELTA_LIPSCHITZ_SAFETY_VALUE;
+    else return safety_value_delta;
 }
 /*
  * Estimate the lipschitz constant by using the numerical hessian as an estimation
