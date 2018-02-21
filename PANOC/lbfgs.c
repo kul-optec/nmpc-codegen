@@ -154,8 +154,8 @@ const real_t* lbfgs_get_direction(void){
         }
 
         /*
-        * First loop lbfgs
-        */
+         * First loop lbfgs
+         */
         int i;/*"i" should be able to go negative, as this is used in second loop */
         for (i = 0; i < buffer_limit; i++)
         {
@@ -165,15 +165,16 @@ const real_t* lbfgs_get_direction(void){
         }
 
         
-        real_t z[dimension];
-        vector_real_mul(y[buffer_limit-1], \
+        real_t z[dimension]; size_t index_oldest_vector = buffer_limit -1;
+        real_t inner_product_sq = inner_product(s[index_oldest_vector],q,dimension);
+        real_t inner_product_yy = 1/inner_product(y[index_oldest_vector],y[index_oldest_vector],dimension);
+        vector_real_mul(y[index_oldest_vector], \
             dimension, \
-            inner_product(s[buffer_limit-1],q,dimension)*(1/inner_product(y[buffer_limit-1],y[buffer_limit-1], \
-            dimension)), \
+            inner_product_sq/inner_product_yy, \
             z);
         /*
-        * Second loop lbfgs
-        */
+         * Second loop lbfgs
+         */
         real_t beta;
         for (i = buffer_limit - 1; i >= 0; i--)
         {
@@ -221,8 +222,14 @@ const real_t* lbfgs_get_direction(void){
  * 
  */
 static int check_if_valid_update(const real_t* gradient_current_location){
-    const real_t numerator = inner_product(y[buffer_size],s[buffer_size],dimension);
-    const real_t denominator = vector_norm2(s[buffer_size],dimension);
+    /* 
+     * The most recent s/y vectors are at the last element of the buffer
+     */
+    const real_t* possible_s = s[buffer_size];
+    const real_t* possible_y = y[buffer_size];
+
+    const real_t numerator = inner_product(possible_y,possible_s,dimension);
+    const real_t denominator = sq(vector_norm2(possible_s,dimension));
     const real_t norm_gradient_current_location = vector_norm2(gradient_current_location,dimension);
 
     if(numerator/denominator >=LBGFS_SAFETY_SMALL_VALUE*norm_gradient_current_location)
