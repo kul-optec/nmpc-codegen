@@ -13,6 +13,7 @@ int checkIfSolutionIsReached(void);
 int check2thdegreepolynomial(void);
 
 void print_location(const real_t* location);
+void print_diff(const real_t* location,const real_t* solution);
 
 /*
  * TEST lbfgs
@@ -34,6 +35,7 @@ int checkIfSolutionIsReached(void){
     buffer_init();
     
     real_t current_location[DIMENSION]={0.5,0.5};
+    real_t approx_solution[DIMENSION] ={0.017081,0.017081};
 
     printf("test1: starting in location x1=0.5 x2=0.5 with cost=%f\n",f_poly(current_location));
 
@@ -43,7 +45,8 @@ int checkIfSolutionIsReached(void){
         buffer_renew(current_location);
         const real_t* direction = lbfgs_get_direction();
         vector_add(current_location,direction,DIMENSION,current_location);
-        print_location(current_location);
+        /* print_location(current_location); */
+        print_diff(current_location,approx_solution);
     }
     printf("the final cost is=%f \n",f_poly(current_location));
     lbfgs_cleanup();
@@ -91,4 +94,7 @@ int check2thdegreepolynomial(void){
 
 void print_location(const real_t* location){
     printf("x1=%f x2=%f with cost=%1.16f \n",location[0],location[1],f_poly(location));
+}
+void print_diff(const real_t* location,const real_t* solution){
+    printf("difference -> x1=%f x2=%f with cost=%1.16f \n",ABS(location[0]-solution[0]),ABS(location[1]-solution[1]),f_poly(location));
 }
