@@ -85,20 +85,22 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
     const real_t residual_inf_norm=proximal_gradient_descent_get_current_residual_inf_norm();
 
     /* precompute FBE used in linesearch check, static fields ! */
-    FBE_current_location = proximal_gradient_descent_get_current_forward_backward_envelop();
-    direction_norm=sq(vector_norm2(forward_backward_step,dimension));
+    if(residual_inf_norm>MACHINE_ACCURACY){
+        FBE_current_location = proximal_gradient_descent_get_current_forward_backward_envelop();
+        direction_norm=sq(vector_norm2(forward_backward_step,dimension));
 
-    tau=1;
-    panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
-    int i=0;
-    for(i=0;i<FBE_LINESEARCH_MAX_ITERATIONS && panoc_check_linesearch_condition(i,new_location,linesearch_gamma)==FAILURE;i++){
-            tau=tau/2;
-            panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
-    }
-    
-    if(i==FBE_LINESEARCH_MAX_ITERATIONS){
-        tau=0;
+        tau=1;
         panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
+        int i=0;
+        for(i=0;i<FBE_LINESEARCH_MAX_ITERATIONS && panoc_check_linesearch_condition(i,new_location,linesearch_gamma)==FAILURE;i++){
+                tau=tau/2;
+                panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
+        }
+        
+        if(i==FBE_LINESEARCH_MAX_ITERATIONS){
+            tau=0;
+            panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
+        }
     }
 
     return residual_inf_norm;
