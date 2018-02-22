@@ -5,12 +5,14 @@
 #include"../../PANOC/matrix_operations.h"
 #include"../../globals/globals.h"
 #include"example_problems.h"
+#include"./mocks/lbfgs_rosenbrock_interface.h"
 
 #define DIMENSION 2
 static const real_t theoretical_solution[]={0,0};
 static int degree=10;
 int checkIfSolutionIsReached(void);
 int check2thdegreepolynomial(void);
+int rosenbrock_test(void);
 
 void print_location(const real_t* location);
 void print_diff(const real_t* location,const real_t* solution);
@@ -22,7 +24,8 @@ void print_diff(const real_t* location,const real_t* solution);
  */
 int main(){
     return checkIfSolutionIsReached()+ \
-    check2thdegreepolynomial(); 
+    check2thdegreepolynomial()+\
+    rosenbrock_test(); 
 }
 
 int checkIfSolutionIsReached(void){
@@ -45,8 +48,8 @@ int checkIfSolutionIsReached(void){
         buffer_renew(current_location);
         const real_t* direction = lbfgs_get_direction();
         vector_add(current_location,direction,DIMENSION,current_location);
-        /* print_location(current_location); */
-        print_diff(current_location,approx_solution);
+        print_location(current_location);
+        /* print_diff(current_location,approx_solution); */
     }
     printf("the final cost is=%f \n",f_poly(current_location));
     lbfgs_cleanup();
@@ -80,6 +83,39 @@ int check2thdegreepolynomial(void){
         print_location(current_location);
     }
     
+    lbfgs_cleanup();
+    buffer_cleanup();
+
+    if(current_location[0]<pow(10,-15)&&current_location[1]<pow(10,-15)){
+        return SUCCESS;
+        printf("end of test2:SUCCESS --- \n");
+    }else{
+        printf("end of test2:FAILURE --- \n");
+        return FAILURE;
+    }
+}
+
+int rosenbrock_test(void){
+    degree=2;
+    size_t buffer_size = 20;
+
+    lbfgs_init(buffer_size,DIMENSION);
+    enable_rosenbrock();
+    buffer_init();
+
+    printf("test3: starting in location x1=-1.2 x2=1 optimal pint is in 1 \n");
+    real_t current_location[DIMENSION]={-1.2,1.};
+
+    size_t i;
+    for ( i = 0; i < 40; i++)
+    {
+        buffer_renew(current_location);
+        const real_t* direction = lbfgs_get_direction();
+        vector_add(current_location,direction,DIMENSION,current_location);
+        printf("i=%d x1=%f x2=%f with cost=%1.16f \n",i,current_location[0],current_location[1],f_rosenbrock(current_location));
+    }
+    
+    disable_rosenbrock();
     lbfgs_cleanup();
     buffer_cleanup();
 

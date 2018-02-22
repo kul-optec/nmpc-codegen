@@ -43,12 +43,31 @@ void df_poly(const real_t* input,real_t* output){
         size_t exponent = f_poly_degree-1;
         real_t base = input[i];
 
-        size_t j;output[i]=base;
+        size_t j;output[i]=f_poly_degree*base;
         for (j = 0; j < exponent-1; j++)
         {
              output[i] = output[i] * base; 
         }
     }
+}
+
+real_t f_rosenbrock(const real_t* x){
+    real_t a =1;
+    real_t b=100;
+
+    /* Matlab: f =@(x) (a-x(1))^2 + b*(x(2)-x(1))^2; */
+    real_t output=sq(a-x[0]) + b*sq(x[1]-x[0]);
+
+    return output;
+}
+
+void df_rosenbrock(const real_t* x,real_t* output){
+    real_t a =1;
+    real_t b=100;
+    
+    /* Matlab: df = @(x) [-2*(a-(b+1)*x(1)+b*x(2)); 2*b*(x(2)-x(1)) ]; */
+    output[0] = -2*(a-(b+1)*x[0]+b*x[1]);
+    output[1] = 2*b*(x[1]-x[0]);
 }
 
 real_t sign(real_t x){

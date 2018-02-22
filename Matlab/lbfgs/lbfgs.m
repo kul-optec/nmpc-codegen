@@ -30,16 +30,13 @@ function [ s,y,new_x] = lbfgs(iteration_index,buffer_size,x,df,s,y)
         % loop over most recent to oldest
         for i=1:buffer_size_max
             rho(i)=1/(y(:,i)'*s(:,i));
+            
             alpha(i) = rho(i)*s(:,i)'*q;
             q = q - alpha(i)*y(:,i);
         end
-        
-%         H0=y(:,buffer_size_max)*s(:,buffer_size_max)'*...
-%             (1/(y(:,buffer_size_max)'*y(:,buffer_size_max)));
-%         z=H0*q;
-        z=(y(:,buffer_size_max)*s(:,buffer_size_max)'*q)*...
-            (1/(y(:,buffer_size_max)'*y(:,buffer_size_max)));
 
+        z=(y(:,buffer_size_max)*s(:,buffer_size_max)'*q)...
+            /(y(:,buffer_size_max)'*y(:,buffer_size_max));
         
         for i=buffer_size_max:-1:1 % oldest first 
             beta(i)=rho(i)*y(:,i)'*z;
