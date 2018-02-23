@@ -96,11 +96,14 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
                 tau=tau/2;
                 panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
         }
-        
+        #ifndef PURE_PROX_GRADIENT /* if PURE_PROX_GRADIENT is defined, we wont use lbgfs step */
         if(i==FBE_LINESEARCH_MAX_ITERATIONS){
+        #endif
             tau=0;
             panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
+        #ifndef PURE_PROX_GRADIENT /* if PURE_PROX_GRADIENT is defined, we wont use lbgfs step */
         }
+        #endif
     }
 
     return residual_inf_norm;
