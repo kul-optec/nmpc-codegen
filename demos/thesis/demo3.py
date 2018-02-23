@@ -21,11 +21,15 @@ if __name__ == '__main__':
     Q = np.diag([1., 1., 0.01])
     R = np.diag([1., 1.]) * 0.01
 
+    Q_terminal = np.diag([1., 1., 0.01])*100
+    R_terminal = np.diag([1., 1.]) * 0.01
+
     trailer_controller = prepare_demo_trailer(step_size,Q,R)
+    # trailer_controller = prepare_demo_trailer(step_size, Q, R, Q_terminal, Q_terminal)
 
     trailer_controller.horizon = 40 # NMPC parameter
     trailer_controller.integrator_casadi = True # optional  feature that can generate the integrating used  in the cost function
-    trailer_controller.panoc_max_steps = 5000 # the maximum amount of iterations the PANOC algorithm is allowed to do.
+    trailer_controller.panoc_max_steps = 1000 # the maximum amount of iterations the PANOC algorithm is allowed to do.
     trailer_controller.min_residual=-3
     trailer_controller.lbgfs_buffer_size = 50
 
@@ -47,7 +51,7 @@ if __name__ == '__main__':
     reference_state = np.array([-1.0, 1.5,  math.pi/3])
     reference_input = np.array([0, 0])
 
-    obstacle_weights = [1e2]
+    obstacle_weights = [1e5]
 
     state_history = simulate_demo(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights)
 

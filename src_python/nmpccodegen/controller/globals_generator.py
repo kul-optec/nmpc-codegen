@@ -27,6 +27,9 @@ class Globals_generator:
         self._define_variable("PANOC_MIN_STEPS",nmpc_controller.panoc_min_steps)
         self._define_variable("MIN_RESIDUAL","(1e"+str(nmpc_controller.min_residual)+")")
 
+        self._generate_title("options used to test:")
+        if(nmpc_controller.pure_prox_gradient):
+            self._define_variable("PURE_PROX_GRADIENT", 1)
 
         self._generate_title("Optional features")
         if( nmpc_controller.integrator_casadi):

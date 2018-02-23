@@ -28,6 +28,7 @@ if __name__ == '__main__':
     trailer_controller.panoc_max_steps = 2000 # the maximum amount of iterations the PANOC algorithm is allowed to do.
     trailer_controller.min_residual=-3
     trailer_controller.lbgfs_buffer_size = 50
+    # trailer_controller.pure_prox_gradient = True  # this will ignore the lbgfs, only usefull when testing !!!
 
     # construct upper rectangular
     costum_obstacle = obstacles.Obstacle_nonconvex_constraints()
@@ -47,11 +48,11 @@ if __name__ == '__main__':
     trailer_controller.generate_code()
 
     # simulate everything
-    initial_state = np.array([7, -1,-math.pi])
-    reference_state = np.array([1.5, -2., -math.pi])
+    initial_state = np.array([7, -1,0])
+    reference_state = np.array([1.5, -2., 0])
     reference_input = np.array([0, 0])
 
-    obstacle_weights = [1e14]
+    obstacle_weights = [1e5]
 
     state_history = simulate_demo(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights)
 

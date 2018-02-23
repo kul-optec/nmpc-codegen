@@ -11,6 +11,33 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 
+def calculate_horizon(trailer_controller,sim,initial_state,reference_state,reference_input,obstacle_weights):
+    # -- simulate controller --
+    simulation_time = 2
+    number_of_steps = math.ceil(simulation_time / trailer_controller.model.step_size)
+    # setup the weights on a simulator to test
+    for i in range(0,len(obstacle_weights)):
+        sim.set_weight_obstacle(i, obstacle_weights[i])
+    for i in range(0,len(reference_state)*trailer_controller.horizon):
+        sim.set_init_value_solver(0.,i)
+
+    state = initial_state
+    state_history = np.zeros((trailer_controller.model.number_of_states, trailer_controller.horizon))
+
+    (sim_data, full_solution) = sim.simulate_nmpc_multistep_solution(initial_state, reference_state, reference_input,
+                                      trailer_controller.model.number_of_inputs * trailer_controller.horizon)
+    print("problem solved in "+str(sim_data.panoc_interations)+" iterations \n")
+    inputs = np.reshape(full_solution, (trailer_controller.horizon, trailer_controller.model.number_of_inputs))
+
+    for i in range(0, trailer_controller.horizon):
+        state = trailer_controller.model.get_next_state_numpy(state, inputs[i,:].T)
+        state_history[:, i] = np.reshape(state[:], trailer_controller.model.number_of_states)
+
+    print("Final state:")
+    print(state)
+
+    return state_history
+
 def prepare_demo_trailer(step_size,Q,R,Q_terminal=None,R_terminal=None):
     "construct a simple demo controller"
 

@@ -32,6 +32,7 @@ class Nmpc_panoc:
         self._min_residual=-5 #chose 10^{-5} as max residual#
 
         self._integrator_casadi=False
+        self._pure_prox_gradient=False
 
         # generate the dynamic_globals file
         self._globals_generator = Globals_generator(self._location_lib + "/globals/globals_dyn.h")
@@ -148,6 +149,12 @@ class Nmpc_panoc:
     @integrator_casadi.setter
     def integrator_casadi(self, value):
         self._integrator_casadi = value
+    @property
+    def pure_prox_gradient(self):
+        return self._pure_prox_gradient
+    @pure_prox_gradient.setter
+    def pure_prox_gradient(self, value):
+        self._pure_prox_gradient = value
 
     @property
     def location(self):
