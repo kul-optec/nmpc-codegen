@@ -35,6 +35,9 @@ int buffer_cleanup(void){
     return SUCCESS;
 }
 int buffer_renew(const real_t* current_location_){
+    #ifdef PURE_PROX_GRADIENT
+        precomputed_evaluations=FALSE;
+    #endif
     current_location=current_location_;
     /*
      * only renew buffer if it wasn't precomputed
