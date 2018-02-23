@@ -123,6 +123,7 @@ int rosenbrock_test(void){
 
     printf("test3: starting in location x1=-1.2 x2=1 optimal pint is in 1 \n");
     real_t current_location[DIMENSION]={-1.2,1.};
+    real_t solution_rosen[2] = {1,1};
 
     size_t i;
     for ( i = 0; i < 10; i++)
@@ -139,7 +140,7 @@ int rosenbrock_test(void){
     lbfgs_cleanup();
     buffer_cleanup();
 
-    if(ABS(current_location[0]-1)<1e-15 && ABS(current_location[0]-1)<1e-15){
+    if(ABS(current_location[0]-1)<1e-10 && ABS(current_location[0]-1)<1e-10){
         return SUCCESS;
         printf("end of test3:SUCCESS --- \n");
     }else{
