@@ -166,9 +166,9 @@ const real_t* lbfgs_get_direction(void){
 
         
         real_t z[dimension]; size_t index_oldest_vector = buffer_limit -1;
-        real_t inner_product_sq = inner_product(s[index_oldest_vector],q,dimension);
+        real_t inner_product_sy = inner_product(s[index_oldest_vector],y[index_oldest_vector],dimension);
         real_t inner_product_yy = inner_product(y[index_oldest_vector],y[index_oldest_vector],dimension);
-        vector_real_mul(y[index_oldest_vector],dimension,inner_product_sq/inner_product_yy,z);
+        vector_real_mul(q,dimension,inner_product_sy/inner_product_yy,z);
         /*
          * Second loop lbfgs
          */

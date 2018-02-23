@@ -94,7 +94,25 @@ int check2thdegreepolynomial(void){
         return FAILURE;
     }
 }
+real_t backtracking_linesearch(const real_t* direction,const real_t* location){
+    /* do backtracking linesearch */
+    real_t current_df[DIMENSION];
+    df_rosenbrock(location,current_df);
+    real_t gamma_armijo = 0.1;
+    real_t alpha=1;
 
+    real_t possible_location[DIMENSION];
+    vector_add_ntimes(location,direction,DIMENSION,alpha,possible_location);
+    while(f_rosenbrock(possible_location)>= \
+            f_rosenbrock(location) + gamma_armijo * alpha * inner_product(direction,current_df,DIMENSION) ){
+        alpha = alpha/2;
+        if(alpha<10e-5){
+            alpha=0;break;
+        }
+        vector_add_ntimes(location,direction,DIMENSION,alpha,possible_location);
+    }
+    return alpha;
+}
 int rosenbrock_test(void){
     degree=2;
     size_t buffer_size = 20;
@@ -107,11 +125,13 @@ int rosenbrock_test(void){
     real_t current_location[DIMENSION]={-1.2,1.};
 
     size_t i;
-    for ( i = 0; i < 40; i++)
+    for ( i = 0; i < 10; i++)
     {
         buffer_renew(current_location);
         const real_t* direction = lbfgs_get_direction();
-        vector_add(current_location,direction,DIMENSION,current_location);
+        real_t alpha = 1;
+        // alpha = backtracking_linesearch(direction,current_location);
+        vector_add_ntimes(current_location,direction,DIMENSION,alpha,current_location);
         printf("i=%d x1=%f x2=%f with cost=%1.16f \n",i,current_location[0],current_location[1],f_rosenbrock(current_location));
     }
     
@@ -119,11 +139,11 @@ int rosenbrock_test(void){
     lbfgs_cleanup();
     buffer_cleanup();
 
-    if(current_location[0]<pow(10,-15)&&current_location[1]<pow(10,-15)){
+    if(ABS(current_location[0]-1)<1e-15 && ABS(current_location[0]-1)<1e-15){
         return SUCCESS;
-        printf("end of test2:SUCCESS --- \n");
+        printf("end of test3:SUCCESS --- \n");
     }else{
-        printf("end of test2:FAILURE --- \n");
+        printf("end of test3:FAILURE --- \n");
         return FAILURE;
     }
 }
