@@ -32,6 +32,7 @@ static int check_if_valid_update(const real_t* gradient_current_location); /* in
 
 static real_t* y_data; /* data field used to allocate 2D array y, if only one malloc is used we get cast errors */
 static real_t* s_data; /* data field used to allocate 2D array s, if only one malloc is used we get cast errors */
+static real_t hessian_estimate=0;
 
 static int lbfgs_reset_direction(void); /* internal function */
 
@@ -125,16 +126,13 @@ int lbfgs_reset_iteration_counters(void){
  * returns the direction calculated with lbfgs
  */ 
 const real_t* lbfgs_get_direction(void){
-    const real_t* current_location = buffer_get_current_location();
-    real_t gradient_current_location[dimension];proximal_gradient_descent_get_current_residual(gradient_current_location); /* find df(x) */
-    real_t q[dimension];vector_copy(gradient_current_location,q,dimension);
+    const real_t* direction_prox_gradient = proximal_gradient_descent_get_buffered_direction();
     
-
     /* 
-     * If the residual is about zero then this is a fixed point, 
+     * If the gradient is about zero then this is a fixed point, 
      * set the direct on zero and return.
      */
-    if(vector_norm2(q,dimension)<MACHINE_ACCURACY){
+    if(vector_norm2(direction_prox_gradient,dimension)<MACHINE_ACCURACY){
         lbfgs_reset_direction();
         return direction;
     }
@@ -144,7 +142,7 @@ const real_t* lbfgs_get_direction(void){
         /* 
          * use gradient descent for first iteration 
          */
-        vector_minus(q,direction,dimension); /* set the direction */
+        vector_minus(direction_prox_gradient,direction,dimension); /* set the direction */
     }else{
         int buffer_limit; /* how much of the buffer should i use in this iteration? */
         if(iteration_index<buffer_size){
@@ -152,6 +150,8 @@ const real_t* lbfgs_get_direction(void){
         }else{
             buffer_limit=buffer_size;
         }
+
+        real_t q[dimension]; vector_copy(direction_prox_gradient,q,dimension);
 
         /*
          * First loop lbfgs
@@ -163,12 +163,8 @@ const real_t* lbfgs_get_direction(void){
             alpha[i]= rho[i]*inner_product(s[i],q,dimension);
             vector_add_ntimes(q,y[i],dimension,-alpha[i],q);
         }
-
-        
-        real_t z[dimension]; size_t index_buffer_hessian_estimate = 0;
-        real_t inner_product_sy = inner_product(s[index_buffer_hessian_estimate],y[index_buffer_hessian_estimate],dimension);
-        real_t inner_product_yy = inner_product(y[index_buffer_hessian_estimate],y[index_buffer_hessian_estimate],dimension);
-        vector_real_mul(q,dimension,inner_product_sy/inner_product_yy,z);
+        real_t z[dimension];
+        vector_real_mul(q,dimension,hessian_estimate,z);
         /*
          * Second loop lbfgs
          */
@@ -180,39 +176,50 @@ const real_t* lbfgs_get_direction(void){
         }
         vector_minus(z,direction,dimension); /* z contains upward direction, multiply with -1 to get downward direction */
     }
-
-    real_t new_location[dimension]; 
-    vector_add(current_location,direction,dimension,new_location); /* get the new location */
-
+    
+    return direction;
+}
+int lbfgs_update_hessian(real_t tau, const real_t* current_location, const real_t* new_location){
     vector_sub(new_location,current_location,dimension,s[buffer_size]); /* set s */
     
-    /* real_t gradient_current_location[dimension]; already contains df(x) */
-    real_t gradient_new_location[dimension];proximal_gradient_descent_get_residual(new_location,gradient_new_location); /* find df(new_x) */
+    real_t gradient_current_location[dimension];proximal_gradient_descent_get_current_residual(gradient_current_location);
 
+    real_t gradient_new_location[dimension];
+    if(tau==0){
+        /* direction was never used to calculate forward backward envelop */
+        proximal_gradient_descent_get_new_residual(new_location,gradient_new_location);
+    }else{
+        /* direction was used to calculate forward backward envelop */
+        proximal_gradient_descent_get_new_residual_buffered(gradient_new_location);
+    }
+    
     vector_sub(gradient_new_location,gradient_current_location,dimension,y[buffer_size]); /* set y=df(new_x) - df(x) */
+
+    /* scale gamma, this is done in ForBes , but not correct according to paper */
+    real_t gamma = proximal_gradient_descent_get_gamma();
+    vector_real_mul(y[buffer_size],dimension,gamma,y[buffer_size]);
 
     if(check_if_valid_update(gradient_current_location)==SUCCESS){
         shift_s_and_y();  /* shift the s and y buffers */
+
+        real_t inner_product_sy = inner_product(s[0],y[0],dimension);
+        real_t inner_product_yy = inner_product(y[0],y[0],dimension);
+        hessian_estimate=inner_product_sy/inner_product_yy;
+
+        
         iteration_index++;
+
+        return SUCCESS;
     }else{
         /* 
          * Update is not valid, return direction but don't save y and s,
          * which means that the hessian approximation stays the sam.
          */
+        return FAILURE;
     }
-    return direction;
-    /* OLD CODE: check if the solution is not NaN, if so set it too zero */
-    /*
-    size_t i;
-    for ( i = 0; i < dimension; i++)
-    {
-        if(isnan(direction[i])){
-            lbfgs_reset_direction();
-            break;
-        }
-    */
-}
 
+    
+}
 /*
  * Theoretical condition:
  * update if (y^Ts)/||s||^2 > epsilon * ||grad(x)||
@@ -229,9 +236,12 @@ static int check_if_valid_update(const real_t* gradient_current_location){
     const real_t denominator = sq(vector_norm2(possible_s,dimension));
     const real_t norm_gradient_current_location = vector_norm2(gradient_current_location,dimension);
 
-    if(numerator/denominator >=LBGFS_SAFETY_SMALL_VALUE*norm_gradient_current_location)
-        return SUCCESS;
-    return FAILURE;
+    real_t left = numerator/denominator;
+    real_t right = (1e-12)*norm_gradient_current_location;
+
+    if(left < right)
+        return FAILURE;
+    return SUCCESS;
 }
 
  /* internal function used to shift the s and y buffers */

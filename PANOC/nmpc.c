@@ -93,6 +93,10 @@ int npmc_solve( const real_t* current_state,
     {
         optimal_inputs[i]=current_input[i];
     }
+    // for (i = 0; i < DIMENSION_INPUT*MPC_HORIZON - DIMENSION_INPUT; i++)
+    // {
+    //     current_input[i] = current_input[i+DIMENSION_INPUT];
+    // }
     panoc_reset_cycli();
     if(i_panoc==PANOC_MAX_STEPS)
         return i_panoc;

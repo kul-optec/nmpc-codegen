@@ -28,10 +28,6 @@ static real_t* direction;
 static real_t* new_location_FBE;
 static real_t* direction_FBE;
 
-/* precomputed forward_backward_envelop's calculated with residual because its cheaper then */
-static real_t forward_backward_envelop_lbfgs;
-static real_t forward_backward_envelop_current_location;
-
 
 int proximal_gradient_descent_init(void){
     dimension=casadi_interface_get_dimension();
@@ -97,6 +93,10 @@ const real_t* proximal_gradient_descent_get_direction(void){
     return direction;
 }
 
+const real_t* proximal_gradient_descent_get_buffered_direction(void){
+    return direction;
+}
+
 /*
  * This function performs the linesearch
  */
@@ -112,6 +112,25 @@ static int proximal_gradient_descent_linesearch(void){
     return SUCCESS;
 }
 
+/*
+ * check if the linesearch condition is satisfied
+ */
+static int proximal_gradient_descent_check_linesearch(void){
+    const real_t* df_current_location=buffer_get_current_df();
+    const real_t inner_product_df_direction = inner_product(df_current_location,direction,dimension);
+
+    const real_t f_current_location=buffer_get_current_f();
+    const real_t f_new_location=casadi_interface_f(new_location);
+
+    const real_t norm_direction_gamma = sq(vector_norm2(direction,dimension)); /* direction=gamma*r in paper */
+
+    if(f_new_location>f_current_location - inner_product_df_direction + ( 1/(2*linesearch_gamma) )*norm_direction_gamma + 1e-6*f_current_location)
+        return FAILURE;
+    else
+        return SUCCESS;
+}
+
+
 /* 
  * This function performs an forward backward step. x=prox(x-gamma*df(x))
  */
@@ -125,25 +144,32 @@ static int proximal_gradient_descent_forward_backward_step(const real_t* locatio
 /*
  * returns the residual, R(x) = 1/gamma[ x- proxg(x-df(x)*gamma)]
  */
-int proximal_gradient_descent_get_residual(const real_t* location,real_t* residual){
-    proximal_gradient_descent_push(); /* undo changes to the state of this entity */
-    /* 
-     * Use the buffer to evaluate the gradient so it can be reused with the first FBE step.
-     * And possibly as the next current_df if tau is 1 and the steps exists purely out of lbfgs
-     */
-    buffer_evaluate_lbfgs_new_location(location);
-    const real_t* df_location=buffer_get_lbfgs_new_location_df();
-    real_t f_location=buffer_get_lbfgs_new_location_f();
+int proximal_gradient_descent_get_new_residual(const real_t* location,real_t* residual){
+    proximal_gradient_descent_push(); /* swap data fields to FBE calculation fields */
 
+    /* 
+     * use special buffer so values might be reused later
+     */
+    buffer_evaluate_new_location(location);
+    const real_t* df_location=buffer_get_new_location_df();
+    
     proximal_gradient_descent_forward_backward_step(location,df_location);
     /* calculate the residual, as in normalize the current direction */
     vector_real_mul(direction,dimension,1/linesearch_gamma,residual);
 
-    /* 
-     * Calculate the first FBE(x^{k+1}) used on th left side in the linesearch in panoc.c
-     */
-    forward_backward_envelop_lbfgs = proximal_gradient_descent_forward_backward_envelop_precomputed_step(f_location,df_location);
-    proximal_gradient_descent_push(); /* undo changes to the state of this entity */
+    proximal_gradient_descent_push(); /* swap data fields to FBE calculation fields */
+    return SUCCESS;
+}
+/*
+ * compute residual using direction used by fordward backward envelop
+ */
+int proximal_gradient_descent_get_new_residual_buffered(real_t* residual){
+    proximal_gradient_descent_push(); /* swap data fields to FBE calculation fields */
+
+    /* calculate the residual, as in normalize the current direction */
+    vector_real_mul(direction,dimension,1/linesearch_gamma,residual);
+
+    proximal_gradient_descent_push(); /* swap data fields to FBE calculation fields */
     return SUCCESS;
 }
 
@@ -157,63 +183,40 @@ int proximal_gradient_descent_get_current_residual(real_t* residual){
     /* calculate the inf-norm and safe it */
     last_current_residual_inf_norm=vector_norm_inf(residual,dimension);
 
-    /* calculate the forward backward envelop and save it */
-    const real_t f_current_location=buffer_get_current_f();
-    const real_t* df_current_location=buffer_get_current_df();
-    forward_backward_envelop_current_location = \
-        proximal_gradient_descent_forward_backward_envelop_precomputed_step(f_current_location,df_current_location);
     return SUCCESS;
 }
+
 
 real_t proximal_gradient_descent_get_current_residual_inf_norm(void){
     return last_current_residual_inf_norm;
 }
 
-/*
- * check if the linesearch condition is satisfied
- */
-static int proximal_gradient_descent_check_linesearch(void){
-    const real_t* df_current_location=buffer_get_current_df();
-    const real_t inner_product_df_direction = inner_product(df_current_location,direction,dimension);
-
-    const real_t f_current_location=buffer_get_current_f();
-    const real_t f_new_location=casadi_interface_f(new_location);
-
-    const real_t norm_direction_gamma = sq(vector_norm2(direction,dimension)); /* direction=gamma*r in paper */
-
-    if(f_new_location>f_current_location - inner_product_df_direction + ( 1/(2*linesearch_gamma) )*norm_direction_gamma )
-        return FAILURE;
-    else
-        return SUCCESS;
-}
-/*
- * return the precomputed forward backward envelop of the current location
- */
-real_t proximal_gradient_descent_get_current_forward_backward_envelop(void){
-    return forward_backward_envelop_current_location;
-}
-/*
- * return the precomputed forward backward envelop of a pure lbfgs step (tau=1)
- */
-real_t proximal_gradient_descent_get_lbfgs_forward_backward_envelop(void){
-    return forward_backward_envelop_lbfgs;
-}
 
 /*
  * calculate the forward backward envelop using the internal gamma
  * Matlab cache.FBE = cache.fx + cache.gz - cache.gradfx(:)'*cache.FPR(:) + (0.5/gam)*(cache.normFPR^2);
  */
 real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location){
-    proximal_gradient_descent_push(); /* undo changes to the state of this entity */
+    proximal_gradient_descent_push(); /* swap data fields to FBE calculation fields */
 
-    real_t df_location[dimension];
-    const real_t f_location=casadi_interface_f_df(location,df_location);
+    /* 
+     * use special buffer so values might be reused later
+     */
+    buffer_evaluate_new_location(location);
+    const real_t* df_location=buffer_get_new_location_df();
+    real_t f_location=buffer_get_new_location_f();
 
     proximal_gradient_descent_forward_backward_step(location, df_location); /* this will fill the new_direction variable */
     real_t forward_backward_envelop = proximal_gradient_descent_forward_backward_envelop_precomputed_step(f_location,df_location);
 
-    proximal_gradient_descent_push(); /* undo changes to the state of this entity */
+    proximal_gradient_descent_push(); /* swap data fields to FBE calculation fields */
+
     return forward_backward_envelop;
+}
+real_t proximal_gradient_descent_get_current_forward_backward_envelop(void){
+    const real_t f_location = buffer_get_current_f();
+    const real_t* df_location = buffer_get_current_df();
+    return proximal_gradient_descent_forward_backward_envelop_precomputed_step(f_location,df_location);
 }
 
 /*

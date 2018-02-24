@@ -36,7 +36,7 @@ static real_t FBE_current_location;
 static real_t direction_norm;
 
 /* functions used internally */
-static int panoc_check_linesearch_condition(int index_iteration,real_t* new_location, const real_t linesearch_gamma);
+static int panoc_check_linesearch_condition(real_t* new_location, const real_t linesearch_gamma);
 static int panoc_get_new_potential_location(const  real_t* forward_backward_step,
     const real_t* direction_residue,const real_t tau,real_t* potential_new_location);
 
@@ -82,53 +82,47 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
     const real_t linesearch_gamma = proximal_gradient_descent_get_gamma();
 
     const real_t* direction_residue = lbfgs_get_direction();
-    const real_t residual_inf_norm=proximal_gradient_descent_get_current_residual_inf_norm();
-
+    
     /* precompute FBE used in linesearch check, static fields ! */
-    if(residual_inf_norm>MACHINE_ACCURACY){
-        FBE_current_location = proximal_gradient_descent_get_current_forward_backward_envelop();
-        direction_norm=sq(vector_norm2(forward_backward_step,dimension));
+    FBE_current_location = proximal_gradient_descent_get_current_forward_backward_envelop();
+    direction_norm=sq(vector_norm2(forward_backward_step,dimension));
 
-        tau=1;
-        panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
-        int i=0;
-        for(i=0;i<FBE_LINESEARCH_MAX_ITERATIONS && panoc_check_linesearch_condition(i,new_location,linesearch_gamma)==FAILURE;i++){
-                tau=tau/2;
-                panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
-        }
-        #ifndef PURE_PROX_GRADIENT /* if PURE_PROX_GRADIENT is defined, we wont use lbgfs step */
-        if(i==FBE_LINESEARCH_MAX_ITERATIONS){
-        #endif
-            tau=0;
+    tau=1;
+    panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
+    int i=0;
+    for(i=0;i<FBE_LINESEARCH_MAX_ITERATIONS && panoc_check_linesearch_condition(new_location,linesearch_gamma)==FAILURE;i++){
+            tau=tau/2;
             panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
-        #ifndef PURE_PROX_GRADIENT /* if PURE_PROX_GRADIENT is defined, we wont use lbgfs step */
-        }
-        #endif
     }
+    #ifndef PURE_PROX_GRADIENT /* if PURE_PROX_GRADIENT is defined, we wont use lbgfs step */
+    if(i==FBE_LINESEARCH_MAX_ITERATIONS){
+    #endif
+        tau=0;
+        panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
+    #ifndef PURE_PROX_GRADIENT /* if PURE_PROX_GRADIENT is defined, we wont use lbgfs step */
+    }
+    #endif
 
+    lbfgs_update_hessian(tau,current_location,new_location);
+    buffer_set_new_location_as_current_location();
+
+    const real_t residual_inf_norm=proximal_gradient_descent_get_current_residual_inf_norm();
     return residual_inf_norm;
 }
 
-static int panoc_check_linesearch_condition(int index_iteration,real_t* new_location,const real_t linesearch_gamma){
+static int panoc_check_linesearch_condition(real_t* new_location,const real_t linesearch_gamma){
     /*
      * If this is the first time you call the check_line_condition:
      *      use the precomputed FBE as your only using lbfgs
      */
-    real_t FBE_potential_new_location;
-    if(index_iteration==INTERATION_INDEX_PURE_LBFGS_STEP )
-        FBE_potential_new_location = proximal_gradient_descent_get_lbfgs_forward_backward_envelop();
-    else 
-        FBE_potential_new_location = proximal_gradient_descent_forward_backward_envelop(new_location);
-
+    const real_t FBE_potential_new_location = proximal_gradient_descent_forward_backward_envelop(new_location);
     const real_t factor = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*linesearch_gamma);
 
-    if(FBE_potential_new_location<=FBE_current_location-factor*direction_norm){
+    if(FBE_potential_new_location<=FBE_current_location-factor*direction_norm ){
         /* 
          * SUCCESS means that the linesearch will stop, 
          * check if i should reuse something next iteration 
          */
-        if(index_iteration==INTERATION_INDEX_PURE_LBFGS_STEP) /* linesearch succeeds with pure lbfgs step, reuse the function evaluation */
-            buffer_set_lbfgs_as_precomputed();
         return SUCCESS; 
     }
     return FAILURE;
@@ -154,5 +148,6 @@ real_t panoc_get_tau(void){return tau;}
 int panoc_reset_cycli(void){
     proximal_gradient_descent_reset_iteration_counters();
     lbfgs_reset_iteration_counters();
+    buffer_reset_cycle();
     return SUCCESS;
 }

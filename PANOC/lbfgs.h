@@ -7,6 +7,7 @@
 
 int lbfgs_init(const size_t buffer_size_,const size_t dimension_);
 int lbfgs_cleanup(void);
+int lbfgs_update_hessian(real_t tau, const real_t* current_location, const real_t* new_location);
 
 /*
  * returns the direction calculated with lbfgs
