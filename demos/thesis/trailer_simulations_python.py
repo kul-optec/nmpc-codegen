@@ -21,12 +21,17 @@ if __name__ == '__main__':
     Q = np.diag([1., 1., 1.])*0.2
     R = np.diag([1., 1.]) * 0.01
 
-    trailer_controller = prepare_demo_trailer(step_size,Q,R)
+    Q_terminal = np.diag([1., 1., 1])*10
+    R_terminal = np.diag([1., 1.]) * 0.01
 
-    trailer_controller.horizon = 30 # NMPC parameter
+    trailer_controller = prepare_demo_trailer(step_size,Q,R,Q_terminal,R_terminal)
+
+    trailer_controller.horizon = 40 # NMPC parameter
     trailer_controller.integrator_casadi = True # optional  feature that can generate the integrating used  in the cost function
-    trailer_controller.panoc_max_steps = 500 # the maximum amount of iterations the PANOC algorithm is allowed to do.
+    trailer_controller.panoc_max_steps = 2000 # the maximum amount of iterations the PANOC algorithm is allowed to do.
     trailer_controller.min_residual=-3
+    trailer_controller.lbgfs_buffer_size=50
+    # trailer_controller.pure_prox_gradient=True
 
     # construct left circle
     circle1 = obstacles.Obstacle_circle(np.array([1.5,0.]),1.)
@@ -48,7 +53,7 @@ if __name__ == '__main__':
     reference_state = np.array([7., 5., 0.8])
     reference_input = np.array([0, 0])
 
-    obstacle_weights = [700.,700.,700.]
+    obstacle_weights = [700.,700.,700.,700.]
 
     state_history = simulate_demo(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights)
 
@@ -64,4 +69,5 @@ if __name__ == '__main__':
     plt.xlabel('x')
     plt.xlabel('y')
     plt.title('Trailer')
+    plt.savefig('trailer_simulations_python.png')
     plt.show()

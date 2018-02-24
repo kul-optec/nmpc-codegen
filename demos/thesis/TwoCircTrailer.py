@@ -15,15 +15,18 @@ import math
 from demo import prepare_demo_trailer,simulate_demo
 
 if __name__ == '__main__':
-    step_size=0.05
+    step_size=0.03
 
     # Q and R matrixes determined by the control engineer.
     Q = np.diag([1., 1., 0.0])*0.2
     R = np.diag([1., 1.]) * 0.01
 
-    trailer_controller = prepare_demo_trailer(step_size,Q,R)
+    Q_terminal = np.diag([1., 1., 0.0])*2
+    R_terminal = np.diag([1., 1.]) * 0.01
 
-    trailer_controller.horizon = 30 # NMPC parameter
+    trailer_controller = prepare_demo_trailer(step_size,Q,R,Q_terminal,R_terminal)
+
+    trailer_controller.horizon = 50 # NMPC parameter
     trailer_controller.integrator_casadi = True # optional  feature that can generate the integrating used  in the cost function
     trailer_controller.panoc_max_steps = 500 # the maximum amount of iterations the PANOC algorithm is allowed to do.
     trailer_controller.min_residual=-3

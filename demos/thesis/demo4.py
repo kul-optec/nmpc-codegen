@@ -21,7 +21,10 @@ if __name__ == '__main__':
     Q = np.diag([1., 1., 0.1])*2
     R = np.diag([1., 1.]) * 0.01
 
-    trailer_controller = prepare_demo_trailer(step_size,Q,R)
+    Q_terminal = np.diag([1., 1., 0.1])*10
+    R_terminal = np.diag([1., 1.]) * 0.01
+
+    trailer_controller = prepare_demo_trailer(step_size,Q,R,Q_terminal,R_terminal)
 
     trailer_controller.horizon = 40 # NMPC parameter
     trailer_controller.integrator_casadi = True # optional  feature that can generate the integrating used  in the cost function
@@ -52,7 +55,7 @@ if __name__ == '__main__':
     reference_state = np.array([1.5, -2., 0])
     reference_input = np.array([0, 0])
 
-    obstacle_weights = [1e5]
+    obstacle_weights = [1e1]
 
     state_history = simulate_demo(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights)
 
@@ -67,4 +70,5 @@ if __name__ == '__main__':
     plt.xlabel('x')
     plt.xlabel('y')
     plt.title('Trailer')
+    plt.savefig('demo4.png')
     plt.show()

@@ -66,4 +66,5 @@ if __name__ == '__main__':
     plt.xlabel('x')
     plt.xlabel('y')
     plt.title('Trailer')
+    plt.savefig('demo2.png')
     plt.show()

@@ -25,9 +25,10 @@ if __name__ == '__main__':
 
     trailer_controller.horizon = 50 # NMPC parameter
     trailer_controller.integrator_casadi = True # optional  feature that can generate the integrating used  in the cost function
-    trailer_controller.panoc_max_steps = 5000 # the maximum amount of iterations the PANOC algorithm is allowed to do.
+    trailer_controller.panoc_max_steps = 2000 # the maximum amount of iterations the PANOC algorithm is allowed to do.
     trailer_controller.min_residual=-3
-    trailer_controller.lbgfs_buffer_size = 10
+    trailer_controller.lbgfs_buffer_size = 50
+    # trailer_controller.pure_prox_gradient=True
 
     # construct upper rectangular
     rectangular_up = obstacles.Obstacle_rectangular(np.array([1,0.5]),0.4,0.5)
@@ -51,7 +52,7 @@ if __name__ == '__main__':
     reference_state = np.array([1.5, 0.4, 0])
     reference_input = np.array([0, 0])
 
-    obstacle_weights = [1000.,1000.,1000.]
+    obstacle_weights = [1e3,1e3,1e3]
 
     state_history = simulate_demo(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights)
 
@@ -65,4 +66,5 @@ if __name__ == '__main__':
     plt.xlabel('x')
     plt.xlabel('y')
     plt.title('Trailer')
+    plt.savefig('OneCricleTwoRectTrailer.png')
     plt.show()
