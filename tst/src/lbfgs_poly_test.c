@@ -31,13 +31,15 @@ int main(){
 int checkIfSolutionIsReached(void){
     printf("test1 --- \n");
     degree=10;
-    size_t buffer_size =10;
+    size_t buffer_size =20;
 
     lbfgs_init(buffer_size,DIMENSION);
     f_poly_init(DIMENSION,degree);
     buffer_init();
+    lbfgs_prox_grad_descent_test_init(DIMENSION);
     
     real_t current_location[DIMENSION]={0.5,0.5};
+    real_t next_location[DIMENSION];
     real_t approx_solution[DIMENSION] ={0.017081,0.017081};
 
     printf("test1: starting in location x1=0.5 x2=0.5 with cost=%f\n",f_poly(current_location));
@@ -47,13 +49,17 @@ int checkIfSolutionIsReached(void){
     {
         buffer_renew(current_location);
         const real_t* direction = lbfgs_get_direction();
-        vector_add(current_location,direction,DIMENSION,current_location);
+        vector_add(current_location,direction,DIMENSION,next_location);
+        real_t tau =0.;
+        lbfgs_update_hessian(tau,current_location,next_location);
+        vector_copy(next_location,current_location,DIMENSION);
         print_location(current_location);
         /* print_diff(current_location,approx_solution); */
     }
     printf("the final cost is=%f \n",f_poly(current_location));
     lbfgs_cleanup();
     buffer_cleanup();
+    lbfgs_prox_grad_descent_test_cleanup();
     if(ABS(f_poly(current_location))<pow(10,-5)){
         printf("end of test1:SUCCESS --- \n");
         return SUCCESS;
@@ -71,6 +77,8 @@ int check2thdegreepolynomial(void){
     f_poly_init(DIMENSION,degree);
     buffer_init();
     real_t current_location[DIMENSION]={0.5,0.5};
+    real_t next_location[DIMENSION];
+    lbfgs_prox_grad_descent_test_init(DIMENSION);
 
     printf("test2: starting in location x1=0.5 x2=0.5 \n");
 
@@ -79,12 +87,16 @@ int check2thdegreepolynomial(void){
     {
         buffer_renew(current_location);
         const real_t* direction = lbfgs_get_direction();
-        vector_add(current_location,direction,DIMENSION,current_location);
+        vector_add(current_location,direction,DIMENSION,next_location);
+        real_t tau =0.;
+        lbfgs_update_hessian(tau,current_location,next_location);
+        vector_copy(next_location,current_location,DIMENSION);
         print_location(current_location);
     }
     
     lbfgs_cleanup();
     buffer_cleanup();
+    lbfgs_prox_grad_descent_test_cleanup();
 
     if(current_location[0]<pow(10,-15)&&current_location[1]<pow(10,-15)){
         return SUCCESS;
@@ -120,9 +132,11 @@ int rosenbrock_test(void){
     lbfgs_init(buffer_size,DIMENSION);
     enable_rosenbrock();
     buffer_init();
+    lbfgs_prox_grad_descent_test_init(DIMENSION);
 
     printf("test3: starting in location x1=-1.2 x2=1 optimal pint is in 1 \n");
     real_t current_location[DIMENSION]={-1.2,1.};
+    real_t next_location[DIMENSION];
     real_t solution_rosen[2] = {1,1};
 
     size_t i;
@@ -130,15 +144,17 @@ int rosenbrock_test(void){
     {
         buffer_renew(current_location);
         const real_t* direction = lbfgs_get_direction();
-        real_t alpha = 1;
-        // alpha = backtracking_linesearch(direction,current_location);
-        vector_add_ntimes(current_location,direction,DIMENSION,alpha,current_location);
+        vector_add(current_location,direction,DIMENSION,next_location);
+        real_t tau =0.;
+        lbfgs_update_hessian(tau,current_location,next_location);
+        vector_copy(next_location,current_location,DIMENSION);
         printf("i=%d x1=%f x2=%f with cost=%1.16f \n",i,current_location[0],current_location[1],f_rosenbrock(current_location));
     }
     
     disable_rosenbrock();
     lbfgs_cleanup();
     buffer_cleanup();
+    lbfgs_prox_grad_descent_test_cleanup();
 
     if(ABS(current_location[0]-1)<1e-10 && ABS(current_location[0]-1)<1e-10){
         return SUCCESS;
