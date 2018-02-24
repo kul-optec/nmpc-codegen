@@ -8,7 +8,7 @@ df=@(x) [polynomial_degree*x(1)^(polynomial_degree-1);polynomial_degree*x(2)^(po
 
 %%
 dimension=2;
-number_of_iterations=10; % number of iterations
+number_of_iterations=40; % number of iterations
 x0=[0.5;0.5];
 
 buffer_size=50; % buffer_size
@@ -27,7 +27,7 @@ x=x0;
 for interation_index=1:number_of_iterations
     [s_new,y_new,x_new] = lbfgs(interation_index,buffer_size,x,df,s,y);
     x_steps(:,interation_index)=x_new;
-    disp(['step x1=' num2str(x(1)) ' x2='  num2str(x(1))]);
+    disp(['step x1=' num2str(x(1)) ' x2='  num2str(x(2)) 'with cost=' num2str(f(x))]);
     x=x_new;s=s_new;y=y_new;
 end
 
@@ -54,4 +54,4 @@ contour(X,Y,Z);
 %% plot the convergence
 
 figure(2);clf;
-plot(x_steps(1,2:end)./x_steps(1,1:end-1));
+plot(abs(x_steps(1,2:end)-0.017081)./abs(x_steps(1,1:end-1)-0.017081));
