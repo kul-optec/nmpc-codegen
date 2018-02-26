@@ -118,7 +118,14 @@ static int panoc_check_linesearch_condition(real_t* new_location,const real_t li
     const real_t FBE_potential_new_location = proximal_gradient_descent_forward_backward_envelop(new_location);
     const real_t factor = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*linesearch_gamma);
 
-    if(FBE_potential_new_location<=FBE_current_location-factor*direction_norm ){
+    const real_t f_current_location = buffer_get_current_f();
+    const real_t f_potential_new_location = buffer_get_new_location_f();
+
+    if( \
+        (FBE_potential_new_location<=FBE_current_location-factor*direction_norm)\
+        &&\
+        (f_potential_new_location<f_current_location)\
+      ){
         /* 
          * SUCCESS means that the linesearch will stop, 
          * check if i should reuse something next iteration 

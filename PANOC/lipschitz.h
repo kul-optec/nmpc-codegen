@@ -5,6 +5,6 @@
 #ifndef LIPSCHITZ_H
 #define LIPSCHITZ_H
 
-real_t get_lipschitz(const real_t* current_position);
+real_t get_lipschitz(void);
 
 #endif

@@ -98,9 +98,8 @@ int npmc_solve( const real_t* current_state,
     //     current_input[i] = current_input[i+DIMENSION_INPUT];
     // }
     panoc_reset_cycli();
-    if(i_panoc==PANOC_MAX_STEPS)
-        return i_panoc;
-    return i_panoc-1;
+
+    return i_panoc;
 }
 int nmpc_get_last_full_solution(real_t* output){
     int i;

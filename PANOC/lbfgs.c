@@ -119,6 +119,7 @@ int lbfgs_cleanup(void){
 }
 int lbfgs_reset_iteration_counters(void){
     iteration_index=0;
+    hessian_estimate=1;
     return SUCCESS;
 }
 
@@ -232,15 +233,13 @@ static int check_if_valid_update(const real_t* gradient_current_location){
     const real_t* possible_s = s[buffer_size];
     const real_t* possible_y = y[buffer_size];
 
-    const real_t numerator = inner_product(possible_y,possible_s,dimension);
-    const real_t denominator = sq(vector_norm2(possible_s,dimension));
+    const real_t inner_product_ys = inner_product(possible_y,possible_s,dimension);
+    const real_t norm_s = sq(vector_norm2(possible_s,dimension));
     const real_t norm_gradient_current_location = vector_norm2(gradient_current_location,dimension);
 
-    real_t left = numerator/denominator;
-    real_t right = (1e-12)*norm_gradient_current_location;
+    if(inner_product_ys/norm_s < (1e-12)*norm_gradient_current_location)
+        return FAILURE; /* don't update */
 
-    if(left < right)
-        return FAILURE;
     return SUCCESS;
 }
 

@@ -84,7 +84,7 @@ const real_t* proximal_gradient_descent_get_direction(void){
     * by estimating the lipschitz value of df
     */
     if(iteration_index==0){
-        real_t lipschitz_value = get_lipschitz(buffer_get_current_location());
+        real_t lipschitz_value = get_lipschitz();
 
         linesearch_gamma = (1-PROXIMAL_GRAD_DESC_SAFETY_VALUE)/lipschitz_value;
         iteration_index++; /* index only needs to increment if it is 0 */
@@ -108,6 +108,7 @@ static int proximal_gradient_descent_linesearch(void){
     while(proximal_gradient_descent_check_linesearch()==FAILURE){
         linesearch_gamma=linesearch_gamma/2;
         proximal_gradient_descent_forward_backward_step(current_location,df_current_location);
+        lbfgs_reset_iteration_counters();
     }
     return SUCCESS;
 }
@@ -124,7 +125,7 @@ static int proximal_gradient_descent_check_linesearch(void){
 
     const real_t norm_direction_gamma = sq(vector_norm2(direction,dimension)); /* direction=gamma*r in paper */
 
-    if(f_new_location>f_current_location - inner_product_df_direction + ( 1/(2*linesearch_gamma) )*norm_direction_gamma + 1e-6*f_current_location)
+    if(f_new_location>f_current_location - inner_product_df_direction + ( (1-PROXIMAL_GRAD_DESC_SAFETY_VALUE)/(2*linesearch_gamma) )*norm_direction_gamma + 1e-6*f_current_location)
         return FAILURE;
     else
         return SUCCESS;

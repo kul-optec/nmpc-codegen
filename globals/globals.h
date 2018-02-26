@@ -36,7 +36,7 @@
 
     /* minimum amount of steps Panoc always should execute */
     #ifndef PANOC_MIN_STEPS
-        #define PANOC_MIN_STEPS 10
+        #define PANOC_MIN_STEPS 0
     #endif
 
 
@@ -56,7 +56,7 @@
     * ---------------------------------
     */
     #ifndef DELTA_LIPSCHITZ
-        #define DELTA_LIPSCHITZ (1e-10)
+        #define DELTA_LIPSCHITZ (1e-12)
     #endif
     #ifndef DELTA_LIPSCHITZ_SAFETY_VALUE
         #define DELTA_LIPSCHITZ_SAFETY_VALUE (1e-6)
@@ -85,11 +85,11 @@
     */
 
     #ifndef LBGFS_BUFFER_SIZE
-        #define LBGFS_BUFFER_SIZE 10
+        #define LBGFS_BUFFER_SIZE 50
     #endif
 
     #ifndef FBE_LINESEARCH_MAX_ITERATIONS
-        #define FBE_LINESEARCH_MAX_ITERATIONS 5
+        #define FBE_LINESEARCH_MAX_ITERATIONS 10
     #endif
 
     #ifndef LBGFS_SAFETY_SMALL_VALUE
