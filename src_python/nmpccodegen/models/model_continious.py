@@ -8,11 +8,12 @@ class Model_continious(m.Model):
         self._integrator=integrator
 
     def get_next_state(self,state,input):
-        """ integrate the continous system with one step using the selected integrator """
+        """ integrate the continous system with one step using the selected integrator return it as casadi array"""
         system_equation = lambda state: super(Model_continious, self).system_equations(state, input)
         return ig.integrator_RK_lib(state, super(Model_continious,self).step_size, system_equation,self._integrator)
 
     def get_next_state_numpy(self,state,input):
+        """ integrate the continous system with one step using the selected integrator and return it as numpy array"""
         number_of_state=super(Model_continious,self).number_of_states
         new_state=np.zeros((number_of_state,1))
 
