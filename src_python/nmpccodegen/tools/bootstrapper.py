@@ -8,7 +8,7 @@ import sys
 
 class Bootstrapper:
     """ bootstraps an nmpc environment """
-    def bootstrap(output_location_controller,python_interface_enabled):
+    def bootstrap(output_location_controller,simulation_tools):
         location_nmpc_repo = Bootstrapper._get_repo_location()
         """ bootstrap the nmpc at location nmpc """
         print("GENERATING output folders of controller:")
@@ -19,7 +19,7 @@ class Bootstrapper:
         Bootstrapper._generate_PANOC_lib(output_location_controller,location_nmpc_repo,overwrite)
         print("GENERATING static globals")
         Bootstrapper._generate_static_globals(output_location_controller, location_nmpc_repo,overwrite)
-        if(python_interface_enabled):
+        if(simulation_tools):
             print("GENERATING python interface")
             Bootstrapper._generate_python_interface(output_location_controller, location_nmpc_repo,overwrite)
             print("GENERATING Build system")
