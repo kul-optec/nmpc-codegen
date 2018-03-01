@@ -17,9 +17,7 @@ typedef struct {
 
 int casadi_interface_init();
 int casadi_interface_cleanup();
-int casadi_prepare_cost_function(   const real_t* current_state,
-                                    const real_t* _state_reference,
-                                    const real_t* _input_reference);
+int casadi_prepare_cost_function(const real_t* current_state);
 #ifdef INTEGRATOR_CASADI
 int casadi_integrate(const real_t* state,const real_t* input,real_t* new_state);
 #endif

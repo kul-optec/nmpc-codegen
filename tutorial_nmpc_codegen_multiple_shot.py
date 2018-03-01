@@ -20,7 +20,7 @@ import time
 ## -- GENERATE STATIC FILES --
 # start by generating the static files and folder of the controller
 trailer_controller_location = "./test_controller_builds/tutorial_controller_multishot"
-tools.Bootstrapper.bootstrap(trailer_controller_location, python_interface_enabled=True)
+tools.Bootstrapper.bootstrap(trailer_controller_location, simulation_tools=True)
 ## -----------------------------------------------------------------
 
 # get the continuous system equations from the existing library

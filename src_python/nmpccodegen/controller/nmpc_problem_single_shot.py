@@ -10,6 +10,8 @@ class Single_shot_definition:
         initial_state = cd.SX.sym('initial_state', self._controller.model.number_of_states, 1)
         state_reference = cd.SX.sym('state_reference', self._controller.model.number_of_states, 1)
         input_reference = cd.SX.sym('input_reference', self._controller.model.number_of_inputs, 1)
+        static_casadi_parameters = cd.vertcat(initial_state, state_reference,input_reference)
+
         obstacle_weights = cd.SX.sym('obstacle_weights', self._controller.number_of_obstacles, 1)
         
         input_all_steps = cd.SX.sym('input_all_steps', self._controller.model.number_of_inputs*self._controller.horizon, 1)
@@ -25,8 +27,7 @@ class Single_shot_definition:
             cost = cost + self._controller.generate_cost_obstacles(current_state,obstacle_weights)
 
         (cost_function, cost_function_derivative_combined) = \
-            ccg.setup_casadi_functions_and_generate_c(initial_state,input_all_steps,\
-                                                      state_reference,input_reference,obstacle_weights,cost,\
+            ccg.setup_casadi_functions_and_generate_c(static_casadi_parameters,input_all_steps,obstacle_weights,cost,\
                                                       self._controller.location)
 
         return (cost_function,cost_function_derivative_combined)

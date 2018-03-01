@@ -60,8 +60,18 @@ static void switch_input_current_new(void){
 int npmc_solve( const real_t* current_state,
                 const real_t* state_reference,
                 const real_t* input_reference,
-                real_t* optimal_inputs){ 
-    casadi_prepare_cost_function(current_state,state_reference,input_reference);
+                real_t* optimal_inputs){
+    real_t static_casadi_parameters[2*DIMENSION_STATE+DIMENSION_INPUT];
+    int i;
+    for(i=0;i<DIMENSION_STATE;i++){
+        static_casadi_parameters[i] = current_state[i];
+        static_casadi_parameters[i+DIMENSION_STATE] = state_reference[i];
+    }
+    for(i=0;i<DIMENSION_INPUT;i++){
+        static_casadi_parameters[i+2*DIMENSION_STATE] = input_reference[i];
+    }
+
+    casadi_prepare_cost_function(static_casadi_parameters);
 
     /* 
      * take implicitly the previous inputs as the starting position for the algorithm 
@@ -88,7 +98,6 @@ int npmc_solve( const real_t* current_state,
             switch_input_current_new();
     }
     /* only return the optimal input */
-    int i;
     for (i = 0; i < DIMENSION_INPUT; i++)
     {
         optimal_inputs[i]=current_input[i];

@@ -4,13 +4,12 @@ from pathlib import Path
 
 class Casadi_code_generator:
     @ staticmethod
-    def setup_casadi_functions_and_generate_c(initial_state,input_all_steps,
-                                                state_reference,input_reference,
+    def setup_casadi_functions_and_generate_c(static_casadi_parameters,input_all_steps,
                                                 obstacle_weights,cost,location_lib):
 
-        cost_function = cd.Function('cost_function', [initial_state, input_all_steps,state_reference,input_reference,obstacle_weights], [cost])
+        cost_function = cd.Function('cost_function', [static_casadi_parameters, input_all_steps,obstacle_weights], [cost])
         cost_function_derivative_combined = cd.Function('cost_function_derivative_combined',
-                                                        [initial_state, input_all_steps,state_reference,input_reference,obstacle_weights],
+                                                        [static_casadi_parameters, input_all_steps,obstacle_weights],
                                                         [cost, cd.gradient(cost, input_all_steps)])
 
         Casadi_code_generator.translate_casadi_to_c(cost_function,location_lib, filename="cost_function")

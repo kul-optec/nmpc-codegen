@@ -43,7 +43,7 @@ def prepare_demo_trailer(step_size,Q,R,Q_terminal=None,R_terminal=None):
 
     # generate static files
     trailer_controller_output_location =  "../../test_controller_builds/demo_controller"
-    tools.Bootstrapper.bootstrap(trailer_controller_output_location, python_interface_enabled=True)
+    tools.Bootstrapper.bootstrap(trailer_controller_output_location, simulation_tools=True)
 
     # get example model from lib
     (system_equations, number_of_states, number_of_inputs, coordinates_indices) = nmpc.example_models.get_trailer_model(

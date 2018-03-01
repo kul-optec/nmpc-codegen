@@ -8,7 +8,7 @@ import sys
 
 class Bootstrapper:
     """ bootstraps an nmpc environment """
-    def bootstrap(output_location_controller,simulation_tools):
+    def bootstrap(output_location_controller,simulation_tools=False):
         location_nmpc_repo = Bootstrapper._get_repo_location()
         """ bootstrap the nmpc at location nmpc """
         print("GENERATING output folders of controller:")

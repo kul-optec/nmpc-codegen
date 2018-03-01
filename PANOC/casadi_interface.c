@@ -65,14 +65,8 @@ int casadi_integrate(const real_t* current_state,const real_t* input,real_t* new
 }
 #endif
 static const real_t* state;
-static const real_t* state_reference;
-static const real_t* input_reference;
-int casadi_prepare_cost_function(   const real_t* _current_state,
-                                    const real_t* _state_reference,
-                                    const real_t* _input_reference){
+int casadi_prepare_cost_function(const real_t* _current_state){
     state = _current_state;
-    state_reference=_state_reference;
-    input_reference=_input_reference;
     return SUCCESS;
 }
 size_t casadi_interface_get_dimension(){
@@ -84,7 +78,7 @@ real_t casadi_interface_f(const real_t* input){
     real_t data_output;
     real_t* output[1] = {&data_output};
 
-    const real_t* input_function[5]={state,input,state_reference,input_reference,obstacle_weights};
+    const real_t* input_function[3]={state,input,obstacle_weights};
 
     cost_function(input_function, output, NULL, NULL, MEM_CASADI);
 
@@ -100,7 +94,7 @@ real_t casadi_interface_f(const real_t* input){
 real_t casadi_interface_f_df(const real_t* input,real_t* data_output){
     real_t f_value;
     real_t* output[2] = {&f_value,data_output};
-    const real_t* input_function[5]={state,input,state_reference,input_reference,obstacle_weights};
+    const real_t* input_function[3]={state,input,obstacle_weights};
 
     cost_function_derivative_combined(input_function, output, NULL, NULL, MEM_CASADI);
 
