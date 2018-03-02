@@ -62,7 +62,7 @@ classdef Globals_generator
         function generate_comment(obj,comment)
             fid = fopen(obj.location_globals,'a');
 
-            fprintf(fid,"/* "+comment+" */ \n");
+            fprintf(fid,['/* ' comment ' */ \n']);
 
             fclose(fid);
         end
@@ -77,25 +77,25 @@ classdef Globals_generator
         end
         function set_data_type(obj,data_type)
             if(strcmp(data_type,'single precision'))
-                obj.generate_title('constants used with float data type')
-                obj.define_variable('real_t','float')
-                obj.generate_comment('data types have different absolute value functions')
-                obj.define_variable('ABS(x)', 'fabsf(x)')
-                obj.generate_comment('Machine accuracy of IEEE float')
-                obj.define_variable('MACHINE_ACCURACY', 'FLT_EPSILON')
-                obj.generate_comment('large number use with things like indicator functions')
-                obj.define_variable('LARGE', '100000')
+                obj.generate_title('constants used with float data type');
+                obj.define_variable('real_t','float');
+                obj.generate_comment('data types have different absolute value functions');
+                obj.define_variable('ABS(x)', 'fabsf(x)');
+                obj.generate_comment('Machine accuracy of IEEE float');
+                obj.define_variable('MACHINE_ACCURACY', 'FLT_EPSILON');
+                obj.generate_comment('large number use with things like indicator functions');
+                obj.define_variable('LARGE', '100000');
             elseif(strcmp(data_type,'double precision'))
-                obj.generate_title('constants used with double data type')
-                obj.define_variable('real_t', 'double')
-                obj.generate_comment('data types have different absolute value functions')
-                obj.define_variable('ABS(x)', 'fabs(x)')
-                obj.generate_comment('Machine accuracy of IEEE double')
-                obj.define_variable('MACHINE_ACCURACY', 'DBL_EPSILON')
-                obj.generate_comment('large number use with things like indicator functions')
-                obj.define_variable('LARGE', '10000000000')
+                obj.generate_title('constants used with double data type');
+                obj.define_variable('real_t', 'double');
+                obj.generate_comment('data types have different absolute value functions');
+                obj.define_variable('ABS(x)', 'fabs(x)');
+                obj.generate_comment('Machine accuracy of IEEE double');
+                obj.define_variable('MACHINE_ACCURACY', 'DBL_EPSILON');
+                obj.generate_comment('large number use with things like indicator functions');
+                obj.define_variable('LARGE', '10000000000');
             else
-                disp("Error: invalid data type, not supported by globals generator")
+                disp('Error: invalid data type, not supported by globals generator');
             end
         end
     end
