@@ -10,7 +10,7 @@ classdef Single_shot_definition
     methods
         function obj = Single_shot_definition(controller)
             obj.controller = controller;
-            obj.dimension = dimension;
+            obj.dimension = controller.model.number_of_inputs*controller.horizon;
         end
         function [cost_function,cost_function_derivative_combined] = generate_cost_function(obj)
             initial_state = casadi.SX.sym('initial_state', obj.controller.model.number_of_states, 1);
@@ -25,7 +25,7 @@ classdef Single_shot_definition
 
             cost=0;
             current_state=initial_state;
-            for i=1:obj.controller.horizon+1
+            for i=1:obj.controller.horizon
                 input = input_all_steps(...
                     (i-1)*obj.controller.model.number_of_inputs+1:...
                     i*obj.controller.model.number_of_inputs);
@@ -36,7 +36,7 @@ classdef Single_shot_definition
                 cost = cost + obj.controller.generate_cost_obstacles(current_state,obstacle_weights);
             end
             [cost_function, cost_function_derivative_combined] = ...
-                Casadi_code_generator.setup_casadi_functions_and_generate_c(...
+                nmpccodegen.controller.Casadi_code_generator.setup_casadi_functions_and_generate_c(...
                     static_casadi_parameters,input_all_steps,obstacle_weights,cost, ...
                     obj.controller.location);
         end

@@ -11,7 +11,7 @@ classdef Globals_generator
             obj.location_globals=location_globals;
         end
         function generate_globals(obj,nmpc_controller)
-            disp('Generating globals file at: '+obj.location_globals);
+            disp(['Generating globals file at: ' obj.location_globals]);
             obj.init_globals_file();
             
             obj.generate_title('Problem specific definitions');
@@ -31,8 +31,6 @@ classdef Globals_generator
             obj.generate_title('NMPC-PANOC solver definitions');
             obj.define_variable('PANOC_MAX_STEPS',num2str(nmpc_controller.panoc_max_steps));
             obj.define_variable('PANOC_MIN_STEPS',num2str(nmpc_controller.panoc_min_steps));
-            
-
             
         end
         function init_globals_file(obj)

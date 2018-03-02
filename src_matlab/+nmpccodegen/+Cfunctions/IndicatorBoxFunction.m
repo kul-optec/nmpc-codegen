@@ -1,4 +1,4 @@
-classdef IndicatorBoxFunction < ProximalFunction
+classdef IndicatorBoxFunction < nmpccodegen.Cfunctions.ProximalFunction
     %INDICATORBOXFUNCTION Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -9,14 +9,12 @@ classdef IndicatorBoxFunction < ProximalFunction
     end
     
     methods
-        function obj=IndicatorBoxFunction(lower_limits,upper_limits)
-            obj@ProximalFunction();
-            
+        function obj=IndicatorBoxFunction(lower_limits,upper_limits)            
             obj.lower_limits=lower_limits;
             obj.upper_limits=upper_limits;
             obj.dimension = min(length(lower_limits),length(upper_limits));
             
-            obj.prox = IndicatorBoxFunctionProx(lower_limits,upper_limits);
+            obj.prox =  nmpccodegen.Cfunctions.IndicatorBoxFunctionProx(lower_limits,upper_limits);
         end
         function obj=generate_c_code(obj, location)
             source_file = Source_file_generator(location,'g');

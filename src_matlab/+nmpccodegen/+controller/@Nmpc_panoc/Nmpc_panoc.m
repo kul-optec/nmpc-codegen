@@ -3,14 +3,14 @@ classdef Nmpc_panoc
     %   Detailed explanation goes here
     
     properties
-        location_lib
+        location
         model
         dimension_panoc=0;
         stage_cost
         terminal_cost
         horizon=10
         shooting_mode = 'single shot' 
-        lbgfs_buffer_size
+        lbgfs_buffer_size = 50
         data_type = 'double precision'
         panoc_max_steps=20
         panoc_min_steps=0
@@ -18,14 +18,15 @@ classdef Nmpc_panoc
         integrator_casadi=false
         pure_prox_gradient=false
         globals_generator
-        obstacles=[];
+        obstacles=[]
+        number_of_obstacles=0
         cost_function
         cost_function_derivative_combined
     end
     
     methods
         function obj = Nmpc_panoc( location_lib,model,stage_cost,terminal_cost)
-            obj.location_lib=location_lib;
+            obj.location=location_lib;
             obj.model=model;
             obj.stage_cost=stage_cost;
             if (nargin == 3)
@@ -35,12 +36,12 @@ classdef Nmpc_panoc
             else
                 disp('error invalid amount of parameters in nmpc_constructor')
             end
-            obj.globals_generator = Globals_generator([location_lib '/globals/globals_dyn.h']);
+            obj.globals_generator = nmpccodegen.controller.Globals_generator([location_lib '/globals/globals_dyn.h']);
         end
         function generate_code(obj)
             % start with generating the cost function
             if(strcmp(obj.shooting_mode,'single shot'))
-                self.generate_cost_function_singleshot()
+                obj.generate_cost_function_singleshot()
             elseif(strcmp(obj.shooting_mode,'multiple shot'))
                 obj.generate_cost_function_multipleshot()
             else
@@ -54,12 +55,12 @@ classdef Nmpc_panoc
             %     obj.generate_integrator()
             % end
 
-            obj.model.generate_constraint(obj.location_lib)
+            obj.model.generate_constraint(obj.location)
             
         end
 
         function obj=generate_cost_function_singleshot(obj)
-            ssd = Single_shot_definition(obj);
+            ssd = nmpccodegen.controller.Single_shot_definition(obj);
             % generate the cost function in casadi syntax AND generate c
             % code in the background
             [cost_function_, cost_function_derivative_combined_] = ssd.generate_cost_function();
@@ -84,11 +85,12 @@ classdef Nmpc_panoc
         end
         function obj = add_obstacle(obj,obstacle)
             obj.obstacles = [obj.obstacles obstacle];
+            obj.number_of_obstacles=length(obj.obstacles);
         end
         function number_of_obstacles = get_number_of_obstacles(obj)
             number_of_obstacles = length(obj.obstacles);
         end
-        function cost = generate_cost_obstacles(obj,state,obstacle_weights):
+        function cost = generate_cost_obstacles(obj,state,obstacle_weights)
             if(obj.number_of_obstacles == 0)
                 cost= 0.;
             else

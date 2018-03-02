@@ -1,4 +1,4 @@
-classdef Obstacle_circular < Obstacle
+classdef Obstacle_circular < nmpccodegen.controller.obstacles.Obstacle
     %RECTANGLE Summary of this class goes here
     %   Detailed explanation goes here
     

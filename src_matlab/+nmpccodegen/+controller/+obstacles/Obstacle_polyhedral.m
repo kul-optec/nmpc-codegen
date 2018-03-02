@@ -1,4 +1,4 @@
-classdef Obstacle_polyhedral < Obstacle
+classdef Obstacle_polyhedral < nmpccodegen.controller.Obstacle
     %POLYHEDRAL Summary of this class goes here
     %   construct obstacle of form a[i,:]^Tb +b , for all i
     

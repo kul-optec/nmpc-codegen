@@ -6,38 +6,40 @@ classdef Bootstrapper
     %       to simulate.
     methods(Static)
         function bootstrap(output_location_controller,simulation_tools)
-            location_nmpc_repo = Bootstrapper.get_repo_location();
+            location_nmpc_repo = nmpccodegen.tools.Bootstrapper.get_repo_location();
             disp('GENERATING output folders of controller:')
-            Bootstrapper.bootstrap_folders(output_location_controller);
+            nmpccodegen.tools.Bootstrapper.bootstrap_folders(output_location_controller);
 
             overwrite = true;
             disp('GENERATING PANOC')
-            Bootstrapper.generate_PANOC_lib(output_location_controller,location_nmpc_repo,overwrite)
+            nmpccodegen.tools.Bootstrapper.generate_PANOC_lib(output_location_controller,location_nmpc_repo,overwrite)
             disp('GENERATING static globals')
-            Bootstrapper.generate_static_globals(output_location_controller, location_nmpc_repo,overwrite)
+            nmpccodegen.tools.Bootstrapper.generate_static_globals(output_location_controller, location_nmpc_repo,overwrite)
 
             if(simulation_tools)
                 disp('GENERATING python interface')
-                Bootstrapper.generate_python_interface(output_location_controller, location_nmpc_repo,overwrite)
+                nmpccodegen.tools.Bootstrapper.generate_python_interface(output_location_controller, location_nmpc_repo,overwrite)
                 disp('GENERATING Build system')
-                Bootstrapper.generate_build_system(output_location_controller, location_nmpc_repo,overwrite)
+                nmpccodegen.tools.Bootstrapper.generate_build_system(output_location_controller, location_nmpc_repo,overwrite)
             end
         end
+    end
+    methods(Static,Access = private)
         function location_repo = get_repo_location()
-            Folder = cd;
-            relative_location_windows = '\src_matlab\nmpccodegen\tools';
-            relative_location_unix = '\src_matlab\nmpccodegen\tools';
+            Folder = which('nmpccodegen.tools.Bootstrapper');
+            relative_location_windows = '\src_matlab\+nmpccodegen\+tools\@Bootstrapper\Bootstrapper.m';
+            relative_location_unix = '/src_matlab/+nmpccodegen/+tools/@Bootstrapper/Bootstrapper.m';
             Folder = strrep(Folder,relative_location_windows,'');
             Folder = strrep(Folder,relative_location_unix,'');
             location_repo = Folder;
         end
         function bootstrap_folders(lib_location)
-            Bootstrapper.create_folder_if_not_exist(lib_location)
-        	Bootstrapper.create_folder_if_not_exist([lib_location  '/casadi'])
-        	Bootstrapper.create_folder_if_not_exist([lib_location  '/globals'])
-        	Bootstrapper.create_folder_if_not_exist([lib_location  '/include'])
-        	Bootstrapper.create_folder_if_not_exist([lib_location  '/PANOC'])
-        	Bootstrapper.create_folder_if_not_exist([lib_location  '/python_interface'])
+            nmpccodegen.tools.Bootstrapper.create_folder_if_not_exist(lib_location)
+        	nmpccodegen.tools.Bootstrapper.create_folder_if_not_exist([lib_location  '/casadi'])
+        	nmpccodegen.tools.Bootstrapper.create_folder_if_not_exist([lib_location  '/globals'])
+        	nmpccodegen.tools.Bootstrapper.create_folder_if_not_exist([lib_location  '/include'])
+        	nmpccodegen.tools.Bootstrapper.create_folder_if_not_exist([lib_location  '/PANOC'])
+        	nmpccodegen.tools.Bootstrapper.create_folder_if_not_exist([lib_location  '/python_interface'])
         end
         function generate_PANOC_lib(location,location_nmpc_repo,overwrite)
             src_files = {'buffer.c';'buffer.h';'casadi_definitions.h';...
@@ -50,43 +52,43 @@ classdef Bootstrapper
             for i=1:number_of_src_files
                 src_location=[ location_nmpc_repo '/PANOC/' src_files{i}];
                 dst_location =[ location '/PANOC/' src_files{i} ];
-                Bootstrapper.copy_over_file(src_location,dst_location,overwrite);
+                nmpccodegen.tools.Bootstrapper.copy_over_file(src_location,dst_location,overwrite);
             end
 
             src_location = [ location_nmpc_repo '/include/' 'nmpc.h' ];
             dst_location = [ location  '/include/' 'nmpc.h'];
-            Bootstrapper.copy_over_file(src_location, dst_location, overwrite);
+            nmpccodegen.tools.Bootstrapper.copy_over_file(src_location, dst_location, overwrite);
         end
 
         function generate_static_globals(location,location_nmpc_repo,overwrite)
             src_location = [location_nmpc_repo '/globals/' 'globals.h'];
             dst_location = [location '/globals/' 'globals.h'];
-            Bootstrapper.copy_over_file(src_location,dst_location,overwrite);
+            nmpccodegen.tools.Bootstrapper.copy_over_file(src_location,dst_location,overwrite);
         end
 
         function generate_python_interface(location, location_nmpc_repo, overwrite)
             src_files = {'nmpc_python.c','timer.h','timer_linux.c','timer_windows.c'};
-            number_of_src_files = size(src_files,1);
+            number_of_src_files = size(src_files,2);
             
             for i=1:number_of_src_files
                 src_location=[ location_nmpc_repo '/python_interface/' src_files{i}];
                 dst_location =[ location '/python_interface/' src_files{i} ];
-                Bootstrapper.copy_over_file(src_location,dst_location,overwrite);
+                nmpccodegen.tools.Bootstrapper.copy_over_file(src_location,dst_location,overwrite);
             end
         end
 
         function generate_build_system(location,location_nmpc_repo,overwrite)
             src_location = [location_nmpc_repo '/minimum_build_system/' 'CMakeLists_root.txt'];
             dst_location = [location  '/CMakeLists.txt'];
-            Bootstrapper.copy_over_file(src_location,dst_location,overwrite);
+            nmpccodegen.tools.Bootstrapper.copy_over_file(src_location,dst_location,overwrite);
 
             src_location = [location_nmpc_repo '/minimum_build_system/' 'CMakeLists_panoc.txt'];
             dst_location = [location '/PANOC/' 'CMakeLists.txt'];
-            Bootstrapper.copy_over_file(src_location, dst_location, overwrite)
+            nmpccodegen.tools.Bootstrapper.copy_over_file(src_location, dst_location, overwrite)
 
             src_location = [location_nmpc_repo '/minimum_build_system/' 'CMakeLists_casadi.txt'];
             dst_location = [location '/casadi/' 'CMakeLists.txt'];
-            Bootstrapper.copy_over_file(src_location, dst_location, overwrite)
+            nmpccodegen.tools.Bootstrapper.copy_over_file(src_location, dst_location, overwrite)
         end
 
         function create_folder_if_not_exist(location)

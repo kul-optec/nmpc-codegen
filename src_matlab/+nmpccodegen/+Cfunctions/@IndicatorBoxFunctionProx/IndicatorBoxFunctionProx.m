@@ -1,4 +1,4 @@
-classdef IndicatorBoxFunctionProx < Cfunction
+classdef IndicatorBoxFunctionProx <  nmpccodegen.Cfunctions.Cfunction
     %INDICATORBOXFUNCTION Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -15,7 +15,7 @@ classdef IndicatorBoxFunctionProx < Cfunction
             obj.dimension = min(length(lower_limits),length(upper_limits));
         end
         function obj=generate_c_code(obj,location)
-            source_file = Source_file_generator(location,'proxg');
+            source_file = nmpccodegen.Cfunctions.Source_file_generator(location,'proxg');
             source_file = source_file.open();
             source_file = source_file.start_for('i','MPC_HORIZON',1);
 

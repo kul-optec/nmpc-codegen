@@ -21,8 +21,9 @@ classdef Model
             obj.number_of_inputs=number_of_inputs;
             obj.indices_coordinates=indices_coordinates;
         end
-        function generate_constrain(obj,location)
-            disp('TODO: Generating constraints at '+ location);
+        function generate_constraint(obj,location)
+            obj.input_constraint.generate_c_code([location '/casadi/g.c']);
+            obj.input_constraint.prox.generate_c_code([location  '/casadi/proxg.c']);
         end
         function next_state = get_next_state(obj,state,input)
             next_state = obj.system_equations(state,input);

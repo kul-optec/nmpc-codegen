@@ -9,7 +9,7 @@ classdef Stage_cost_QR
     end
     
     methods
-        function obj = Stage_cost_QR(Q,R)
+        function obj = Stage_cost_QR(model,Q,R)
             obj.Q=Q;
             obj.R=R;
             obj.model=model;
