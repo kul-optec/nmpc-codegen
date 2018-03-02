@@ -47,9 +47,15 @@ classdef Simulator
             cd(current_location); % go back to start location
         end
         function obj = load_library(obj)
+            extension='dll';
+            if ismac
+                extension= 'so'; % .dylib is dynamic one
+            elseif isunix
+                extension='so';
+            end
             if not(libisloaded('nmpc_panoc'))
                 disp('Loading nmpc_panoc library \n');
-                lib_file_name = [obj.nmpc_controller_location '/libpython_interface.dll'];
+                lib_file_name = [obj.nmpc_controller_location '/libpython_interface.' extension];
                 lib_file_header_name = [obj.nmpc_controller_location '/libpython_interface.h'];
                 
                 [notfound,warnings] = loadlibrary(lib_file_name,lib_file_header_name,'alias','nmpc_panoc');
