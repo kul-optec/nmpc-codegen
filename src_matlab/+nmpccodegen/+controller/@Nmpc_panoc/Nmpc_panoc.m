@@ -41,19 +41,19 @@ classdef Nmpc_panoc
         function generate_code(obj)
             % start with generating the cost function
             if(strcmp(obj.shooting_mode,'single shot'))
-                obj.generate_cost_function_singleshot()
+                obj = obj.generate_cost_function_singleshot();
             elseif(strcmp(obj.shooting_mode,'multiple shot'))
-                obj.generate_cost_function_multipleshot()
+                obj = obj.generate_cost_function_multipleshot();
             else
-                disp('ERROR in generating code: invalid choice of shooting mode [single shot|multiple shot]')
+                disp('ERROR in generating code: invalid choice of shooting mode [single shot|multiple shot]');
             end
 
-            obj.globals_generator.generate_globals(obj)
+            obj.globals_generator.generate_globals(obj);
 
             % optional feature, a c version of the integrator
-            % if(obj.integrator_casadi)
-            %     obj.generate_integrator()
-            % end
+            if(obj.integrator_casadi)
+                obj.generate_integrator();
+            end
 
             obj.model.generate_constraint(obj.location)
             
@@ -74,8 +74,11 @@ classdef Nmpc_panoc
             disp('Multiple shot is not implemented !');
         end
         function generate_integrator(obj)
-            % TODO
-            disp('Integrator shot is not implemented !');
+            state = casadi.SX.sym('state', obj.model.number_of_states, 1);
+            input = casadi.SX.sym('input', obj.model.number_of_inputs , 1);
+            
+            integrator = casadi.Function('integrator', {state, input}, {obj.model.get_next_state(state,input)});
+            nmpccodegen.controller.Casadi_code_generator.translate_casadi_to_c(integrator,obj.location,'integrator');
         end
         function cost = calculate_stage_cost(obj,current_state,input,i,...
                                         state_reference,input_reference)

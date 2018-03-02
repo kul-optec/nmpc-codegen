@@ -11,6 +11,7 @@ classdef Simulation_data
         micro_seconds
         nano_seconds
         panoc_interations
+        time_string
     end
     
     methods
@@ -26,6 +27,9 @@ classdef Simulation_data
             obj.nano_seconds=time_struct_pointer.value.nano_seconds;
             
             obj.panoc_interations=time_struct_pointer.value.panoc_interations;
+            
+            obj.time_string = ['[' num2str(obj.hours) ':' num2str(obj.minutes) ':' num2str(obj.seconds) ']' ...
+                '  [' num2str(obj.milli_seconds) ':' num2str(obj.micro_seconds) ':' num2str(obj.nano_seconds) ']'];
         end
     end
     

@@ -32,6 +32,16 @@ classdef Globals_generator
             obj.define_variable('PANOC_MAX_STEPS',num2str(nmpc_controller.panoc_max_steps));
             obj.define_variable('PANOC_MIN_STEPS',num2str(nmpc_controller.panoc_min_steps));
             
+            obj.generate_title('options used to test:')
+            if(nmpc_controller.pure_prox_gradient)
+                obj.define_variable('PURE_PROX_GRADIENT',1);
+            end
+
+            obj.generate_title('Optional features');
+            if( nmpc_controller.integrator_casadi)
+                obj.define_variable('INTEGRATOR_CASADI',1);
+            end
+            
         end
         function init_globals_file(obj)
             fid = fopen(obj.location_globals,'w');
@@ -47,6 +57,7 @@ classdef Globals_generator
             lines = ['#define ' variable_name ' ' variable_value '\n'];
             fprintf(fid,lines);
       
+            fclose(fid);
         end
         function generate_comment(obj,comment)
             fid = fopen(obj.location_globals,'a');

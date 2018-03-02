@@ -75,6 +75,11 @@ classdef Bootstrapper
                 dst_location =[ location '/python_interface/' src_files{i} ];
                 nmpccodegen.tools.Bootstrapper.copy_over_file(src_location,dst_location,overwrite);
             end
+            
+            % copy over the header file matlab needs
+            src_location=[ location_nmpc_repo '/python_interface' '/libpython_interface.h'];
+            dst_location =[ location  '/libpython_interface.h'];
+            nmpccodegen.tools.Bootstrapper.copy_over_file(src_location,dst_location,overwrite);
         end
 
         function generate_build_system(location,location_nmpc_repo,overwrite)
