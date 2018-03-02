@@ -28,5 +28,6 @@ function [ state_history ] = simulate_demo_trailer( trailer_controller, ...
     
     disp("Final state:")
     disp(state)
+    
 end
 

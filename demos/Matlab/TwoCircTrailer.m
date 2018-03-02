@@ -41,4 +41,7 @@ state_history = simulate_demo_trailer(trailer_controller,initial_state,...
     reference_state,reference_input,obstacle_weights);
 %% plot everything TODO make proper plot !
 figure;
-plot(state_history(1,:),state_history(2,:));
+left_circle.plot();
+hold on;
+right_circle.plot();
+nmpccodegen.example_models.trailer_printer(state_history,0.03,'red');

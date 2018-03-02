@@ -17,6 +17,13 @@ classdef Obstacle_circular < nmpccodegen.controller.obstacles.Obstacle
                     - sqrt(sum1((obj.center_coordinates-coordinates_state).^2))...
                     );
         end
+        function plot(obj)
+            angles = 0:0.01:2*pi;
+            plot(obj.radius * cos(angles) + obj.center_coordinates(1), ...
+                obj.radius * sin(angles) + obj.center_coordinates(2), 'linewidth', 2, ...
+                'Color', 'black');
+        end
+        
     end
     
 end
