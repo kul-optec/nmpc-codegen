@@ -3,7 +3,7 @@ function [system_equations, number_of_states, number_of_inputs, coordinates_indi
 %   Detailed explanation goes here
     number_of_states=3;
     number_of_inputs=2;
-    coordinates_indices = [0,1]; % only x and y are coordinates, theta has nothing to do with position of the trailer
+    coordinates_indices = [1 2]; % only x and y are coordinates, theta has nothing to do with position of the trailer
     system_equations = @(x,u) nmpccodegen.example_models.trailer_dyn(L,x,u);
 end
 

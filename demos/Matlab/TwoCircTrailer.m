@@ -15,24 +15,24 @@ trailer_controller.panoc_max_steps = 500; % the maximum amount of iterations the
 trailer_controller.min_residual=-3;
 
 % construct left circle
-left_circle = nmpccodegen.controller.obstacles.Obstacle_circular([0.2 0.2],0.2);
+left_circle = nmpccodegen.controller.obstacles.Obstacle_circular([0.2; 0.2],0.2);
 
 % construct right circle
-right_circle = nmpccodegen.controller.obstacles.Obstacle_circular([0.7 0.2], 0.2);
+right_circle = nmpccodegen.controller.obstacles.Obstacle_circular([0.7; 0.2], 0.2);
 
 % add obstacles to controller
-trailer_controller.add_obstacle(left_circle);
-trailer_controller.add_obstacle(right_circle);
+trailer_controller = trailer_controller.add_obstacle(left_circle);
+trailer_controller = trailer_controller.add_obstacle(right_circle);
 
 % generate the dynamic code
 trailer_controller.generate_code();
 
 % simulate everything
-initial_state = [0.2 0.6 0];
-reference_state = [0.7 -0.02 pi/2];
-reference_input = [0 0];
+initial_state = [0.2; 0.6; 0];
+reference_state = [0.7; -0.02; pi/2];
+reference_input = [0; 0];
 
-obstacle_weights = [1000. 1000.];
+obstacle_weights = [1000.; 1000.];
 
 % state_history = simulate_demo(trailer_controller,initial_state,...
 %     reference_state,reference_input,obstacle_weights);

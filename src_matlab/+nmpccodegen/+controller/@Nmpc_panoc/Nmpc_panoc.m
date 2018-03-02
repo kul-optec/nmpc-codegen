@@ -71,9 +71,11 @@ classdef Nmpc_panoc
         end
         function generate_cost_function_multipleshot(obj)
             % TODO
+            disp('Multiple shot is not implemented !');
         end
         function generate_integrator(obj)
             % TODO
+            disp('Integrator shot is not implemented !');
         end
         function cost = calculate_stage_cost(obj,current_state,input,i,...
                                         state_reference,input_reference)
@@ -96,7 +98,7 @@ classdef Nmpc_panoc
             else
                 cost = 0.;
                 for i=1:obj.number_of_obstacles
-                    cost = cost + obstacle_weights(i)*obj.obstacle(i).evaluate_cost(state(obj.model.indices_coordinates));
+                    cost = cost + obstacle_weights(i)*obj.obstacles(i).evaluate_cost(state(obj.model.indices_coordinates));
                 end
             end
         end
