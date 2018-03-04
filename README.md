@@ -24,3 +24,19 @@ This is only for those who want to check if the library works on there device.
 - Run Cmake to generate the make files: cmake .
 - Run Make to compile everything: make
 - Run make test to test everything: make all test
+
+
+
+## common problems
+1. When using the Matlab version the following error appears:
+cmake: /usr/local/MATLAB/R2016a/bin/glnxa64/libcurl.so.4: no version information available (required by cmake)
+cmake: /usr/local/MATLAB/R2016a/sys/os/glnxa64/libstdc++.so.6: version `GLIBCXX_3.4.18' not found (required by cmake)
+cmake: /usr/local/MATLAB/R2016a/sys/os/glnxa64/libstdc++.so.6: version `CXXABI_1.3.9' not found (required by cmake)
+cmake: /usr/local/MATLAB/R2016a/sys/os/glnxa64/libstdc++.so.6: version `GLIBCXX_3.4.20' not found (required by cmake)
+cmake: /usr/local/MATLAB/R2016a/sys/os/glnxa64/libstdc++.so.6: version `GLIBCXX_3.4.21' not found (required by cmake)
+cmake: /usr/local/MATLAB/R2016a/sys/os/glnxa64/libstdc++.so.6: version `GLIBCXX_3.4.21' not found (required by /usr/lib/x86_64-linux-gnu/libjsoncpp.so.1)
+cmake: /usr/local/MATLAB/R2016a/sys/os/glnxa64/libstdc++.so.6: version `CXXABI_1.3.8' not found (required by /usr/lib/x86_64-linux-gnu/libicuuc.so.57)
+
+This is due to Matlab using some old version from gcc. 
+
+solution: start matlab as following: "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6 matlab" 

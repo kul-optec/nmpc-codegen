@@ -31,8 +31,8 @@ function [ state_history,time_history,iteration_history ] = simulate_demo_traile
         state_history(:, i) = state;
     end
     
-    disp("Final state:")
-    disp(state)
+    disp('Final state:');
+    disp(state);
     
     clear('sim');
 end
