@@ -18,3 +18,14 @@ casadi
 build
 .vscode
 test_controller_builds
+
+# visual studio stuff
+*.vcxproj*
+*.dir
+Win32
+Debug
+PANOC/Debug
+PANOC/Release
+tst/Release
+tst/Debug
+*.sln

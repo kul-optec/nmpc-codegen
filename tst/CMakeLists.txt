@@ -7,35 +7,49 @@ add_library(PANOC_test_lbfgs STATIC "${PROJECT_SOURCE_DIR}/PANOC/lbfgs.c" "${PRO
 set_property(TARGET PANOC_test_lbfgs PROPERTY C_STANDARD 90)
 
 # from here on compile the different tests
-add_executable(bin/matrix_operations_norms src/matrix_operations_norms.c)
-target_link_libraries (bin/matrix_operations_norms PANOC_lib)
-target_link_libraries(bin/matrix_operations_norms m) # link with the math lib, some toolchains need this
+add_executable(matrix_operations_norms src/matrix_operations_norms.c)
+target_link_libraries(matrix_operations_norms PANOC_lib)
+if(NOT MSVC)
+target_link_libraries(matrix_operations_norms m) # link with the math lib, some toolchains need this
+endif()
 
-add_executable(bin/matrix_operations_vectors src/matrix_operations_vectors.c)
-target_link_libraries (bin/matrix_operations_vectors PANOC_lib)
-target_link_libraries(bin/matrix_operations_vectors m) # link with the math lib, some toolchains need this
+add_executable(matrix_operations_vectors src/matrix_operations_vectors.c)
+target_link_libraries (matrix_operations_vectors PANOC_lib)
+if(NOT MSVC)
+target_link_libraries(matrix_operations_vectors m) # link with the math lib, some toolchains need this
+endif()
 
-add_executable(bin/lbfgs_poly_test src/lbfgs_poly_test.c)
-target_link_libraries (bin/lbfgs_poly_test PANOC_test_lbfgs)
-target_link_libraries(bin/lbfgs_poly_test m) # link with the math lib, some toolchains need this
-target_link_libraries(bin/lbfgs_poly_test problem_set)
+add_executable(lbfgs_poly_test src/lbfgs_poly_test.c)
+target_link_libraries (lbfgs_poly_test PANOC_test_lbfgs)
+if(NOT MSVC)
+target_link_libraries(lbfgs_poly_test m) # link with the math lib, some toolchains need this
+endif()
+target_link_libraries(lbfgs_poly_test problem_set)
 
-add_executable(bin/lipschitz_estimator_test src/lipschitz_estimator_test.c)
-target_link_libraries (bin/lipschitz_estimator_test PANOC_fake)
-target_link_libraries(bin/lipschitz_estimator_test m) # link with the math lib, some toolchains need this
-target_link_libraries(bin/lipschitz_estimator_test problem_set)
+add_executable(lipschitz_estimator_test src/lipschitz_estimator_test.c)
+target_link_libraries (lipschitz_estimator_test PANOC_fake)
+if(NOT MSVC)
+target_link_libraries(lipschitz_estimator_test m) # link with the math lib, some toolchains need this
+endif()
+target_link_libraries(lipschitz_estimator_test problem_set)
 
-add_executable(bin/prox_grad_descent_poly_test src/prox_grad_descent_poly_test.c)
-target_link_libraries (bin/prox_grad_descent_poly_test PANOC_fake)
-target_link_libraries(bin/prox_grad_descent_poly_test m) # link with the math lib, some toolchains need this
-target_link_libraries(bin/prox_grad_descent_poly_test problem_set)
+add_executable(prox_grad_descent_poly_test src/prox_grad_descent_poly_test.c)
+target_link_libraries (prox_grad_descent_poly_test PANOC_fake)
+if(NOT MSVC)
+target_link_libraries(prox_grad_descent_poly_test m) # link with the math lib, some toolchains need this
+endif()
+target_link_libraries(prox_grad_descent_poly_test problem_set)
 
-add_executable(bin/panoc_poly_test src/panoc_poly_test.c)
-target_link_libraries (bin/panoc_poly_test PANOC_fake)
-target_link_libraries(bin/panoc_poly_test m) # link with the math lib, some toolchains need this
-target_link_libraries(bin/panoc_poly_test problem_set)
+add_executable(panoc_poly_test src/panoc_poly_test.c)
+target_link_libraries (panoc_poly_test PANOC_fake)
+if(NOT MSVC)
+target_link_libraries(panoc_poly_test m) # link with the math lib, some toolchains need this
+endif()
+target_link_libraries(panoc_poly_test problem_set)
 
-add_executable(bin/casadi_interface_test src/casadi_interface_test.c)
-target_link_libraries (bin/casadi_interface_test PANOC_lib)
-target_link_libraries(bin/casadi_interface_test m) # link with the math lib, some toolchains need this
-target_link_libraries(bin/casadi_interface_test CASADI_lib) 
+add_executable(casadi_interface_test src/casadi_interface_test.c)
+target_link_libraries (casadi_interface_test PANOC_lib)
+if(NOT MSVC)
+target_link_libraries(casadi_interface_test m) # link with the math lib, some toolchains need this
+endif()
+target_link_libraries(casadi_interface_test CASADI_lib) 
