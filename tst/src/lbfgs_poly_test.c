@@ -33,13 +33,13 @@ int checkIfSolutionIsReached(void){
     degree=10;
     size_t buffer_size =20;
 
-    lbfgs_init(buffer_size,DIMENSION);
+    lbfgs_init(buffer_size);
     f_poly_init(DIMENSION,degree);
     buffer_init();
     lbfgs_prox_grad_descent_test_init(DIMENSION);
     
     real_t current_location[DIMENSION]={0.5,0.5};
-    real_t next_location[DIMENSION];
+    real_t next_location[DIMENSION]={0,0};
     real_t approx_solution[DIMENSION] ={0.017081,0.017081};
 
     printf("test1: starting in location x1=0.5 x2=0.5 with cost=%f\n",f_poly(current_location));
@@ -73,7 +73,7 @@ int check2thdegreepolynomial(void){
     degree=2;
     size_t buffer_size =10;
 
-    lbfgs_init(buffer_size,DIMENSION);
+    lbfgs_init(buffer_size);
     f_poly_init(DIMENSION,degree);
     buffer_init();
     real_t current_location[DIMENSION]={0.5,0.5};
@@ -129,7 +129,7 @@ int rosenbrock_test(void){
     degree=2;
     size_t buffer_size = 20;
 
-    lbfgs_init(buffer_size,DIMENSION);
+    lbfgs_init(buffer_size);
     enable_rosenbrock();
     buffer_init();
     lbfgs_prox_grad_descent_test_init(DIMENSION);

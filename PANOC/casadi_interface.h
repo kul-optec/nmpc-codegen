@@ -21,7 +21,7 @@ int casadi_prepare_cost_function(const real_t* current_state);
 #ifdef INTEGRATOR_CASADI
 int casadi_integrate(const real_t* state,const real_t* input,real_t* new_state);
 #endif
-size_t casadi_interface_get_dimension();
+/* size_t casadi_interface_get_dimension(); */
 
 /* obstacle related functions */
 real_t casadi_get_weight_obstacles(int index_obstacle);/* returns zero if index was out of range */

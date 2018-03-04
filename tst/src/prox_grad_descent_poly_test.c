@@ -23,8 +23,7 @@ void print_location_2D(const real_t* location);
  * f(x) =0 if x=[0 0 0 0]
  */
 int main(){
-    return checkIfSolutionIsReached() \
-    +checkIfSolutionIsReached_problem2();
+    return checkIfSolutionIsReached();
 }
 
 int checkIfSolutionIsReached(void){
@@ -62,44 +61,6 @@ int checkIfSolutionIsReached(void){
         return SUCCESS;
     }else{
         printf("end of test1:FAILURE --- \n");
-        return FAILURE;
-    }  
-}
-
-int checkIfSolutionIsReached_problem2(void){
-    printf("test2 --- \n");
-    const size_t dimension=1;
-    degree=5;
-    size_t numer_of_iterations=3;
-    real_t current_location[1]={0.5};
-
-    printf("starting in location x=0.5 \n");
-    f_poly_init(dimension,degree );
-    casadi_interface_test_init(dimension, 
-        g_2,
-        proxg_2,
-        f_poly,
-        df_poly);
-
-    buffer_init();
-    proximal_gradient_descent_init();
-
-    size_t i;
-    for ( i = 0; i < numer_of_iterations; i++)
-    {
-        buffer_renew(current_location);
-        const real_t* direction = proximal_gradient_descent_get_direction(); /* direction = old_location - new_location */
-        vector_add_ntimes(current_location,direction,dimension,-1,current_location);
-        print_location(current_location);
-    }
-    proximal_gradient_descent_cleanup();
-    buffer_cleanup();
-
-    if(ABS(current_location[0])<0.5){ 
-        printf("end of test2:SUCCESS --- \n");
-        return SUCCESS;
-    }else{
-        printf("end of test2:FAILURE --- \n");
         return FAILURE;
     }  
 }

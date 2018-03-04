@@ -15,10 +15,10 @@ static unsigned char precomputed_evaluations=FALSE;
 
 
 int buffer_init(void){
-    current_df=malloc(sizeof(real_t)*casadi_interface_get_dimension());
+    current_df=malloc(sizeof(real_t)*DIMENSION_PANOC);
     if(current_df==NULL) goto fail_1;
 
-    new_location_df=malloc(sizeof(real_t)*casadi_interface_get_dimension());
+    new_location_df=malloc(sizeof(real_t)*DIMENSION_PANOC);
     if(new_location_df==NULL) goto fail_2;
     
     return SUCCESS;

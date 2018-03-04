@@ -45,7 +45,7 @@ int simple_estimate_test(void){
     printf("Estimating lischitz on location x1=0.5 x2=0.5 \n");
     real_t lipschitz_value;
     buffer_renew(current_location);
-    lipschitz_value = get_lipschitz(current_location);
+    lipschitz_value = get_lipschitz();
 
     buffer_cleanup();
     

@@ -6,6 +6,7 @@
 #include "matrix_operations.h"
 #include "lipschitz.h"
 #include"buffer.h"
+#include"lbfgs.h"
 
 /* functions only used internally */
 static int proximal_gradient_descent_check_linesearch(void);
@@ -13,9 +14,6 @@ static int proximal_gradient_descent_forward_backward_step(const real_t* locatio
 static int proximal_gradient_descent_push(void);
 static int proximal_gradient_descent_linesearch(void);
 static real_t proximal_gradient_descent_forward_backward_envelop_precomputed_step(const real_t f_location,const real_t* df_location);
-
-/* values set by the init function */
-static size_t dimension;
 
 /* variables safed between direction calls */
 static size_t iteration_index=0; /* is 0 at first and 1 after first time you call get direction */
@@ -30,18 +28,16 @@ static real_t* direction_FBE;
 
 
 int proximal_gradient_descent_init(void){
-    dimension=casadi_interface_get_dimension();
-
-    new_location = malloc(sizeof(real_t)*dimension);
+    new_location = malloc(sizeof(real_t)*DIMENSION_PANOC);
     if(new_location==NULL)goto fail_1;
 
-    direction = malloc(sizeof(real_t)*dimension);
+    direction = malloc(sizeof(real_t)*DIMENSION_PANOC);
     if(direction==NULL)goto fail_2;
 
-    new_location_FBE = malloc(sizeof(real_t)*dimension);
+    new_location_FBE = malloc(sizeof(real_t)*DIMENSION_PANOC);
     if(new_location_FBE==NULL)goto fail_3;
 
-    direction_FBE = malloc(sizeof(real_t)*dimension);
+    direction_FBE = malloc(sizeof(real_t)*DIMENSION_PANOC);
     if(direction_FBE==NULL)goto fail_4;
 
     return SUCCESS;
@@ -118,12 +114,12 @@ static int proximal_gradient_descent_linesearch(void){
  */
 static int proximal_gradient_descent_check_linesearch(void){
     const real_t* df_current_location=buffer_get_current_df();
-    const real_t inner_product_df_direction = inner_product(df_current_location,direction,dimension);
+    const real_t inner_product_df_direction = inner_product(df_current_location,direction,DIMENSION_PANOC);
 
     const real_t f_current_location=buffer_get_current_f();
     const real_t f_new_location=casadi_interface_f(new_location);
 
-    const real_t norm_direction_gamma = sq(vector_norm2(direction,dimension)); /* direction=gamma*r in paper */
+    const real_t norm_direction_gamma = sq(vector_norm2(direction,DIMENSION_PANOC)); /* direction=gamma*r in paper */
 
     if(f_new_location>f_current_location - inner_product_df_direction + ( (1-PROXIMAL_GRAD_DESC_SAFETY_VALUE)/(2*linesearch_gamma) )*norm_direction_gamma + 1e-6*f_current_location)
         return FAILURE;
@@ -136,9 +132,9 @@ static int proximal_gradient_descent_check_linesearch(void){
  * This function performs an forward backward step. x=prox(x-gamma*df(x))
  */
 static int proximal_gradient_descent_forward_backward_step(const real_t* location,const real_t* df_location){
-    vector_add_ntimes(location,df_location,dimension,-1*linesearch_gamma,new_location); /* new_location = location - gamma * df_location */
+    vector_add_ntimes(location,df_location,DIMENSION_PANOC,-1*linesearch_gamma,new_location); /* new_location = location - gamma * df_location */
     casadi_interface_proxg(new_location); /* new_location = proxg(new_location) */
-    vector_sub(location,new_location,dimension,direction); /* find the direction */
+    vector_sub(location,new_location,DIMENSION_PANOC,direction); /* find the direction */
     return SUCCESS;
 }
 
@@ -156,7 +152,7 @@ int proximal_gradient_descent_get_new_residual(const real_t* location,real_t* re
     
     proximal_gradient_descent_forward_backward_step(location,df_location);
     /* calculate the residual, as in normalize the current direction */
-    vector_real_mul(direction,dimension,1/linesearch_gamma,residual);
+    vector_real_mul(direction,DIMENSION_PANOC,1/linesearch_gamma,residual);
 
     proximal_gradient_descent_push(); /* swap data fields to FBE calculation fields */
     return SUCCESS;
@@ -168,7 +164,7 @@ int proximal_gradient_descent_get_new_residual_buffered(real_t* residual){
     proximal_gradient_descent_push(); /* swap data fields to FBE calculation fields */
 
     /* calculate the residual, as in normalize the current direction */
-    vector_real_mul(direction,dimension,1/linesearch_gamma,residual);
+    vector_real_mul(direction,DIMENSION_PANOC,1/linesearch_gamma,residual);
 
     proximal_gradient_descent_push(); /* swap data fields to FBE calculation fields */
     return SUCCESS;
@@ -179,10 +175,10 @@ int proximal_gradient_descent_get_new_residual_buffered(real_t* residual){
  */
 int proximal_gradient_descent_get_current_residual(real_t* residual){
     /* calculate the residual, as in normalize the current direction */
-    vector_real_mul(direction,dimension,1/linesearch_gamma,residual);
+    vector_real_mul(direction,DIMENSION_PANOC,1/linesearch_gamma,residual);
 
     /* calculate the inf-norm and safe it */
-    last_current_residual_inf_norm=vector_norm_inf(residual,dimension);
+    last_current_residual_inf_norm=vector_norm_inf(residual,DIMENSION_PANOC);
 
     return SUCCESS;
 }
@@ -225,10 +221,10 @@ real_t proximal_gradient_descent_get_current_forward_backward_envelop(void){
  */
 static real_t proximal_gradient_descent_forward_backward_envelop_precomputed_step(const real_t f_location,const real_t* df_location){
     const real_t g_new_location=casadi_interface_g(new_location);
-    const real_t norm_direction = sq(vector_norm2(direction,dimension));
+    const real_t norm_direction = sq(vector_norm2(direction,DIMENSION_PANOC));
 
     const real_t forward_backward_envelop = f_location + g_new_location \
-     - inner_product(df_location,direction,dimension) \
+     - inner_product(df_location,direction,DIMENSION_PANOC) \
      + (1/(linesearch_gamma*2))*norm_direction;
 
     return forward_backward_envelop;

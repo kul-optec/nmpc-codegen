@@ -4,6 +4,8 @@
 #include"../../PANOC/casadi_interface.h"
 #include"../../PANOC/matrix_operations.h"
 
+#define DIMENSION_PANOC_EXAMPLE 100
+
 int test_casadi_interface_f(void);
 int test_casadi_interface_df(void);
 int simple_test_integrator(void);
@@ -29,30 +31,48 @@ int main(){
     return test_result1+test_result2;
 }
 
+int test_casadi_prepare_static_casadi_parameters(real_t* static_casadi_parameters,\
+                real_t* current_state,real_t* state_reference,real_t* input_reference){
+    int i;
+    for(i=0;i<DIMENSION_STATE;i++){
+        static_casadi_parameters[i] = current_state[i];
+        static_casadi_parameters[i+DIMENSION_STATE] = state_reference[i];
+    }
+    for(i=0;i<DIMENSION_INPUT;i++){
+        static_casadi_parameters[i+2*DIMENSION_STATE] = input_reference[i];
+    }
+    return SUCCESS;
+}
+
 int test_casadi_interface_f(void){
     printf("-----------------\n");
     printf("Starting test on casadi interface using the function in /casadi/cost_function.c \n");
     casadi_interface_init();
 
-    real_t* zero_input=calloc(sizeof(real_t),casadi_interface_get_dimension());
+    real_t* zero_input=calloc(sizeof(real_t),DIMENSION_PANOC_EXAMPLE);
 
     real_t current_state[DIMENSION_STATE]={0.1932, -5.9190 , 0.3874,-8.8949,0.6126,-8.8949,0.8068,-5.9190 \
                 ,1. , 0., \
                 0.,0., 0.,0.,0.,0.,0.,0.};
 
-    casadi_prepare_cost_function(current_state,state_reference,input_reference);
+    real_t static_casadi_parameters[2*DIMENSION_STATE+DIMENSION_INPUT];
+                
+    test_casadi_prepare_static_casadi_parameters(static_casadi_parameters,current_state,state_reference,input_reference);
+    casadi_prepare_cost_function(static_casadi_parameters);
     real_t test_cost_optimal = casadi_interface_f(zero_input);
 
     real_t lower_state[DIMENSION_STATE]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     vector_add_ntimes(lower_state,current_state,DIMENSION_STATE,0.8,lower_state);
     
-    casadi_prepare_cost_function(lower_state,state_reference,input_reference);
+    test_casadi_prepare_static_casadi_parameters(static_casadi_parameters,current_state,state_reference,input_reference);
+    casadi_prepare_cost_function(static_casadi_parameters);
     real_t test_cost_to_low = casadi_interface_f(zero_input);
 
     real_t higher_state[DIMENSION_STATE]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     vector_add_ntimes(higher_state,current_state,DIMENSION_STATE,1.5,higher_state);
     
-    casadi_prepare_cost_function(higher_state,state_reference,input_reference);
+    test_casadi_prepare_static_casadi_parameters(static_casadi_parameters,current_state,state_reference,input_reference);
+    casadi_prepare_cost_function(static_casadi_parameters);
     real_t test_cost_to_high = casadi_interface_f(zero_input);
 
     printf("test of f \n");
@@ -81,10 +101,12 @@ int test_casadi_interface_df(void){
                 0.,0., 0.,0.,0.,0.,0.,0.};
 
     /* test on current state */
-    real_t* zero_input=calloc(sizeof(real_t),casadi_interface_get_dimension());
+    real_t* zero_input=calloc(sizeof(real_t),DIMENSION_PANOC_EXAMPLE);
+    real_t static_casadi_parameters[2*DIMENSION_STATE+DIMENSION_INPUT];
                       
-    casadi_prepare_cost_function(current_state,state_reference,input_reference);
-    real_t* test_cost_optimal=malloc(sizeof(real_t)*casadi_interface_get_dimension());
+    test_casadi_prepare_static_casadi_parameters(static_casadi_parameters,current_state,state_reference,input_reference);
+    casadi_prepare_cost_function(static_casadi_parameters);
+    real_t* test_cost_optimal=malloc(sizeof(real_t)*DIMENSION_PANOC_EXAMPLE);
     casadi_interface_f_df(zero_input,test_cost_optimal);
     /* --------------------- */
 
@@ -92,8 +114,9 @@ int test_casadi_interface_df(void){
     real_t* lower_state=calloc(sizeof(real_t),DIMENSION_STATE);
     vector_add_ntimes(lower_state,current_state,18,0.8,lower_state);
     
-    casadi_prepare_cost_function(current_state,state_reference,input_reference);
-    real_t* test_cost_to_low=malloc(sizeof(real_t)*casadi_interface_get_dimension());
+    test_casadi_prepare_static_casadi_parameters(static_casadi_parameters,current_state,state_reference,input_reference);
+    casadi_prepare_cost_function(static_casadi_parameters);
+    real_t* test_cost_to_low=malloc(sizeof(real_t)*DIMENSION_PANOC_EXAMPLE);
     casadi_interface_f_df(zero_input,test_cost_to_low);
 
     free(lower_state);
@@ -103,8 +126,9 @@ int test_casadi_interface_df(void){
     real_t* higher_state=calloc(sizeof(real_t),DIMENSION_STATE);
     vector_add_ntimes(higher_state,current_state,18,1.5,higher_state);
         
-    casadi_prepare_cost_function(current_state,state_reference,input_reference);
-    real_t* test_cost_to_high=malloc(sizeof(real_t)*casadi_interface_get_dimension());
+    test_casadi_prepare_static_casadi_parameters(static_casadi_parameters,current_state,state_reference,input_reference);
+    casadi_prepare_cost_function(static_casadi_parameters);
+    real_t* test_cost_to_high=malloc(sizeof(real_t)*DIMENSION_PANOC_EXAMPLE);
     casadi_interface_f_df(zero_input,test_cost_to_high);
     free(higher_state);
     /* --------------------- */
@@ -160,7 +184,7 @@ int check_positions(const real_t* state,const real_t* required_state){
     size_t i;int return_value=SUCCESS;
     for (i = 0; i < number_of_masses; i++)
     {
-        printf(" mass%d [%f , %f] ",i,state[i*2],state[i*2+1]);
+        printf(" mass %d [%f , %f] ",i,state[i*2],state[i*2+1]);
         real_t sensitivity = 0.1;
         real_t difference_1 = ABS(state[i*2]-required_state[i*2]);
         real_t difference_2 = ABS(state[i*2+1]-required_state[i*2+1]);

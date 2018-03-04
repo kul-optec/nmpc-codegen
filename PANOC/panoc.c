@@ -27,9 +27,6 @@
 
 #define INTERATION_INDEX_PURE_LBFGS_STEP 0
 
-/* variables set once by init */
-static size_t dimension;
-
 /* variables reused by each get direction */
 static real_t tau;
 static real_t FBE_current_location;
@@ -45,9 +42,7 @@ static int panoc_get_new_potential_location(const  real_t* forward_backward_step
  * This function should allways be called before doing anything with the panoc lib
  */
 int panoc_init(){
-    dimension=casadi_interface_get_dimension();
-
-    if(lbfgs_init(LBGFS_BUFFER_SIZE,dimension)==FAILURE) goto fail_1;
+    if(lbfgs_init(LBGFS_BUFFER_SIZE)==FAILURE) goto fail_1;
     if(proximal_gradient_descent_init()==FAILURE) goto fail_2;
     if(buffer_init()==FAILURE) goto fail_3;
 
@@ -85,7 +80,7 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
     
     /* precompute FBE used in linesearch check, static fields ! */
     FBE_current_location = proximal_gradient_descent_get_current_forward_backward_envelop();
-    direction_norm=sq(vector_norm2(forward_backward_step,dimension));
+    direction_norm=sq(vector_norm2(forward_backward_step,DIMENSION_PANOC));
 
     tau=1;
     panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
@@ -142,7 +137,7 @@ static int panoc_get_new_potential_location(const  real_t* forward_backward_step
     const real_t* direction_residue,const real_t tau,real_t* potential_new_location){
 
     const real_t* current_location = buffer_get_current_location();
-    vector_add_2_vectors_a_times(current_location,forward_backward_step,direction_residue,dimension,\
+    vector_add_2_vectors_a_times(current_location,forward_backward_step,direction_residue,DIMENSION_PANOC,\
         -(1-tau),tau,potential_new_location); 
     return SUCCESS;
 }

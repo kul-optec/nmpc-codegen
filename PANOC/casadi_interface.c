@@ -69,9 +69,11 @@ int casadi_prepare_cost_function(const real_t* _current_state){
     state = _current_state;
     return SUCCESS;
 }
+/*
 size_t casadi_interface_get_dimension(){
     return DIMENSION_PANOC;
 }
+*/
 
 /* cost functions */
 real_t casadi_interface_f(const real_t* input){

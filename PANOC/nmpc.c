@@ -26,11 +26,10 @@ static real_t* current_input;
 static real_t* new_input;
 
 int nmpc_init(void){
-    int dimension = casadi_interface_get_dimension();
     if(panoc_init()==FAILURE) goto fail_1;
-    current_input=calloc(dimension,sizeof(real_t)); /* start with the zero input */
+    current_input=calloc(DIMENSION_PANOC,sizeof(real_t)); /* start with the zero input */
     if(current_input==NULL) goto fail_2;
-    new_input=malloc(dimension*sizeof(real_t));
+    new_input=malloc(DIMENSION_PANOC*sizeof(real_t));
     if(new_input==NULL) goto fail_3;
     if(casadi_interface_init()==FAILURE) goto fail_4;
 
@@ -112,8 +111,7 @@ int npmc_solve( const real_t* current_state,
 }
 int nmpc_get_last_full_solution(real_t* output){
     int i;
-    int dimension = casadi_interface_get_dimension();
-    for ( i = 0; i < dimension ; i++)
+    for ( i = 0; i < DIMENSION_PANOC ; i++)
     {
         output[i]=current_input[i];
     }

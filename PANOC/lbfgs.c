@@ -24,7 +24,6 @@ static real_t* rho;
 
 static size_t iteration_index=0; /* the iteration index, this is increased at the end of the iteration */
 static size_t buffer_size; /* buffersize initialized in init method */
-static size_t dimension;
 static real_t* direction;
 
 static void shift_s_and_y(void); /* internal function used to shift the s and y buffers */
@@ -40,22 +39,20 @@ static int lbfgs_reset_direction(void); /* internal function */
  * Initialize the lbfgs library
  * This function should allways be called before doing anything with the lbfgs algorithm.
  */
-int lbfgs_init(const size_t buffer_size_,const size_t dimension_){
-    
-    dimension=dimension_;
+int lbfgs_init(const size_t buffer_size_){
     buffer_size=buffer_size_;
     iteration_index=0;
 
     /* 
      * Allocate memory.
      */
-    s_data = malloc(sizeof(real_t)*dimension*(buffer_size+1));
+    s_data = malloc(sizeof(real_t)*DIMENSION_PANOC*(buffer_size+1));
     if(s_data==NULL) goto fail_1;
 
     s = malloc(sizeof(real_t*)*(buffer_size+1));
     if(s==NULL) goto fail_2;
 
-    y_data = malloc(sizeof(real_t)*dimension*(buffer_size+1));
+    y_data = malloc(sizeof(real_t)*DIMENSION_PANOC*(buffer_size+1));
     if(y_data==NULL) goto fail_3;
 
     y = malloc(sizeof(real_t*)*(buffer_size+1));
@@ -67,7 +64,7 @@ int lbfgs_init(const size_t buffer_size_,const size_t dimension_){
     rho = malloc(sizeof(real_t)*buffer_size);
     if(rho==NULL) goto fail_6;
 
-    direction =calloc(sizeof(real_t),dimension);
+    direction =calloc(sizeof(real_t),DIMENSION_PANOC);
     if(rho==NULL) goto fail_7;
 
     /*
@@ -76,8 +73,8 @@ int lbfgs_init(const size_t buffer_size_,const size_t dimension_){
     size_t i;
     for (i = 0; i < buffer_size+1; i++)
     {
-        s[i] = s_data + i*dimension;
-        y[i] = y_data + i*dimension;
+        s[i] = s_data + i*DIMENSION_PANOC;
+        y[i] = y_data + i*DIMENSION_PANOC;
     }
 
     return SUCCESS;
@@ -133,7 +130,7 @@ const real_t* lbfgs_get_direction(void){
      * If the gradient is about zero then this is a fixed point, 
      * set the direct on zero and return.
      */
-    if(vector_norm2(direction_prox_gradient,dimension)<MACHINE_ACCURACY){
+    if(vector_norm2(direction_prox_gradient,DIMENSION_PANOC)<MACHINE_ACCURACY){
         lbfgs_reset_direction();
         return direction;
     }
@@ -143,7 +140,7 @@ const real_t* lbfgs_get_direction(void){
         /* 
          * use gradient descent for first iteration 
          */
-        vector_minus(direction_prox_gradient,direction,dimension); /* set the direction */
+        vector_minus(direction_prox_gradient,direction,DIMENSION_PANOC); /* set the direction */
     }else{
         int buffer_limit; /* how much of the buffer should i use in this iteration? */
         if(iteration_index<buffer_size){
@@ -152,7 +149,7 @@ const real_t* lbfgs_get_direction(void){
             buffer_limit=buffer_size;
         }
 
-        real_t q[dimension]; vector_copy(direction_prox_gradient,q,dimension);
+        real_t q[DIMENSION_PANOC]; vector_copy(direction_prox_gradient,q,DIMENSION_PANOC);
 
         /*
          * First loop lbfgs
@@ -160,32 +157,32 @@ const real_t* lbfgs_get_direction(void){
         int i;/*"i" should be able to go negative, as this is used in second loop */
         for (i = 0; i < buffer_limit; i++)
         {
-            rho[i] = 1/inner_product(y[i],s[i],dimension);
-            alpha[i]= rho[i]*inner_product(s[i],q,dimension);
-            vector_add_ntimes(q,y[i],dimension,-alpha[i],q);
+            rho[i] = 1/inner_product(y[i],s[i],DIMENSION_PANOC);
+            alpha[i]= rho[i]*inner_product(s[i],q,DIMENSION_PANOC);
+            vector_add_ntimes(q,y[i],DIMENSION_PANOC,-alpha[i],q);
         }
-        real_t z[dimension];
-        vector_real_mul(q,dimension,hessian_estimate,z);
+        real_t z[DIMENSION_PANOC];
+        vector_real_mul(q,DIMENSION_PANOC,hessian_estimate,z);
         /*
          * Second loop lbfgs
          */
         real_t beta;
         for (i = buffer_limit - 1; i >= 0; i--)
         {
-            beta=rho[i]*inner_product(y[i],z,dimension);
-            vector_add_ntimes(z,s[i],dimension,(alpha[i]-beta),z); 
+            beta=rho[i]*inner_product(y[i],z,DIMENSION_PANOC);
+            vector_add_ntimes(z,s[i],DIMENSION_PANOC,(alpha[i]-beta),z); 
         }
-        vector_minus(z,direction,dimension); /* z contains upward direction, multiply with -1 to get downward direction */
+        vector_minus(z,direction,DIMENSION_PANOC); /* z contains upward direction, multiply with -1 to get downward direction */
     }
     
     return direction;
 }
 int lbfgs_update_hessian(real_t tau, const real_t* current_location, const real_t* new_location){
-    vector_sub(new_location,current_location,dimension,s[buffer_size]); /* set s */
+    vector_sub(new_location,current_location,DIMENSION_PANOC,s[buffer_size]); /* set s */
     
-    real_t gradient_current_location[dimension];proximal_gradient_descent_get_current_residual(gradient_current_location);
+    real_t gradient_current_location[DIMENSION_PANOC];proximal_gradient_descent_get_current_residual(gradient_current_location);
 
-    real_t gradient_new_location[dimension];
+    real_t gradient_new_location[DIMENSION_PANOC];
     if(tau==0){
         /* direction was never used to calculate forward backward envelop */
         proximal_gradient_descent_get_new_residual(new_location,gradient_new_location);
@@ -194,17 +191,17 @@ int lbfgs_update_hessian(real_t tau, const real_t* current_location, const real_
         proximal_gradient_descent_get_new_residual_buffered(gradient_new_location);
     }
     
-    vector_sub(gradient_new_location,gradient_current_location,dimension,y[buffer_size]); /* set y=df(new_x) - df(x) */
+    vector_sub(gradient_new_location,gradient_current_location,DIMENSION_PANOC,y[buffer_size]); /* set y=df(new_x) - df(x) */
 
     /* scale gamma, this is done in ForBes , but not correct according to paper */
     real_t gamma = proximal_gradient_descent_get_gamma();
-    vector_real_mul(y[buffer_size],dimension,gamma,y[buffer_size]);
+    vector_real_mul(y[buffer_size],DIMENSION_PANOC,gamma,y[buffer_size]);
 
     if(check_if_valid_update(gradient_current_location)==SUCCESS){
         shift_s_and_y();  /* shift the s and y buffers */
 
-        real_t inner_product_sy = inner_product(s[0],y[0],dimension);
-        real_t inner_product_yy = inner_product(y[0],y[0],dimension);
+        real_t inner_product_sy = inner_product(s[0],y[0],DIMENSION_PANOC);
+        real_t inner_product_yy = inner_product(y[0],y[0],DIMENSION_PANOC);
         hessian_estimate=inner_product_sy/inner_product_yy;
 
         
@@ -217,9 +214,7 @@ int lbfgs_update_hessian(real_t tau, const real_t* current_location, const real_
          * which means that the hessian approximation stays the sam.
          */
         return FAILURE;
-    }
-
-    
+    }    
 }
 /*
  * Theoretical condition:
@@ -233,9 +228,9 @@ static int check_if_valid_update(const real_t* gradient_current_location){
     const real_t* possible_s = s[buffer_size];
     const real_t* possible_y = y[buffer_size];
 
-    const real_t inner_product_ys = inner_product(possible_y,possible_s,dimension);
-    const real_t norm_s = sq(vector_norm2(possible_s,dimension));
-    const real_t norm_gradient_current_location = vector_norm2(gradient_current_location,dimension);
+    const real_t inner_product_ys = inner_product(possible_y,possible_s,DIMENSION_PANOC);
+    const real_t norm_s = sq(vector_norm2(possible_s,DIMENSION_PANOC));
+    const real_t norm_gradient_current_location = vector_norm2(gradient_current_location,DIMENSION_PANOC);
 
     if(inner_product_ys/norm_s < (1e-12)*norm_gradient_current_location)
         return FAILURE; /* don't update */
@@ -259,7 +254,7 @@ static void shift_s_and_y(void){
 
 static int lbfgs_reset_direction(void){
     size_t i;
-    for ( i = 0; i < dimension; i++)
+    for ( i = 0; i < DIMENSION_PANOC; i++)
     {
         direction[i]=0;
     }

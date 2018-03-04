@@ -13,7 +13,7 @@ static real_t get_lipschitz_get_delta(const real_t* current_position,real_t * cu
  * delta= max{small number,10^{-6}*u_0}
  */
 static real_t get_lipschitz_get_delta(const real_t* current_position,real_t * current_position_delta){
-    const size_t dimension=casadi_interface_get_dimension();
+    const size_t dimension=DIMENSION_PANOC;
     real_t norm_delta=0;
 
     size_t i;
@@ -37,11 +37,11 @@ static real_t get_lipschitz_get_delta(const real_t* current_position,real_t * cu
  *     f is B-lipschitz
  */
 real_t get_lipschitz(void){
-    const size_t dimension=casadi_interface_get_dimension();
+    const size_t dimension=DIMENSION_PANOC;
 
     /* get the curernt position an its gradient */
     const real_t* current_position = buffer_get_current_location();
-    const real_t* df_current_position=buffer_get_current_df();
+    const real_t* df_current_position = buffer_get_current_df();
 
     /* get the shifted position  */
     real_t current_position_delta[dimension];
