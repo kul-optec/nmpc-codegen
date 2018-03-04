@@ -18,9 +18,11 @@ add_subdirectory (casadi)
 # add the python interface, this target is excluded from all
 if(WIN32)
     SET(TIMER_LIB "${PROJECT_SOURCE_DIR}/python_interface/timer_windows.c")
-elseif(UNIX)
+elseif(APPLE )
+    SET(TIMER_LIB "${PROJECT_SOURCE_DIR}/python_interface/timer_empty.c") # TODO add timer class for mac's
+else()
     SET(TIMER_LIB "${PROJECT_SOURCE_DIR}/python_interface/timer_linux.c")
-endif()
+endif(
 
 add_library(python_interface SHARED "${PROJECT_SOURCE_DIR}/python_interface/nmpc_python" "${TIMER_LIB}")
 target_link_libraries (python_interface PANOC_lib)
