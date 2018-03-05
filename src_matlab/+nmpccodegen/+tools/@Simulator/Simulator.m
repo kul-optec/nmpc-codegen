@@ -63,18 +63,31 @@ classdef Simulator
         end
         function obj = nmpc_python_interface(obj)
         end
-        function simulation_data = simulate_nmpc(obj,current_state,state_reference,input_reference)
-            current_state_ = libpointer('doublePtr',current_state);
-            state_reference_ = libpointer('doublePtr',state_reference);
-            input_reference_ = libpointer('doublePtr',input_reference);
-            
+        function simulation_data = simulate_nmpc(obj,current_state,state_reference,input_reference)            
             optimal_inputs = zeros(1,length(input_reference));
             optimal_inputs_ = libpointer('doublePtr',optimal_inputs);
             
             [time_struct_pointer,~,~,~] = calllib('nmpc_panoc','simulate_nmpc_panoc',...
-                current_state_,state_reference_,input_reference_,optimal_inputs_);
+                current_state,state_reference,input_reference,optimal_inputs_);
             
             simulation_data = nmpccodegen.tools.Simulation_data(time_struct_pointer, optimal_inputs_.value);
+        end
+        function [f_value,f_gradient] = evaluate_cost_gradient(obj,initial_state,state_reference,input_reference,location)
+            static_casadi_parameters = vertcat(initial_state, state_reference,input_reference);
+            
+            gradient = zeros(size(location));
+            gradient_ = libpointer('doublePtr',gradient);
+            
+            [f_value,~,~,~] = calllib('nmpc_panoc','simulation_evaluate_f_df',...
+                static_casadi_parameters,location,gradient_);
+            
+            f_gradient = gradient_.value;
+        end
+        function [f_value] = evaluate_cost(obj,initial_state,state_reference,input_reference,location)
+            static_casadi_parameters = vertcat(initial_state, state_reference,input_reference);
+            
+            [f_value] = calllib('nmpc_panoc','simulation_evaluate_f',...
+                static_casadi_parameters,location);
         end
         function set_weight_obstacle(obj,obstacle_id,weight)
             calllib('nmpc_panoc','simulation_set_weight_obstacles',int32(obstacle_id),weight);

@@ -116,10 +116,13 @@ static int panoc_check_linesearch_condition(real_t* new_location,const real_t li
     const real_t f_current_location = buffer_get_current_f();
     const real_t f_potential_new_location = buffer_get_new_location_f();
 
+    /*
+     * possible extra condition to get monotone behavior
+     */
+    /* unsigned char monotone = (f_potential_new_location<f_current_location); */
+
     if( \
-        (FBE_potential_new_location<=FBE_current_location-factor*direction_norm)\
-        &&\
-        (f_potential_new_location<f_current_location)\
+        (FBE_potential_new_location<=FBE_current_location-factor*direction_norm)
       ){
         /* 
          * SUCCESS means that the linesearch will stop, 

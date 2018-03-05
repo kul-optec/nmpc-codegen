@@ -1,7 +1,5 @@
 #include "../globals/globals.h"
 
-// #include "casadi_definitions.h"
-
 #include "../casadi/cost_function.h"
 #include "../casadi/cost_function_derivative_combined.h"
 

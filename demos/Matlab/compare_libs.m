@@ -1,3 +1,6 @@
+clear all;
+addpath(genpath('../../src_matlab'));
+%%
 step_size=0.05;
 
 % Q and R matrixes determined by the control engineer.
@@ -37,26 +40,39 @@ reference_state = [7.; 5.; 0.8];
 reference_input = [0; 0];
 
 obstacle_weights = [700.;700.;700.;700.];
-
-[state_history,time_history,iteration_history] = simulate_demo_trailer(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights);
-% [state_history_forbes,time_history_forbes,iteration_history_forbes] = simulate_demo_trailer_panoc_matlab(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights);
+%%
+[state_history,time_history,iteration_history,simulator] = simulate_demo_trailer(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights);
+%%
+[state_history_forbes,time_history_forbes,iteration_history_forbes] = simulate_demo_trailer_panoc_matlab(trailer_controller,simulator,initial_state,reference_state,reference_input);
+%%
+[state_history_fmincon,time_history_fmincon,iteration_history_fmincon] = simulate_demo_trailer_interior_point_matlab(trailer_controller,simulator,initial_state,reference_state,reference_input);
 %%
 figure;
 hold on;
 nmpccodegen.example_models.trailer_printer(state_history,0.03,'red');
+nmpccodegen.example_models.trailer_printer(state_history_forbes,0.03,'black');
+nmpccodegen.example_models.trailer_printer(state_history_fmincon,0.03,'blue');
 circle1.plot();
 circle2.plot();
 circle3.plot();
 circle4.plot();
+ylabel('y coordinate');
+xlabel('x coordinate');
+title('black = Forbes red=nmpc-codegen');
 %%
 figure;
 hold on;
 plot(time_history);
+plot(time_history_forbes);
+plot(time_history_fmincon);
 ylabel('time till convergence (ms)');
 xlabel('step');
+legend('nmpc-codegen','ForBEs','fmincon');
 %%
 figure;
 hold on;
 plot(iteration_history);
-ylabel('number of iterations till convergence (ms)');
+plot(iteration_history_forbes);
+ylabel('number of iterations till convergence ');
 xlabel('step');
+legend('nmpc-codegen','ForBEs');

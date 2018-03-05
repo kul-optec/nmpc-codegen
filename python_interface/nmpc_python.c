@@ -1,5 +1,6 @@
 #include "stdlib.h"
 #include "../include/nmpc.h"
+#include "../PANOC/casadi_interface.h"
 #include "../globals/globals.h"
 #include "timer.h"
 #include <stdio.h>
@@ -50,4 +51,12 @@ int simulation_set_weight_obstacles(int index_obstacle,real_t weight){
 }
 int simulation_set_buffer_solution(real_t value, int index){
     return nmpc_set_buffer_solution(value,index);
+}
+real_t simulation_evaluate_f_df(real_t* static_casadi_parameters,real_t* input, real_t* output){
+    casadi_prepare_cost_function(static_casadi_parameters);
+    return casadi_interface_f_df(input,output);
+}
+real_t simulation_evaluate_f(real_t* static_casadi_parameters,real_t* input){
+    casadi_prepare_cost_function(static_casadi_parameters);
+    return casadi_interface_f(input);
 }

@@ -1,4 +1,4 @@
-function [ state_history,time_history,iteration_history ] = simulate_demo_trailer( trailer_controller, ...
+function [ state_history,time_history,iteration_history,sim ] = simulate_demo_trailer( trailer_controller, ...
     initial_state,reference_state,reference_input,obstacle_weights )
 %SIMULATE_DEMO_TRAILER Simulate 3 seconds of the trailer controller
 
@@ -19,7 +19,7 @@ function [ state_history,time_history,iteration_history ] = simulate_demo_traile
     
     for i=1:number_of_steps
         result_simulation = sim.simulate_nmpc(state, reference_state, reference_input);
-        disp(['Step [' num2str(i+1) '/' + num2str(number_of_steps)  ']: The optimal input is: [' ...
+        disp(['Step [' num2str(i+1) '/'  num2str(number_of_steps)  ']: The optimal input is: [' ...
               num2str(result_simulation.optimal_input(1)) ',' num2str(result_simulation.optimal_input(2)) ']' ...
               ' time=' result_simulation.time_string ' number of panoc iterations=' ...
               num2str(result_simulation.panoc_interations)]);
@@ -34,6 +34,5 @@ function [ state_history,time_history,iteration_history ] = simulate_demo_traile
     disp('Final state:');
     disp(state);
     
-    clear('sim');
 end
 

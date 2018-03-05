@@ -23,12 +23,12 @@ classdef IndicatorBoxFunctionProx <  nmpccodegen.Cfunctions.Cfunction
                 source_file = source_file.write_comment_line(...
                     'check if the value of the border is outside the box, if so go to the nearest point inside the box',...
                     2);
-                source_file = source_file.write_line(['if(state[' num2str(i_dimension) ']<' num2str(obj.lower_limits(i_dimension)) '){'],2);
-                source_file = source_file.set_output(i_dimension,num2str(obj.lower_limits(i_dimension)),3);
-                source_file = source_file.write_line(['}else if(state[' num2str(i_dimension) ']>' num2str(obj.upper_limits(i_dimension)) '){'] ,2);
-                source_file = source_file.set_output(i_dimension, num2str(obj.upper_limits(i_dimension)), 3);
+                source_file = source_file.write_line(['if(state[' num2str(i_dimension-1) ']<' num2str(obj.lower_limits(i_dimension)) '){'],2);
+                source_file = source_file.set_output(i_dimension-1,num2str(obj.lower_limits(i_dimension)),3);
+                source_file = source_file.write_line(['}else if(state[' num2str(i_dimension-1) ']>' num2str(obj.upper_limits(i_dimension)) '){'] ,2);
+                source_file = source_file.set_output(i_dimension-1, num2str(obj.upper_limits(i_dimension)), 3);
                 source_file = source_file.write_line('}else{', 2);
-                source_file = source_file.set_output(i_dimension,[ 'state[' num2str(i_dimension) ']'], 3);
+                source_file = source_file.set_output(i_dimension-1,[ 'state[' num2str(i_dimension-1) ']'], 3);
                 source_file = source_file.write_line('}', 2);
             end
 
