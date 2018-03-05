@@ -138,9 +138,9 @@ class Simulator:
         try:
             os.chdir(self._nmpc_controller_location)
             if (platform.system() == 'Linux'):
-                os.system("cmake .")
+                os.system(" cmake -H. -Bbuild")
             elif (platform.system() == 'Windows'):
-                os.system("cmake . -G \"MinGW Makefiles\"")
+                os.system(" cmake -H. -Bbuild -G \"MinGW Makefiles\"")
             else:
                 print("ERROR Platform not supported use either Linux or Windows")
         finally:
@@ -148,7 +148,7 @@ class Simulator:
     def _compile_interface(self):
         cwd = os.getcwd()
         try:
-            os.chdir(self._nmpc_controller_location)
+            os.chdir(self._nmpc_controller_location + "/build")
             os.system("make clean python_interface")
         finally:
             os.chdir(cwd)
@@ -159,16 +159,18 @@ class Simulator:
             if (platform.system() == 'Linux'):
                 print("Compiling python interface for Linux")
                 extension_lib = '.so'
-                lib_location = self._nmpc_controller_location + "/libpython_interface" + extension_lib
+                lib_location = self._nmpc_controller_location + "/build/libpython_interface" + extension_lib
                 self.nmpc_python_interface = ctypes.CDLL(lib_location)
             elif (platform.system() == 'Windows'):
                 extension_lib = '.dll'
-                lib_location = self._nmpc_controller_location + "/libpython_interface" + extension_lib
+                lib_location = self._nmpc_controller_location + "/build/libpython_interface" + extension_lib
                 print("Compiling python interface for Windows: " + lib_location)
                 self.nmpc_python_interface = ctypes.windll.LoadLibrary(lib_location)
             else:
                 print("ERROR platform can't be detected, using Linux")
                 extension_lib = '.so'
+                lib_location = self._nmpc_controller_location + "/build/libpython_interface" + extension_lib
+                self.nmpc_python_interface = ctypes.CDLL(lib_location)
         except:
             print("Failed to load the dll, are you sure python and the toolchain are compatible?")
             print("check if they both are either 32bit or both 64 bit")

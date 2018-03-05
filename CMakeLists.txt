@@ -1,6 +1,11 @@
+### make sure the user is doing an our of source build:
+if ( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR} )
+    message( FATAL_ERROR "In-source builds are not allowed. use cmake -H. -Bbuild instead to build in the build folder" )
+endif()
+###
+
 cmake_minimum_required (VERSION 2.6)
 project (npmc C)
-
 # set the compiler with its flags
 SET(CMAKE_C_COMPILER gcc)
 SET(CMAKE_BUILD_TYPE Debug)

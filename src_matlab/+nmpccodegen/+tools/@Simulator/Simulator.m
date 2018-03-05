@@ -30,11 +30,11 @@ classdef Simulator
             current_location = pwd; % save starting location
             cd(obj.nmpc_controller_location);
             if ismac
-                !cmake .
+                !cmake -H. -Bbuild
             elseif isunix
-                !cmake .
+                !cmake -H. -Bbuild
             elseif ispc
-                !cmake . -G "MinGW Makefiles"
+                !cmake -H. -Bbuild -G "MinGW Makefiles"
             else
                 disp('Platform not supported');
             end
@@ -42,7 +42,7 @@ classdef Simulator
         end
         function obj = compile_interface(obj)
             current_location = pwd;  % save starting location
-            cd(obj.nmpc_controller_location);
+            cd([obj.nmpc_controller_location '/build']);
             !make python_interface
             cd(current_location); % go back to start location
         end
@@ -55,7 +55,7 @@ classdef Simulator
             end
             if not(libisloaded('nmpc_panoc'))
                 disp('Loading nmpc_panoc library \n');
-                lib_file_name = [obj.nmpc_controller_location '/libpython_interface.' extension];
+                lib_file_name = [obj.nmpc_controller_location '/build/libpython_interface.' extension];
                 lib_file_header_name = [obj.nmpc_controller_location '/libpython_interface.h'];
                 
                 [notfound,warnings] = loadlibrary(lib_file_name,lib_file_header_name,'alias','nmpc_panoc');

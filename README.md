@@ -17,13 +17,13 @@ This is only for those who want to check if the library works on there device.
 - Generate the test functions by running the generate_test_files.py script with python3
 - Run Cmake to generate the make files: cmake . -G "MinGW Makefiles"
 - Run Make to compile everything: make
-- Run make test to test everything: make all test
+- Run make test to test everything: make test
 
 ### Unix-like operating systems
 - Generate the test functions by running the generate_test_files.py script with python3
-- Run Cmake to generate the make files: cmake .
-- Run Make to compile everything: make
-- Run make test to test everything: make all test
+- Run Cmake to generate the make files: cmake -H. -Bbuild -G
+- Run Make inside the build folder to compile everything: make
+- Run make test to test everything: make test
 
 
 
