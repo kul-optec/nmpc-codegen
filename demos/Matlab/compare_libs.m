@@ -45,7 +45,13 @@ obstacle_weights = [700.;700.;700.;700.];
 %%
 [state_history_forbes,time_history_forbes,iteration_history_forbes] = simulate_demo_trailer_panoc_matlab(trailer_controller,simulator,initial_state,reference_state,reference_input);
 %%
-[state_history_fmincon,time_history_fmincon,iteration_history_fmincon] = simulate_demo_trailer_interior_point_matlab(trailer_controller,simulator,initial_state,reference_state,reference_input);
+% [state_history_fmincon,time_history_fmincon,iteration_history_fmincon] = simulate_demo_trailer_interior_point_matlab(trailer_controller,simulator,initial_state,reference_state,reference_input);
+%%
+[state_history_fmincon,time_history_fmincon_interior_point] = simulate_demo_trailer_fmincon('interior-point',trailer_controller,simulator,initial_state,reference_state,reference_input);
+%%
+[~,time_history_fmincon_sqp] = simulate_demo_trailer_fmincon('sqp',trailer_controller,simulator,initial_state,reference_state,reference_input);
+%%
+[~,time_history_fmincon_active_set] = simulate_demo_trailer_fmincon('active-set',trailer_controller,simulator,initial_state,reference_state,reference_input);
 %%
 figure;
 hold on;
@@ -58,17 +64,19 @@ circle3.plot();
 circle4.plot();
 ylabel('y coordinate');
 xlabel('x coordinate');
-title('black = Forbes red=nmpc-codegen');
+title('black = Forbes red=nmpc-codegen blue=fmincon interior point');
 %%
 figure;
 set(gca, 'YScale', 'log')
 hold on;
 semilogy(time_history);
 semilogy(time_history_forbes);
-semilogy(time_history_fmincon);
+semilogy(time_history_fmincon_interior_point);
+semilogy(time_history_fmincon_sqp);
+semilogy(time_history_fmincon_active_set);
 ylabel('time till convergence (ms)');
 xlabel('step');
-legend('nmpc-codegen','ForBEs','fmincon');
+legend('nmpc-codegen','ForBEs: zeropfr2','fmincon: interior-point','fmincon: sqp','fmincon: active-set');
 %%
 figure;
 hold on;
