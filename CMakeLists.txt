@@ -7,7 +7,7 @@ endif()
 cmake_minimum_required (VERSION 2.6)
 project (npmc C)
 # set the compiler with its flags
-SET(CMAKE_C_COMPILER gcc)
+# SET(CMAKE_C_COMPILER gcc)
 SET(CMAKE_BUILD_TYPE Debug)
 
 # subdirectories with libraries

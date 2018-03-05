@@ -15,17 +15,19 @@ More information in the  [user manual](toturial.pdf) and the used [example scrip
 This is only for those who want to check if the library works on there device. 
 ### Windows with Mingw/Mingw-W64 (!!! make sure python and the toolchain are either BOTH 32 or BOTH 64 bit)
 - Generate the test functions by running the generate_test_files.py script with python3
-- Run Cmake to generate the make files: cmake . -G "MinGW Makefiles"
+- Run Cmake to generate the make files: cmake -H. -Bbuild -G "MinGW Makefiles"
 - Run Make to compile everything: make
 - Run make test to test everything: make test
 
 ### Unix-like operating systems
 - Generate the test functions by running the generate_test_files.py script with python3
-- Run Cmake to generate the make files: cmake -H. -Bbuild -G
-- Run Make inside the build folder to compile everything: make
+- Run Cmake to generate the make files: cmake -H. -Bbuild
+- Run Make inside the ./build folder to compile everything: make
 - Run make test to test everything: make test
 
-
+### Notes
+- The tested compilers are gcc GNU compiler, Clang LLVM compiler and the Microsoft C Compiler.
+- cmake -H. -Bbuild -DCMAKE_C_COMPILER=clang creates a build system with clang compiler
 
 ## common problems
 1. When using the Matlab version the following error appears:
