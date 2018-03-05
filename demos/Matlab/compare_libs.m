@@ -61,10 +61,11 @@ xlabel('x coordinate');
 title('black = Forbes red=nmpc-codegen');
 %%
 figure;
+set(gca, 'YScale', 'log')
 hold on;
-plot(time_history);
-plot(time_history_forbes);
-plot(time_history_fmincon);
+semilogy(time_history);
+semilogy(time_history_forbes);
+semilogy(time_history_fmincon);
 ylabel('time till convergence (ms)');
 xlabel('step');
 legend('nmpc-codegen','ForBEs','fmincon');
