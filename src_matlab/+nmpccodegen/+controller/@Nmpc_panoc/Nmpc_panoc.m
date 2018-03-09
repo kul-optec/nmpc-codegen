@@ -89,7 +89,7 @@ classdef Nmpc_panoc
             end
         end
         function obj = add_obstacle(obj,obstacle)
-            obj.obstacles = [obj.obstacles obstacle];
+            obj.obstacles = horzcat(obj.obstacles,obstacle);
             obj.number_of_obstacles=length(obj.obstacles);
         end
         function number_of_obstacles = get_number_of_obstacles(obj)

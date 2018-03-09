@@ -14,17 +14,26 @@ classdef Obstacle_rectangular < nmpccodegen.controller.obstacles.Obstacle
             obj.width=width;
             obj.height=height;
         end
-        
         function cost = evaluate_cost(obj,coordinates_state)
-            x_up = obj.center_coordinates(0) + obj.width / 2;
-            x_down = obj.center_coordinates(0) - obj.width / 2;
-            y_up = obj.center_coordinates(1) + obj.height / 2;
-            y_down = obj.center_coordinates(1) - obj.height / 2;
-
+            [x_up,x_down,y_up,y_down] = get_corner_coordinates(obj);
             a = ([-1. 0.; 1., 0. ;0., -1.; 0., 1.])';
             b = [x_up; -x_down; y_up; -y_down];
             
-            cost =  Obstacle_polyhedral(a, b).evaluate_cost(coordinates_state);
+            cost =  nmpccodegen.controller.obstacles.Obstacle_polyhedral(a, b).evaluate_cost(coordinates_state);
+        end
+        function plot(obj)
+            [x_up,x_down,y_up,y_down] = get_corner_coordinates(obj);
+            plot([x_down x_up],[y_down y_down],'linewidth', 2,'Color', 'black');
+            plot([x_down x_up],[y_up y_up],'linewidth', 2,'Color', 'black');
+            plot([x_up x_up],[y_up y_down],'linewidth', 2,'Color', 'black');
+            plot([x_down x_down],[y_down y_up],'linewidth', 2,'Color', 'black');
+            plot(y_up)
+        end
+        function [x_up,x_down,y_up,y_down] = get_corner_coordinates(obj)
+            x_up = obj.center_coordinates(1) + obj.width / 2;
+            x_down = obj.center_coordinates(1) - obj.width / 2;
+            y_up = obj.center_coordinates(2) + obj.height / 2;
+            y_down = obj.center_coordinates(2) - obj.height / 2;
         end
     end
     

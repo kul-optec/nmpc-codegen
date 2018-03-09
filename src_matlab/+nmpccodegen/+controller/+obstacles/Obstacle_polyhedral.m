@@ -1,4 +1,4 @@
-classdef Obstacle_polyhedral < nmpccodegen.controller.Obstacle
+classdef Obstacle_polyhedral < nmpccodegen.controller.obstacles.Obstacle
     %POLYHEDRAL Summary of this class goes here
     %   construct obstacle of form a[i,:]^Tb +b , for all i
     
@@ -22,7 +22,7 @@ classdef Obstacle_polyhedral < nmpccodegen.controller.Obstacle
         function value = evaluate_cost(obj,coordinates_state)
             value=1.;
             for i=1:obj.number_of_constraints
-                value = value * Obstacle.trim_and_square(...
+                value = value * nmpccodegen.controller.obstacles.Obstacle.trim_and_square(...
                     (obj.a(:,i)'*coordinates_state)+ obj.b(i)...
                 );
             end
