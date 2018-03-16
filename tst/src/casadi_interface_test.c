@@ -11,7 +11,7 @@ int test_casadi_interface_df(void);
 int simple_test_integrator(void);
 int check_positions(const real_t* state,const real_t* required_state);
 
-static size_t number_of_masses=4;
+static int number_of_masses=4;
 static real_t state_reference[DIMENSION_STATE]={0.1932, -5.9190 , 0.3874,-8.8949,0.6126,-8.8949,0.8068,-5.9190 \
                 ,1. , 0., \
                 0.,0., 0.,0.,0.,0.,0.,0.};
@@ -156,11 +156,11 @@ int simple_test_integrator(void){
                 0.,0., 0.,0.,0.,0.,0.,0.};
 
     real_t* current_state=malloc(sizeof(real_t)*DIMENSION_STATE);
-    size_t i;
-    for (size_t i = 0; i < DIMENSION_STATE; i++)current_state[i]=start_state[i];
+    int i;
+    for (int i = 0; i < DIMENSION_STATE; i++)current_state[i]=start_state[i];
     real_t* new_state=malloc(sizeof(real_t)*DIMENSION_STATE);
 
-    size_t number_of_simulations=1000;
+    int number_of_simulations=1000;
     for ( i = 0; i < number_of_simulations; i++)
     {
         casadi_integrate(current_state,input,new_state);
@@ -181,7 +181,7 @@ int simple_test_integrator(void){
 }
 
 int check_positions(const real_t* state,const real_t* required_state){
-    size_t i;int return_value=SUCCESS;
+    int i;int return_value=SUCCESS;
     for (i = 0; i < number_of_masses; i++)
     {
         printf(" mass %d [%f , %f] ",i,state[i*2],state[i*2+1]);

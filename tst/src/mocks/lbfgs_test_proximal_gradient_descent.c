@@ -31,6 +31,7 @@ int lbfgs_prox_grad_descent_test_init(int dimension){
 }
 int lbfgs_prox_grad_descent_test_cleanup(void){
     free(buffer);
+    return SUCCESS;
 }
 const real_t* proximal_gradient_descent_get_buffered_direction(void){
     if(rosenbrock==TRUE)

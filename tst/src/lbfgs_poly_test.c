@@ -44,7 +44,7 @@ int checkIfSolutionIsReached(void){
 
     printf("test1: starting in location x1=0.5 x2=0.5 with cost=%f\n",f_poly(current_location));
 
-    size_t i;
+    int i;
     for ( i = 0; i < 50; i++)
     {
         buffer_renew(current_location);
@@ -82,7 +82,7 @@ int check2thdegreepolynomial(void){
 
     printf("test2: starting in location x1=0.5 x2=0.5 \n");
 
-    size_t i;
+    int i;
     for ( i = 0; i < 2; i++)
     {
         buffer_renew(current_location);
@@ -139,7 +139,7 @@ int rosenbrock_test(void){
     real_t next_location[DIMENSION];
     real_t solution_rosen[2] = {1,1};
 
-    size_t i;
+    int i;
     for ( i = 0; i < 10; i++)
     {
         buffer_renew(current_location);

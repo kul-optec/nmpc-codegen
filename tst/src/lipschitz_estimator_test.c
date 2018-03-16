@@ -49,7 +49,7 @@ int simple_estimate_test(void){
 
     buffer_cleanup();
     
-    if(abs(lipschitz_value-2.6517)<0.001){
+    if(ABS(lipschitz_value-2.6517)<0.001){
         printf("end of test1:SUCCESS --- \n");
         return SUCCESS;
     }else{
