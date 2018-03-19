@@ -31,8 +31,13 @@ target_link_libraries (python_interface PANOC_lib CASADI_lib)
 set_property(TARGET python_interface PROPERTY C_STANDARD 90)
 set_property(TARGET python_interface PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-if (EXISTS main.c)
-    add_executable(main_exe main.c)
+SET(MAIN_FILE_PATH "${PROJECT_SOURCE_DIR}/main.c" )
+
+if (EXISTS "${MAIN_FILE_PATH}")
+    MESSAGE( STATUS "main.c detected use 'make main_exe' to compile it" )
+    add_executable(main_exe "${MAIN_FILE_PATH}")
     target_link_libraries (main_exe PANOC_lib CASADI_lib)
     target_link_libraries(main_exe m) # link with the math lib, some toolchains need this
+else()
+    MESSAGE( STATUS "No main.c detected in project root folder" )
 endif()
