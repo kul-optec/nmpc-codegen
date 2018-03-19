@@ -22,6 +22,8 @@ int cleanup_buffer_casadi_function(CasadiFunction* data);
 /* static CasadiFunction* cost_function_data; */
 /* static CasadiFunction* cost_function_derivative_combined_data; */
 static real_t* obstacle_weights;
+static const real_t* state;
+
 #ifdef INTEGRATOR_CASADI
 /* static CasadiFunction* integrator_data; */
 #endif
@@ -62,16 +64,24 @@ int casadi_integrate(const real_t* current_state,const real_t* input,real_t* new
     */
 }
 #endif
-static const real_t* state;
+
+/*  
+ * Function only used when using lagrangian
+ */
+#ifdef USE_LA
+int casadi_evaluate_constraints(const real_t* inputs,real_t* constraint_values){
+    const real_t* input_casadi[2]={state,inputs};
+    real_t* output_casadi[1]={constraint_values};
+
+    evaluate_constraints(input_casadi, output_casadi, NULL, NULL, MEM_CASADI);
+    return SUCCESS;
+}
+#endif
+
 int casadi_prepare_cost_function(const real_t* _current_state){
     state = _current_state;
     return SUCCESS;
 }
-/*
-size_t casadi_interface_get_dimension(){
-    return DIMENSION_PANOC;
-}
-*/
 
 /* cost functions */
 real_t casadi_interface_f(const real_t* input){

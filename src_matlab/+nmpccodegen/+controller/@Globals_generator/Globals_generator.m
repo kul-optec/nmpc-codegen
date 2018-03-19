@@ -19,6 +19,9 @@ classdef Globals_generator
             obj.define_variable('DIMENSION_STATE', num2str(nmpc_controller.model.number_of_states));
             obj.define_variable('DIMENSION_PANOC', num2str(nmpc_controller.dimension_panoc));
             obj.define_variable('MPC_HORIZON', num2str(nmpc_controller.horizon));
+            if(nmpc_controller.use_lagrangian==true)
+                obj.define_variable('USE_LA', num2str(1));
+            end
 
             obj.define_variable('NUMBER_OF_OBSTACLES', ...
                 num2str(nmpc_controller.get_number_of_obstacles()) );

@@ -20,6 +20,7 @@ classdef Nmpc_panoc
         globals_generator
         obstacles=[]
         number_of_obstacles=0
+        use_lagrangian
         cost_function
         cost_function_derivative_combined
     end
@@ -42,6 +43,8 @@ classdef Nmpc_panoc
             % start with generating the cost function
             if(strcmp(obj.shooting_mode,'single shot'))
                 obj = obj.generate_cost_function_singleshot();
+            elseif(strcmp(obj.shooting_mode,'single shot LA'))
+                obj = obj.generate_cost_function_singleshot_LA();
             elseif(strcmp(obj.shooting_mode,'multiple shot'))
                 obj = obj.generate_cost_function_multipleshot();
             else
@@ -69,7 +72,19 @@ classdef Nmpc_panoc
             obj.cost_function_derivative_combined=cost_function_derivative_combined_;
             obj.dimension_panoc=ssd.dimension;
         end
-        function generate_cost_function_multipleshot(obj)
+        function obj=generate_cost_function_singleshot_LA(obj)
+            ssd = nmpccodegen.controller.Single_shot_LA_definition(obj);
+            % generate the cost function in casadi syntax AND generate c
+            % code in the background
+            [cost_function_, cost_function_derivative_combined_] = ssd.generate_cost_function();
+
+            obj.cost_function = cost_function_;
+            obj.cost_function_derivative_combined=cost_function_derivative_combined_;
+            obj.dimension_panoc=ssd.dimension;
+            
+            obj.use_lagrangian=true;
+        end
+        function obj=generate_cost_function_multipleshot(obj)
             % TODO
             disp('Multiple shot is not implemented !');
         end
@@ -101,7 +116,8 @@ classdef Nmpc_panoc
             else
                 cost = 0.;
                 for i=1:obj.number_of_obstacles
-                    cost = cost + obstacle_weights(i)*obj.obstacles(i).evaluate_cost(state(obj.model.indices_coordinates));
+                    cost = cost + obstacle_weights(i)*...
+                        (obj.obstacles(i).evaluate_cost(state(obj.model.indices_coordinates))).^2;
                 end
             end
         end

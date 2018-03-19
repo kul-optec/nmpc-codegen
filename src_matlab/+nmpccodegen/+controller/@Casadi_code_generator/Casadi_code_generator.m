@@ -16,7 +16,10 @@ classdef Casadi_code_generator
             nmpccodegen.controller.Casadi_code_generator.translate_casadi_to_c(cost_function_derivative_combined,location_lib,...
                                                             'cost_function_derivative_combined');
         end
-        
+        function generate_c_constraints(initial_state,input_all_steps,constraint_values,location_lib)
+            constraints_function = casadi.Function('evaluate_constraints', {initial_state,input_all_steps}, {constraint_values});
+            nmpccodegen.controller.Casadi_code_generator.translate_casadi_to_c(constraints_function,location_lib,'evaluate_constraints');
+        end
         function translate_casadi_to_c(casadi_function,location_lib,filename)
             % check if the buffer file excists, should never be the case, but check anyway
 %             buffer_file_name='buffer.c';

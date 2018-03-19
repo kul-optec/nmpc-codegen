@@ -33,4 +33,12 @@ real_t casadi_interface_f_df(const real_t* input,real_t* output);
 real_t casadi_interface_g(const real_t* input);
 void casadi_interface_proxg(real_t* state);
 
+
+/*  
+ * Function only used when using lagrangian
+ */
+#ifdef USE_LA
+int casadi_evaluate_constraints(const real_t* inputs,real_t* constraint_values);
+#endif
+
 #endif
