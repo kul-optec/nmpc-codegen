@@ -22,10 +22,11 @@ classdef Casadi_code_generator
         end
         function translate_casadi_to_c(casadi_function,location_lib,filename)
             % check if the buffer file excists, should never be the case, but check anyway
-%             buffer_file_name='buffer.c';
-%             if (exist(['./' buffer_file_name]))
-%                  delete (['./' buffer_file_name]);
-%             end
+            buffer_file_name=filename;
+            if (exist(['./' buffer_file_name]))
+                 disp('Buffer file present removing it !');
+                 delete (['./' buffer_file_name]);
+            end
             
             % generate the casadi function in C to a buffer file
             opts =   struct('verbose',false,...
@@ -36,21 +37,23 @@ classdef Casadi_code_generator
                             'with_header',true,...              
                             'with_mem',false...
                             );
-
-            casadi_function.generate(filename,opts);
+                        
             file_name_costfunction = [location_lib  '/casadi/' filename];
 
             % check if the files already exist
             if(exist([file_name_costfunction '.c']))
-                disp([file_name_costfunction '.c' ' already exists: removing file...'])
-                delete([file_name_costfunction '.c'])
+                disp([file_name_costfunction '.c' ' already exists: removing file...']);
+                delete([file_name_costfunction '.c']);
             end
 
             if(exist([file_name_costfunction '.h']))
-                disp([file_name_costfunction '.h' ' already exists: removing file...'])
-                delete([file_name_costfunction '.h'])
+                disp([file_name_costfunction '.h' ' already exists: removing file...']);
+                delete([file_name_costfunction '.h']);
             end
-
+            
+            casadi_function.generate(filename,opts);
+            fclose('all'); % temp solution, i think casadi isnt properly handling files
+            
             movefile( [filename '.c'], [file_name_costfunction '.c']);
             movefile( [filename '.h'], [file_name_costfunction '.h']);
     
