@@ -20,7 +20,7 @@ classdef Nmpc_panoc
         globals_generator
         obstacles=[]
         number_of_obstacles=0
-        use_lagrangian
+        general_constraints=[]
         cost_function
         cost_function_derivative_combined
     end
@@ -42,9 +42,11 @@ classdef Nmpc_panoc
         function generate_code(obj)
             % start with generating the cost function
             if(strcmp(obj.shooting_mode,'single shot'))
-                obj = obj.generate_cost_function_singleshot();
-            elseif(strcmp(obj.shooting_mode,'single shot LA'))
-                obj = obj.generate_cost_function_singleshot_LA();
+                if(isempty(obj.general_constraints))
+                    obj = obj.generate_cost_function_singleshot();
+                else
+                    obj = obj.generate_cost_function_singleshot_LA();
+                end                
             elseif(strcmp(obj.shooting_mode,'multiple shot'))
                 obj = obj.generate_cost_function_multipleshot();
             else
@@ -81,8 +83,6 @@ classdef Nmpc_panoc
             obj.cost_function = cost_function_;
             obj.cost_function_derivative_combined=cost_function_derivative_combined_;
             obj.dimension_panoc=ssd.dimension;
-            
-            obj.use_lagrangian=true;
         end
         function obj=generate_cost_function_multipleshot(obj)
             % TODO
@@ -106,6 +106,9 @@ classdef Nmpc_panoc
         function obj = add_obstacle(obj,obstacle)
             obj.obstacles = horzcat(obj.obstacles,obstacle);
             obj.number_of_obstacles=length(obj.obstacles);
+        end
+        function obj = add_general_constraint(obj,general_constraint)
+            obj.general_constraints = horzcat(obj.general_constraints,general_constraint);
         end
         function number_of_obstacles = get_number_of_obstacles(obj)
             number_of_obstacles = length(obj.obstacles);
