@@ -20,10 +20,11 @@ classdef Single_shot_LA_definition
         function cost = generate_cost_general_constraints(obj,current_state,input,lambdas,general_constraint_weights,step_horizon)
             number_of_general_constraints = length(obj.controller.general_constraints);
             offset_constraints = (step_horizon-1)*number_of_general_constraints;
-            cost=0;
+            cost=casadi.SX(1,1);
             for i=1:number_of_general_constraints
-                cost = cost - obj.controller.general_constraints(i).evaluate_cost(current_state,input)*lambdas(offset_constraints+i);
-                cost = cost + (obj.controller.general_constraints(i).evaluate_cost(current_state,input))^2*general_constraint_weights(offset_constraints+i);
+                constraint_cost = obj.controller.general_constraints(i).evaluate_cost(current_state,input);
+                cost = cost - constraint_cost*lambdas(offset_constraints+i);
+                cost = cost + (constraint_cost^2)*general_constraint_weights(offset_constraints+i);
             end
         end
         % Evaluate cost of general constraints for 1 step in the horizon
@@ -48,17 +49,16 @@ classdef Single_shot_LA_definition
         % generate the cost function and general constraints function using casadi
         function [cost_function,cost_function_derivative_combined] = generate_cost_function(obj)
             initial_state = casadi.SX.sym('initial_state', obj.controller.model.number_of_states, 1);
-            
             state_reference = casadi.SX.sym('state_reference', obj.controller.model.number_of_states, 1);
             input_reference = casadi.SX.sym('input_reference', obj.controller.model.number_of_inputs, 1);
             
             lambdas = casadi.SX.sym('lambdas',length(obj.controller.general_constraints)*obj.controller.horizon, 1);
             general_constraint_weights = casadi.SX.sym('general_constraint_weights',length(obj.controller.general_constraints)*obj.controller.horizon, 1);
             
-            static_casadi_parameters = vertcat(initial_state, state_reference,input_reference,lambdas,general_constraint_weights);
+            static_casadi_parameters = vertcat(initial_state, state_reference,input_reference,...
+                lambdas,general_constraint_weights);
 
             obstacle_weights = casadi.SX.sym('obstacle_weights', obj.controller.number_of_obstacles, 1);
-        
             input_all_steps = casadi.SX.sym('input_all_steps', obj.controller.model.number_of_inputs*obj.controller.horizon, 1);
 
             cost=0;
@@ -74,8 +74,9 @@ classdef Single_shot_LA_definition
                 cost = cost + obj.controller.generate_cost_obstacles(current_state,obstacle_weights);
                 
                 % Extra terms associated with the lagrangian - lambda*c(x) + mu*c(c)^2
-                cost = cost + obj.generate_cost_general_constraints(...
+                general_constraints_cost = obj.generate_cost_general_constraints(...
                         current_state,input,lambdas,general_constraint_weights,i);
+                cost = cost + general_constraints_cost;
             end
             [cost_function, cost_function_derivative_combined] = ...
                 nmpccodegen.controller.Casadi_code_generator.setup_casadi_functions_and_generate_c(...
@@ -92,10 +93,10 @@ classdef Single_shot_LA_definition
                     (i-1)*obj.controller.model.number_of_inputs+1:...
                     i*obj.controller.model.number_of_inputs);
                 
+                state = obj.controller.model.get_next_state(state,input);
+                
                 constraint_values = obj.evaluate_constraints(state,input,...
                     constraint_values,i);
-                
-                state = obj.controller.model.get_next_state(state,input);
             end
             
             nmpccodegen.controller.Casadi_code_generator.generate_c_constraints(...

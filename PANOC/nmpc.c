@@ -24,6 +24,8 @@
 
 static real_t* current_input;
 static real_t* new_input;
+static real_t* static_casadi_parameters;
+static real_t current_residual;
 
 static int nmpc_prepare(real_t* static_casadi_parameters,const real_t* current_state,const real_t* state_reference,\
         const real_t* input_reference,const real_t* optimal_inputs);
@@ -36,15 +38,39 @@ static int nmpc_solve_with_lagrangian(real_t* static_casadi_parameters);
 int nmpc_init(void){
     if(panoc_init()==FAILURE) goto fail_1;
     current_input=calloc(DIMENSION_PANOC,sizeof(real_t)); /* start with the zero input */
+
     if(current_input==NULL) goto fail_2;
     new_input=malloc(DIMENSION_PANOC*sizeof(real_t));
+
     if(new_input==NULL) goto fail_3;
     if(casadi_interface_init()==FAILURE) goto fail_4;
 
+    #ifdef USE_LA
+        static_casadi_parameters = calloc(2*DIMENSION_STATE+DIMENSION_INPUT+NUMBER_OF_GENERAL_CONSTRAINTS*2,sizeof(real_t));
+        if(static_casadi_parameters!=NULL){
+            /* if the memory is allocated set the weights of the constraints at one */ 
+            real_t* weights_constraints = &static_casadi_parameters[2*DIMENSION_STATE+DIMENSION_INPUT + NUMBER_OF_GENERAL_CONSTRAINTS];
+            real_t* lambdas = &static_casadi_parameters[2*DIMENSION_STATE+DIMENSION_INPUT];
+            int i;
+            for(i=0;i<NUMBER_OF_GENERAL_CONSTRAINTS;i++){
+                weights_constraints[i]=1;
+                lambdas[i]=1;
+            }
+        }
+    #else
+        static_casadi_parameters = malloc(2*DIMENSION_STATE+DIMENSION_INPUT);
+    #endif
+    if(static_casadi_parameters==NULL) goto fail_5;
+
     return SUCCESS;
-    
-    fail_4:
+
+    /*
+     * if something went wrong allocating free up the take memory
+     */
+    fail_5:
         casadi_interface_cleanup();
+    fail_4:
+        free(new_input);
     fail_3:
         free(current_input);
     fail_2:
@@ -54,8 +80,10 @@ int nmpc_init(void){
 }
 int nmpc_cleanup(void){
     panoc_cleanup();
+    casadi_interface_cleanup();
     free(current_input);
     free(new_input);
+    free(static_casadi_parameters);
     return SUCCESS;
 }
 static void switch_input_current_new(void){
@@ -74,8 +102,7 @@ static int nmpc_prepare(real_t* static_casadi_parameters,const real_t* current_s
     for(i=0;i<DIMENSION_INPUT;i++){
         static_casadi_parameters[i+2*DIMENSION_STATE] = input_reference[i];
     }
-    
-
+    casadi_prepare_cost_function(static_casadi_parameters);
     return SUCCESS;
 }
 int npmc_solve( const real_t* current_state,
@@ -88,24 +115,10 @@ int npmc_solve( const real_t* current_state,
      *    1. classic way, min cost(x) + h(x) with h(x) as the soft constraint
      *    2. Accelerated lagrangian
      */
+    nmpc_prepare(static_casadi_parameters,current_state,state_reference,input_reference,optimal_inputs);
     #ifdef USE_LA
-        real_t static_casadi_parameters[2*DIMENSION_STATE+DIMENSION_INPUT+NUMBER_OF_OBSTACLES];
-        nmpc_prepare(static_casadi_parameters,current_state,state_reference,input_reference,optimal_inputs);
-        /*
-         * set lambda's to zero
-         */
-        int j;
-        int start_index_lambdas = DIMENSION_STATE*2 + DIMENSION_INPUT;
-        for (j = start_index_lambdas; j < start_index_lambdas + NUMBER_OF_OBSTACLES; j++){
-            static_casadi_parameters[j]=0;
-        }
-        casadi_prepare_cost_function(static_casadi_parameters);
-        
         int i_panoc = nmpc_solve_with_lagrangian(static_casadi_parameters);
     #else
-        real_t static_casadi_parameters[2*DIMENSION_STATE+DIMENSION_INPUT];
-        nmpc_prepare(static_casadi_parameters,current_state,state_reference,input_reference,optimal_inputs);
-        casadi_prepare_cost_function(static_casadi_parameters);
         int i_panoc = nmpc_solve_classic_way(MIN_RESIDUAL);
     #endif
 
@@ -115,10 +128,12 @@ int npmc_solve( const real_t* current_state,
     {
         optimal_inputs[i]=current_input[i];
     }
-    // for (i = 0; i < DIMENSION_INPUT*MPC_HORIZON - DIMENSION_INPUT; i++)
-    // {
-    //     current_input[i] = current_input[i+DIMENSION_INPUT];
-    // }
+    #ifdef SHIFT_INPUT
+        for (i = 0; i < DIMENSION_INPUT*MPC_HORIZON - DIMENSION_INPUT; i++)
+        {
+            current_input[i] = current_input[i+DIMENSION_INPUT];
+        }
+    #endif
     panoc_reset_cycli();
 
     return i_panoc;
@@ -132,14 +147,14 @@ static int nmpc_solve_classic_way(real_t minimum_residual){
      * take implicitly the previous inputs as the starting position for the algorithm 
      */
     int i_panoc;
-    real_t residual=1;
+    real_t current_residual=minimum_residual*10;
     for (i_panoc= 0; i_panoc < PANOC_MAX_STEPS ; i_panoc++){
-        if(i_panoc > PANOC_MIN_STEPS && residual<minimum_residual){
+        if(i_panoc > PANOC_MIN_STEPS && current_residual<minimum_residual){
             /* if more then PANOC_MIN_STEPS steps are passed 
                and residual is low stop iterating */
             break;
         }
-        residual = panoc_get_new_location(current_input,new_input);
+        current_residual = panoc_get_new_location(current_input,new_input);
 
         /*
          * if the residual was larger then the machine accuracy
@@ -147,7 +162,7 @@ static int nmpc_solve_classic_way(real_t minimum_residual){
          * WARNING: if the residual was smaller then the machine 
          *  accuracy you might get NaN thats why we won't use it
          */
-        if(residual>MACHINE_ACCURACY)
+        if(current_residual>MACHINE_ACCURACY)
             switch_input_current_new();
     }
     return i_panoc;
@@ -155,12 +170,14 @@ static int nmpc_solve_classic_way(real_t minimum_residual){
 
 #ifdef USE_LA
 static int nmpc_solve_with_lagrangian(real_t* static_casadi_parameters){
+    real_t* lambdas = &static_casadi_parameters[2*DIMENSION_STATE+DIMENSION_INPUT];
+    real_t* weights_constraints = &static_casadi_parameters[2*DIMENSION_STATE+DIMENSION_INPUT + NUMBER_OF_GENERAL_CONSTRAINTS];
     /* 
      * take implicitly the previous inputs as the starting position for the algorithm 
      */
     int i_panoc=0;int i;
-    real_t minimum_residual=0.1;
-    for (i = 0; i < 3; i++)
+    real_t minimum_residual=1;
+    for (i = 0; (i < 4) && (current_residual<MIN_RESIDUAL) ; i++)
     {
         /*
          * Solve the problem
@@ -169,7 +186,7 @@ static int nmpc_solve_with_lagrangian(real_t* static_casadi_parameters){
         /*
          * evaluate the constrain functions on the entire horizon
          */
-        real_t constraint_values[NUMBER_OF_OBSTACLES];
+        real_t constraint_values[NUMBER_OF_GENERAL_CONSTRAINTS];
         casadi_evaluate_constraints(current_input,constraint_values);
         /*
          * calculate new lambda's using the following formula:
@@ -178,16 +195,17 @@ static int nmpc_solve_with_lagrangian(real_t* static_casadi_parameters){
          * the amount of lambda's is equal to the amount of constraints
          */
         int j;
-        for (j=0;j<NUMBER_OF_OBSTACLES;j++){
-            real_t weight_constraint = casadi_get_weight_obstacles(j);
-            int start_index_lambdas = DIMENSION_STATE*2 + DIMENSION_INPUT;
-            static_casadi_parameters[start_index_lambdas+j]=static_casadi_parameters[start_index_lambdas+j] - 2*weight_constraint*constraint_values[j];
-
+        for (j=0;j<NUMBER_OF_GENERAL_CONSTRAINTS;j++){
             /*
              * calibrate the constraint weights
              */
-            //TODO: check value constraint before updating obs weight
-            casadi_set_weight_obstacles(j,weight_constraint*10);
+            /* TODO: check value constraint before updating obs weight */
+            if(constraint_values[j]<CONSTRAINT_OPTIMAL_VALUE && weights_constraints[j]<CONSTRAINT_MAX_WEIGHT){
+                weights_constraints[j] = weights_constraints[j]*10;
+            }
+
+            int start_index_lambdas = DIMENSION_STATE*2 + DIMENSION_INPUT;
+            static_casadi_parameters[start_index_lambdas+j]=lambdas[j] - 2*weights_constraints[j]*constraint_values[j];
         }
 
         /*
@@ -196,13 +214,9 @@ static int nmpc_solve_with_lagrangian(real_t* static_casadi_parameters){
         minimum_residual = minimum_residual/10.;
     }
     /*
-     * temporary solution reset weights back to
+     * TODO: shift the weights
      */
-    int j;
-    for (j=0;j<NUMBER_OF_OBSTACLES;j++){
-        real_t weight_constraint = casadi_get_weight_obstacles(j);
-        casadi_set_weight_obstacles(j,weight_constraint/1000);
-    }
+
     return i_panoc;
 }
 #endif

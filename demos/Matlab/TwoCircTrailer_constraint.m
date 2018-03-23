@@ -1,3 +1,4 @@
+close all;
 clear all;
 addpath(genpath('../../src_matlab'));
 %%
@@ -12,7 +13,7 @@ R_terminal = diag([1. 1.]) * 0.01;
 
 trailer_controller = prepare_demo_trailer(step_size,Q,R,Q_terminal,R_terminal);
 
-trailer_controller.horizon = 50; % NMPC parameter
+trailer_controller.horizon = 20; % NMPC parameter
 trailer_controller.integrator_casadi = true; % optional  feature that can generate the integrating used  in the cost function
 trailer_controller.panoc_max_steps = 500; % the maximum amount of iterations the PANOC algorithm is allowed to do.
 trailer_controller.min_residual=-3;
@@ -28,7 +29,7 @@ trailer_controller = trailer_controller.add_obstacle(left_circle);
 trailer_controller = trailer_controller.add_obstacle(right_circle);
 
 % experimental feature !!!! this will activate the Lagrangian !
-max_speed = 4;
+max_speed = 20;
 max_speed_constraint = nmpccodegen.controller.constraints.Input_norm(max_speed);
 trailer_controller = trailer_controller.add_general_constraint(max_speed_constraint);
 
@@ -36,7 +37,7 @@ trailer_controller = trailer_controller.add_general_constraint(max_speed_constra
 trailer_controller.shooting_mode='single shot';
 
 % generate the dynamic code
-trailer_controller.generate_code();
+trailer_controller = trailer_controller.generate_code();
 %%
 % simulate everything
 initial_state = [0.2; 0.6; 0];
@@ -45,8 +46,9 @@ reference_input = [0; 0];
 
 obstacle_weights = [1000.; 1000.];
 
-[ state_history,time_history,iteration_history,~ ] = simulate_demo_trailer(trailer_controller,initial_state,...
+[ state_history,time_history,iteration_history,sim ] = simulate_demo_trailer(trailer_controller,initial_state,...
     reference_state,reference_input,obstacle_weights);
+clear sim;
 %% plot everything TODO make proper plot !
 figure;
 
@@ -55,7 +57,7 @@ left_circle.plot();
 hold on;
 right_circle.plot();
 nmpccodegen.example_models.trailer_printer(state_history,0.03,'red');
-title('path taken bij trailer');
+title('path trailer');
 xlabel('X coordinate');
 ylabel('Y coordinate');
 
