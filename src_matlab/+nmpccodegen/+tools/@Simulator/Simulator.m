@@ -5,6 +5,13 @@ classdef Simulator
     properties
         nmpc_controller_location
     end
+    methods(Static)
+        function force_unload()
+            if libisloaded('nmpc_panoc')
+                unloadlibrary('nmpc_panoc');
+            end
+        end
+    end
     
     methods
         function obj = Simulator(nmpc_controller_location)
