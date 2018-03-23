@@ -39,7 +39,7 @@ classdef Nmpc_panoc
             end
             obj.globals_generator = nmpccodegen.controller.Globals_generator([location_lib '/globals/globals_dyn.h']);
         end
-        function generate_code(obj)
+        function obj=generate_code(obj)
             % start with generating the cost function
             if(strcmp(obj.shooting_mode,'single shot'))
                 if(isempty(obj.general_constraints))
