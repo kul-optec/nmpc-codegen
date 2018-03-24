@@ -24,8 +24,11 @@ classdef Globals_generator
             if(~isempty(nmpc_controller.general_constraints))
                 obj.define_variable('USE_LA', '1');
                 obj.define_variable('NUMBER_OF_GENERAL_CONSTRAINTS', num2str(length(nmpc_controller.general_constraints)*nmpc_controller.horizon));
+                obj.define_variable('NUMBER_OF_GENERAL_CONSTRAINTS_PER_STEP', num2str(length(nmpc_controller.general_constraints)));
                 obj.define_variable('CONSTRAINT_OPTIMAL_VALUE', '(1e1)');
                 obj.define_variable('CONSTRAINT_MAX_WEIGHT', '(1e6)');
+                obj.define_variable('START_RESIDUAL', '1');
+                obj.define_variable('MAX_STEPS_LA', '4');
             end
 
             obj.define_variable('NUMBER_OF_OBSTACLES', ...
