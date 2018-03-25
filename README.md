@@ -30,6 +30,7 @@ This is only for those who want to check if the library works on there device.
 - Run make test to test everything: make test
 
 ### Notes
+- The library is tested with casadi version 3.2, using other versions will lead to problems
 - The tested compilers are gcc GNU compiler, Clang LLVM compiler and the Microsoft C Compiler.
 - cmake -H. -Bbuild -DCMAKE_C_COMPILER=clang creates a build system with clang compiler
 
