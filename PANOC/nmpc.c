@@ -63,7 +63,7 @@ int nmpc_init(void){
             }
         }
     #else
-        static_casadi_parameters = malloc(2*DIMENSION_STATE+DIMENSION_INPUT);
+        static_casadi_parameters = malloc((2*DIMENSION_STATE+DIMENSION_INPUT)*sizeof(real_t));
     #endif
     if(static_casadi_parameters==NULL) goto fail_5;
 
@@ -115,6 +115,7 @@ static int shift_input(void){
     for (i = 0; i < DIMENSION_INPUT*MPC_HORIZON - DIMENSION_INPUT; i++){
             current_input[i] = current_input[i+DIMENSION_INPUT];
     }
+    return SUCCESS;
 }
 
 int npmc_solve( const real_t* current_state,
