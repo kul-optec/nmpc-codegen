@@ -22,8 +22,8 @@ static real_t* alpha;
 static real_t* rho;
 
 
-static size_t iteration_index=0; /* the iteration index, this is increased at the end of the iteration */
-static size_t buffer_size; /* buffersize initialized in init method */
+static unsigned int active_buffer_size=0; /* the used buffer size , this is increased at the end of an hessian update */
+static unsigned int buffer_size; /* buffersize initialized in init method */
 static real_t* direction;
 
 static void shift_s_and_y(void); /* internal function used to shift the s and y buffers */
@@ -39,9 +39,9 @@ static int lbfgs_reset_direction(void); /* internal function */
  * Initialize the lbfgs library
  * This function should allways be called before doing anything with the lbfgs algorithm.
  */
-int lbfgs_init(const size_t buffer_size_){
+int lbfgs_init(const unsigned int buffer_size_){
     buffer_size=buffer_size_;
-    iteration_index=0;
+    active_buffer_size=0;
 
     /* 
      * Allocate memory.
@@ -70,7 +70,7 @@ int lbfgs_init(const size_t buffer_size_){
     /*
      * if all the allocations took place, setup the 2D arrays
      */
-    size_t i;
+    unsigned int i;
     for (i = 0; i < buffer_size+1; i++)
     {
         s[i] = s_data + i*DIMENSION_PANOC;
@@ -111,11 +111,14 @@ int lbfgs_cleanup(void){
         free(alpha);
         free(rho);
         free(direction);
-        iteration_index=0;
+        active_buffer_size=0;
         return SUCCESS;
 }
+
+unsigned int lbfgs_get_active_buffer_size(void){return active_buffer_size;}
+
 int lbfgs_reset_iteration_counters(void){
-    iteration_index=0;
+    active_buffer_size=0;
     hessian_estimate=1;
     return SUCCESS;
 }
@@ -136,15 +139,15 @@ const real_t* lbfgs_get_direction(void){
     }
 
     /* is this the first time you call get_direction? */
-    if(iteration_index==0){
+    if(active_buffer_size==0){
         /* 
          * use gradient descent for first iteration 
          */
         vector_minus(direction_prox_gradient,direction,DIMENSION_PANOC); /* set the direction */
     }else{
         int buffer_limit; /* how much of the buffer should i use in this iteration? */
-        if(iteration_index<buffer_size){
-            buffer_limit=iteration_index;
+        if(active_buffer_size<buffer_size){
+            buffer_limit=active_buffer_size;
         }else{
             buffer_limit=buffer_size;
         }
@@ -205,7 +208,7 @@ int lbfgs_update_hessian(real_t tau, const real_t* current_location, const real_
         hessian_estimate=inner_product_sy/inner_product_yy;
 
         
-        iteration_index++;
+        active_buffer_size++;
 
         return SUCCESS;
     }else{
@@ -242,7 +245,7 @@ static int check_if_valid_update(const real_t* gradient_current_location){
 static void shift_s_and_y(void){
         real_t* buffer_s =s[buffer_size];
         real_t* buffer_y =y[buffer_size];
-        size_t i;
+        unsigned int i;
         for (i = buffer_size; i >0 ; i--)
         {
             s[i] = s[i-1];
@@ -253,7 +256,7 @@ static void shift_s_and_y(void){
 }
 
 static int lbfgs_reset_direction(void){
-    size_t i;
+    unsigned int i;
     for ( i = 0; i < DIMENSION_PANOC; i++)
     {
         direction[i]=0;

@@ -11,8 +11,15 @@ static real_t* current_df;
 static real_t new_location_f;
 static real_t* new_location_df;
 
+#ifdef SINGLE_COST_MODE
+static real_t pure_prox_location_f;
+static real_t* pure_prox_location_df;
+#endif
+
 static unsigned char precomputed_evaluations=FALSE;
 
+/* internal functions */
+static int set_precomputed_as_current(real_t f, real_t** df);
 
 int buffer_init(void){
     current_df=malloc(sizeof(real_t)*DIMENSION_PANOC);
@@ -20,9 +27,18 @@ int buffer_init(void){
 
     new_location_df=malloc(sizeof(real_t)*DIMENSION_PANOC);
     if(new_location_df==NULL) goto fail_2;
+
+    #ifdef SINGLE_COST_MODE
+    pure_prox_location_df=malloc(sizeof(real_t)*DIMENSION_PANOC);
+    if(pure_prox_location_df==NULL) goto fail_3;
+    #endif
     
     return SUCCESS;
 
+    #ifdef SINGLE_COST_MODE
+    fail_3:
+        free(new_location_df);
+    #endif
     fail_2:
         free(current_df);
     fail_1:
@@ -32,6 +48,9 @@ int buffer_cleanup(void){
     free(new_location_df);
     free(current_df);
     precomputed_evaluations=FALSE;
+    #ifdef SINGLE_COST_MODE
+    free(pure_prox_location_df);
+    #endif
     return SUCCESS;
 }
 int buffer_renew(const real_t* current_location_){
@@ -59,21 +78,42 @@ int buffer_evaluate_new_location(const real_t* lbfgs_new_location){
     return SUCCESS;
 }
 
-int buffer_set_new_location_as_current_location(void){
+static int set_precomputed_as_current(real_t f, real_t** df){
     /*
      * Use the precomputed function/gradient evaluations as next current function/gradient values
      */
-    current_f=new_location_f;
+    current_f=f;
 
     real_t* buffer_pointer = current_df;
-    current_df=new_location_df;
-    new_location_df=buffer_pointer;
+    current_df= (*df);
+    (*df)=buffer_pointer;
 
-    /* let buffer know it should renew in next iteration */
+    /* let buffer know it shouldn't renew in next iteration */
     precomputed_evaluations=TRUE; 
 
     return SUCCESS;
 }
+
+int buffer_set_new_location_as_current_location(void){
+    return set_precomputed_as_current(new_location_f, &new_location_df);
+}
+
+#ifdef SINGLE_COST_MODE
+int buffer_evaluate_pure_prox_location(const real_t* pure_prox_location){
+    pure_prox_location_f = casadi_interface_f_df(pure_prox_location,pure_prox_location_df);
+    return SUCCESS;
+}
+
+int buffer_set_pure_prox_location_as_current_location(void){
+    return set_precomputed_as_current(pure_prox_location_f, &pure_prox_location_df);
+}
+const real_t* buffer_get_pure_prox_df(void){
+    return pure_prox_location_df;
+}
+real_t buffer_get_pure_prox_f(void){
+    return pure_prox_location_f;
+}
+#endif
 
 /*
  * Bunch of getters on the static values, pointers are always return as pointer to const

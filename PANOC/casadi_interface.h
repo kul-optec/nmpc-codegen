@@ -28,7 +28,10 @@ real_t casadi_get_weight_obstacles(int index_obstacle);/* returns zero if index 
 int casadi_set_weight_obstacles(int index_obstacle,real_t weight);/* returns failure if the index is out of range */
 
 /* cost functions */
+#ifndef SINGLE_COST_MODE
 real_t casadi_interface_f(const real_t* input);
+#endif
+
 real_t casadi_interface_f_df(const real_t* input,real_t* output);
 real_t casadi_interface_g(const real_t* input);
 void casadi_interface_proxg(real_t* state);

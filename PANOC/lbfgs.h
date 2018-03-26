@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-int lbfgs_init(const size_t buffer_size_);
+int lbfgs_init(const unsigned int buffer_size_);
 int lbfgs_cleanup(void);
 int lbfgs_update_hessian(real_t tau, const real_t* current_location, const real_t* new_location);
 
@@ -14,5 +14,6 @@ int lbfgs_update_hessian(real_t tau, const real_t* current_location, const real_
  */ 
 const real_t* lbfgs_get_direction(void);
 int lbfgs_reset_iteration_counters(void);
+unsigned int lbfgs_get_active_buffer_size(void);
 
 #endif 

@@ -58,5 +58,10 @@ real_t simulation_evaluate_f_df(real_t* static_casadi_parameters,real_t* input, 
 }
 real_t simulation_evaluate_f(real_t* static_casadi_parameters,real_t* input){
     casadi_prepare_cost_function(static_casadi_parameters);
-    return casadi_interface_f(input);
+    #ifndef SINGLE_COST_MODE
+        return casadi_interface_f(input);
+    #else
+        return casadi_interface_f_df(input,NULL);
+    #endif
+    
 }

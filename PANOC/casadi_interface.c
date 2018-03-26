@@ -1,6 +1,5 @@
 #include "../globals/globals.h"
 
-#include "../casadi/cost_function.h"
 #include "../casadi/cost_function_derivative_combined.h"
 
 #include <stddef.h>
@@ -84,6 +83,8 @@ int casadi_prepare_cost_function(const real_t* _current_state){
 }
 
 /* cost functions */
+#ifndef SINGLE_COST_MODE
+#include "../casadi/cost_function.h"
 real_t casadi_interface_f(const real_t* input){
     real_t data_output;
     real_t* output[1] = {&data_output};
@@ -100,6 +101,7 @@ real_t casadi_interface_f(const real_t* input){
     */
     return *output[0];
 }
+#endif
 
 real_t casadi_interface_f_df(const real_t* input,real_t* data_output){
     real_t f_value;

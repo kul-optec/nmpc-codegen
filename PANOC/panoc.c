@@ -88,17 +88,30 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
     FBE_current_location = proximal_gradient_descent_get_current_forward_backward_envelop();
     direction_norm=sq(vector_norm2(forward_backward_step,DIMENSION_PANOC));
 
-    panoc_linesearch(forward_backward_step,direction_residue,linesearch_gamma,new_location);
+    if(lbfgs_get_active_buffer_size()>0)
+        panoc_linesearch(forward_backward_step,direction_residue,linesearch_gamma,new_location);
+    else{
+        tau=0;/* no linesearch needed, as the lbfgs buffer is empty */
+        panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
+    }
 
-    lbfgs_update_hessian(tau,current_location,new_location);
-    buffer_set_new_location_as_current_location();
+    #ifndef PURE_PROX_GRADIENT /* if PURE_PROX_GRADIENT is defined, we wont use lbgfs step */
+        lbfgs_update_hessian(tau,current_location,new_location);
+    #endif
 
+        
+    #ifdef SINGLE_COST_MODE
+    if(tau==0)
+        buffer_set_pure_prox_location_as_current_location();
+    else
+    #endif
+        buffer_set_new_location_as_current_location();
+    
     const real_t residual_inf_norm=proximal_gradient_descent_get_current_residual_inf_norm();
     return residual_inf_norm;
 }
 static int panoc_linesearch(const real_t* forward_backward_step,const real_t* direction_residue,\
                         real_t linesearch_gamma, real_t* new_location){
-    #ifndef PURE_PROX_GRADIENT /* if PURE_PROX_GRADIENT is defined, we wont use lbgfs step */
     tau=1;
     panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
     int i=0;
@@ -108,12 +121,9 @@ static int panoc_linesearch(const real_t* forward_backward_step,const real_t* di
     }
 
     if(i==FBE_LINESEARCH_MAX_ITERATIONS){
-    #endif
         tau=0;
         panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
-    #ifndef PURE_PROX_GRADIENT /* if PURE_PROX_GRADIENT is defined, we wont use lbgfs step */
     }
-    #endif
 
     return SUCCESS;
 }
