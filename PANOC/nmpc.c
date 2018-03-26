@@ -223,15 +223,15 @@ static int nmpc_solve_with_lagrangian(real_t* static_casadi_parameters){
          */
         int j;
         for (j=0;j<NUMBER_OF_GENERAL_CONSTRAINTS;j++){
+            int start_index_lambdas = DIMENSION_STATE*2 + DIMENSION_INPUT;
+            static_casadi_parameters[start_index_lambdas+j]=lambdas[j] - 2*weights_constraints[j]*constraint_values[j];
+
             /*
              * calibrate the constraint weights
              */
             if(constraint_values[j]!=0 && constraint_values[j]<CONSTRAINT_OPTIMAL_VALUE && weights_constraints[j]<CONSTRAINT_MAX_WEIGHT){
                 weights_constraints[j] = weights_constraints[j]*10;
             }
-
-            int start_index_lambdas = DIMENSION_STATE*2 + DIMENSION_INPUT;
-            static_casadi_parameters[start_index_lambdas+j]=lambdas[j] - 2*weights_constraints[j]*constraint_values[j];
         }
 
         /*
