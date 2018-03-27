@@ -138,9 +138,9 @@ real_t inner_product(const real_t* vector1,const real_t* vector2,const int size_
 }
 
 /* add vector2 n times to vector1 */
-void vector_add_ntimes(const real_t* vector1,const real_t* vector2,const int size_vector,const real_t n,real_t* result){
+void vector_add_ntimes(real_t* vector1,const real_t* vector2,const int size_vector,const real_t n){
     int i;
-    for(i = 0; i < size_vector; i++)result[i]=vector1[i]+n*vector2[i];
+    for(i = 0; i < size_vector; i++)vector1[i]=vector1[i]+n*vector2[i];
 }
 
 /* add vector2 a_vector2 times to vector1 and add vector3 a_vector3 times to vector1*/

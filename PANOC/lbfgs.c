@@ -162,7 +162,7 @@ const real_t* lbfgs_get_direction(void){
         {
             rho[i] = 1/inner_product(y[i],s[i],DIMENSION_PANOC);
             alpha[i]= rho[i]*inner_product(s[i],q,DIMENSION_PANOC);
-            vector_add_ntimes(q,y[i],DIMENSION_PANOC,-alpha[i],q);
+            vector_add_ntimes(q,y[i],DIMENSION_PANOC,-alpha[i]);
         }
         real_t z[DIMENSION_PANOC];
         vector_real_mul(q,DIMENSION_PANOC,hessian_estimate,z);
@@ -173,7 +173,7 @@ const real_t* lbfgs_get_direction(void){
         for (i = buffer_limit - 1; i >= 0; i--)
         {
             beta=rho[i]*inner_product(y[i],z,DIMENSION_PANOC);
-            vector_add_ntimes(z,s[i],DIMENSION_PANOC,(alpha[i]-beta),z); 
+            vector_add_ntimes(z,s[i],DIMENSION_PANOC,(alpha[i]-beta)); 
         }
         vector_minus(z,direction,DIMENSION_PANOC); /* z contains upward direction, multiply with -1 to get downward direction */
     }
