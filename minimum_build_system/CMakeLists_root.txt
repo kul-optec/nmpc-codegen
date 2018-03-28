@@ -22,6 +22,8 @@ add_subdirectory (casadi)
 
 if(WIN32)
     SET(TIMER_LIB "${PROJECT_SOURCE_DIR}/python_interface/timer_windows.c")
+elseif(APPLE)
+    SET(TIMER_LIB "${PROJECT_SOURCE_DIR}/python_interface/timer_mac.c" )
 elseif(UNIX)
     SET(TIMER_LIB "${PROJECT_SOURCE_DIR}/python_interface/timer_linux.c")
 endif()
