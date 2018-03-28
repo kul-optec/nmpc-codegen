@@ -10,7 +10,7 @@
  * compile windows MINGW: gcc -std=c89 .\python_interface\timer_windows.c python_interface/test_timer.c  -lm  -g
  */
 static void print_time(const struct Panoc_time* time_difference);
-int main(char** args,int argc){
+int main(void){
     printf("START TESTING TIMER \n");
     panoc_timer_start();
     size_t i;
