@@ -56,7 +56,7 @@ classdef Simulator
         function obj = load_library(obj)
             extension='dll';
             if ismac
-                extension= '.dylib'; % .dylib is dynamic one
+                extension= 'dylib'; % .dylib is dynamic one
             elseif isunix
                 extension='so';
             end
