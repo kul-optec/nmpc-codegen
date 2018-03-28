@@ -66,7 +66,7 @@ class Bootstrapper:
 
     @staticmethod
     def _generate_python_interface(location, location_nmpc_repo, overwrite):
-        src_files = ["nmpc_python.c","timer.h","timer_linux.c","timer_windows.c"]
+        src_files = ["nmpc_python.c","timer.h","timer_linux.c","timer_windows.c","timer_mac.c"]
 
         for i in range(0, len(src_files)):
             src_location = location_nmpc_repo + "/python_interface/" + src_files[i]
