@@ -27,8 +27,11 @@ classdef Casadi_code_generator
                  disp('Buffer file present removing it !');
                  delete (['./' buffer_file_name]);
             end
-            
-            version_casadi = casadi.CasadiMeta.version();
+            try
+                version_casadi = casadi.CasadiMeta.version();
+            catch
+                error('unsupported casadi version');
+            end
             version_split = strsplit(version_casadi,'.');
             
             major_version = cell2mat(version_split(1));
