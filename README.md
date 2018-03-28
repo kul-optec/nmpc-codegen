@@ -8,7 +8,7 @@ Below you can find a comparison between the Matlab implementation (ForBes zerofp
 
 The first version of Python is ready to be used, a Matlab version is on its way, right now its experimental.(run ./demos/thesis/TwoCircTrailer.py to get an idea what this is about)
 
-More information in the  [user manual](toturial.pdf) and the used [example script](toturial_nmpc_codegen.py). A short introduction to the underlying algorithm can be found [here](PANOC.pdf)
+More information in the  [user manual](tutorial.pdf) and the used [example script](tutorial_nmpc_codegen.py). A short introduction to the underlying algorithm can be found [here](PANOC.pdf)
 
 ## What do I need?
 - GNU toolchain with gcc
