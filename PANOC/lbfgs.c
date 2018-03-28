@@ -232,7 +232,7 @@ static int check_if_valid_update(const real_t* gradient_current_location){
     const real_t* possible_y = y[buffer_size];
 
     const real_t inner_product_ys = inner_product(possible_y,possible_s,DIMENSION_PANOC);
-    const real_t norm_s = sq(vector_norm2(possible_s,DIMENSION_PANOC));
+    const real_t norm_s = inner_product(possible_s,possible_s,DIMENSION_PANOC);
     const real_t norm_gradient_current_location = vector_norm2(gradient_current_location,DIMENSION_PANOC);
 
     if(inner_product_ys/norm_s < (1e-12)*norm_gradient_current_location)

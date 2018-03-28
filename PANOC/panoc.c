@@ -86,7 +86,7 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
     
     /* precompute FBE used in linesearch check, static fields ! */
     FBE_current_location = proximal_gradient_descent_get_current_forward_backward_envelop();
-    direction_norm=sq(vector_norm2(forward_backward_step,DIMENSION_PANOC));
+    direction_norm=inner_product(forward_backward_step,forward_backward_step,DIMENSION_PANOC);
 
     if(lbfgs_get_active_buffer_size()>0)
         panoc_linesearch(forward_backward_step,direction_residue,linesearch_gamma,new_location);
