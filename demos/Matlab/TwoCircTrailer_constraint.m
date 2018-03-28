@@ -13,7 +13,7 @@ R_terminal = diag([1. 1.]) * 0.01;
 
 trailer_controller = prepare_demo_trailer(step_size,Q,R,Q_terminal,R_terminal);
 
-trailer_controller.horizon = 20; % NMPC parameter
+trailer_controller.horizon = 30; % NMPC parameter
 trailer_controller.integrator_casadi = true; % optional  feature that can generate the integrating used  in the cost function
 trailer_controller.panoc_max_steps = 500; % the maximum amount of iterations the PANOC algorithm is allowed to do.
 trailer_controller.min_residual=-3;
