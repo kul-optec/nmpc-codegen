@@ -24,18 +24,37 @@ class Casadi_code_generator:
         if (file.exists()):
             os.remove(buffer_file_name)
 
+        version_casadi = cd.CasadiMeta.version();
+        version_split=version_casadi.split(".")
+
+        major_version = version_split[0]
+        minor_version = version_split[1]
+
         # generate the casadi function in C to a buffer file
-        opts = dict(verbose=False,
-                    mex=False,
-                    cpp=False,
-                    main=False, 
-                    # casadi_real="double",
-                    codegen_scalars=False, 
-                    with_header=True,                
-                    with_mem=False,
-                    # with_export=False
-                    )
-                    
+        if(major_version=="3" and minor_version=="4"):
+            opts = dict(verbose=False,
+                        mex=False,
+                        cpp=False,
+                        main=False, 
+                        # casadi_real="double",
+                        codegen_scalars=False, 
+                        with_header=True,                
+                        with_mem=False,
+                        with_export=False,
+                        casadi_int="long int",
+                        )
+        else:            
+            opts = dict(verbose=False,
+                        mex=False,
+                        cpp=False,
+                        main=False, 
+                        # casadi_real="double",
+                        codegen_scalars=False, 
+                        with_header=True,                
+                        with_mem=False,
+                        # with_export=False
+                        )
+
         casadi_function.generate(filename,opts)
         file_name_costfunction = location_lib + "/casadi/"+filename
 

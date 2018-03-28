@@ -141,6 +141,9 @@ class Simulator:
                 os.system(" cmake -H. -Bbuild")
             elif (platform.system() == 'Windows'):
                 os.system(" cmake -H. -Bbuild -G \"MinGW Makefiles\"")
+            elif (platform.system() == 'Darwin'):
+                os.system(" cmake -H. -Bbuild ")
+                print("warning using mac only partial support")
             else:
                 print("ERROR Platform not supported use either Linux or Windows")
         finally:
@@ -166,6 +169,11 @@ class Simulator:
                 lib_location = self._nmpc_controller_location + "/build/libpython_interface" + extension_lib
                 print("Compiling python interface for Windows: " + lib_location)
                 self.nmpc_python_interface = ctypes.windll.LoadLibrary(lib_location)
+            elif(platform.system() == 'Darwin'):
+                print("Compiling python interface for Windows")
+                extension_lib = '.dylib'
+                lib_location = self._nmpc_controller_location + "/build/libpython_interface" + extension_lib
+                self.nmpc_python_interface = ctypes.CDLL(lib_location)
             else:
                 print("ERROR platform can't be detected, using Linux")
                 extension_lib = '.so'
