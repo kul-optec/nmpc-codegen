@@ -12,8 +12,14 @@ More information in the  [user manual](toturial.pdf) and the used [example scrip
 
 ## What do I need?
 - GNU toolchain with gcc
-- python 3 with casadi and numpy installed on it
+- python 3 with casadi 3.4.x and numpy installed on it
 - Cmake
+
+## How to install
+- git clone the repo 
+- add src_matlab or src_python to you python/matlab path
+- !! no compilation is required when installing , Python/Matlab takes care of any compilation !!
+- check out demos/Matlab or demos/Python
 
 ## How to compile and test me?
 This is only for those who want to check if the library works on there device. 
@@ -31,7 +37,7 @@ This is only for those who want to check if the library works on there device.
 
 ### Notes
 - The library is tested with casadi version 3.2, using other versions will lead to problems
-- The tested compilers are gcc GNU compiler, Clang LLVM compiler and the Microsoft C Compiler.
+- The tested compilers are gcc GNU compiler, Clang LLVM compiler, Intel C compiler and the Microsoft C Compiler.
 - cmake -H. -Bbuild -DCMAKE_C_COMPILER=clang creates a build system with clang compiler
 
 ## common problems
