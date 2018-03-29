@@ -31,7 +31,7 @@ else
     disp('Error the make is not available [NOT OK]');
 end
 
-command='cmake';
+command='cmake --help';
 pattern='Specify a source directory';
 if(test_if_command_available(command,pattern))
     disp('cmake [OK]');
