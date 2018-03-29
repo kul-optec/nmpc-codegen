@@ -1,16 +1,22 @@
 classdef Globals_generator
-    %GLOBALS_GENERATOR Summary of this class goes here
-    %   Detailed explanation goes here
+    %GLOBALS_GENERATOR Generates the globals/globals_dyn.h  header file
+    %   This class is used internally by the Nmpc_panoc class.
     
     properties
-        location_globals
+        location_globals % Where to generate the header file.
     end
     
-    methods
+    methods(Access = public)
         function obj = Globals_generator( location_globals)
+            % Constructor of the Globals_generator class
+            %   location_globals=location of the header file
             obj.location_globals=location_globals;
         end
         function generate_globals(obj,nmpc_controller)
+            % Generated the header file at the location specified by the
+            % construct.
+            %   nmpc_controller=Controller object that contains the attributes
+            %   used in generating the header file.
             disp(['Generating globals file at: ' obj.location_globals]);
             obj.init_globals_file();
             
@@ -54,7 +60,10 @@ classdef Globals_generator
             end
             
         end
+    end
+    methods(Access = private)
         function init_globals_file(obj)
+            % Open the file stream to a new header file.
             fid = fopen(obj.location_globals,'w');
 
             date_string = ['/* file generated on ' datestr(datetime('now')) ' in Matlab */ \n'];
@@ -63,6 +72,7 @@ classdef Globals_generator
             fclose(fid);
         end
         function define_variable(obj,variable_name,variable_value)
+            % Add a preprocessor defined to the header file.
             fid = fopen(obj.location_globals,'a');
 
             lines = ['#define ' variable_name ' ' variable_value '\n'];
@@ -71,6 +81,7 @@ classdef Globals_generator
             fclose(fid);
         end
         function generate_comment(obj,comment)
+            % Generate a one line comment.
             fid = fopen(obj.location_globals,'a');
 
             fprintf(fid,['/* ' comment ' */ \n']);
@@ -78,6 +89,8 @@ classdef Globals_generator
             fclose(fid);
         end
         function generate_title(obj,title)
+            % Generate a title in comment existing out of a line then on the
+            % net line the title followed by another line.
             fid = fopen(obj.location_globals,'a');
 
             fprintf(fid,['/*' '\n' '* ---------------------------------' '\n']);
@@ -87,6 +100,7 @@ classdef Globals_generator
             fclose(fid);
         end
         function set_data_type(obj,data_type)
+            % Set the datatype to either double or single precision.
             if(strcmp(data_type,'single precision'))
                 obj.generate_title('constants used with float data type');
                 obj.define_variable('real_t','float');

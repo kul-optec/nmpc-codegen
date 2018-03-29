@@ -1,23 +1,24 @@
 classdef Single_shot_LA_definition
     %SINGLE_SHOT_LA_DEFINITION Definition of single shot MPC problem with
     %Lagrangian
-    %   This class is used by Nmpc_panoc to generate the cost function
-    %   using casadi. The Lagrangian is used when there are general
-    %   constraints.
+    %   This internal class is used by nmpc_controller to generate the 
+    %   casadi cost function of the single shot definition with Lagrangian. 
+    %   And calls the Globals_generator class to generate the c-file.
+    %   The Lagrangian is used when there are general constraints.
     
     properties
         controller
         dimension
     end
     methods(Access =  private)
-        % Evaluate function cost of all general constraints for 1 step in the horizon
-        %   L = lambda ci(x) + mu ci(x)^2
-        %       current_state: state of this step in the horizon
-        %       input: current inpu applied to the systen
-        %       lambdas: lambda's for this step of the horizon
-        %       general_constraint_weights: mu's for this step of the horizon
-        %       step_horizon: the index of the step in the horizon (the first step is index 1)
         function cost = generate_cost_general_constraints(obj,current_state,input,lambdas,general_constraint_weights,step_horizon)
+            % Evaluate function cost of all general constraints for 1 step in the horizon
+            %   L = lambda ci(x) + mu ci(x)^2
+            %       current_state: state of this step in the horizon
+            %       input: current inpu applied to the systen
+            %       lambdas: lambda's for this step of the horizon
+            %       general_constraint_weights: mu's for this step of the horizon
+            %       step_horizon: the index of the step in the horizon (the first step is index 1)
             number_of_general_constraints = length(obj.controller.general_constraints);
             offset_constraints = (step_horizon-1)*number_of_general_constraints;
             cost=casadi.SX(1,1);
@@ -27,12 +28,12 @@ classdef Single_shot_LA_definition
                 cost = cost + (constraint_cost^2)*general_constraint_weights(offset_constraints+i);
             end
         end
-        % Evaluate cost of general constraints for 1 step in the horizon
-        %       state: state of this step in the horizon
-        %       input: current inpu applied to the systen
-        %       constraint_values: contains the costs of the constraints
-        %       step_horizon: the index of the step in the horizon (the first step is index 1)
         function constraint_values = evaluate_constraints(obj,state,input,constraint_values,step_horizon)
+            % Evaluate cost of general constraints for 1 step in the horizon
+            %       state: state of this step in the horizon
+            %       input: current inpu applied to the systen
+            %       constraint_values: contains the costs of the constraints
+            %       step_horizon: the index of the step in the horizon (the first step is index 1)
             number_of_general_constraints = length(obj.controller.general_constraints);
             offset_constraint_values = (step_horizon-1)*number_of_general_constraints;
             for i=1:number_of_general_constraints
@@ -41,13 +42,17 @@ classdef Single_shot_LA_definition
             end
         end
     end
-    methods
+    methods(Access =  public)
         function obj = Single_shot_LA_definition(controller)
+            % Saves the controller and calculates the dimension of the
+            % optimization problem.
+            %   controller = nmpc_controller object
             obj.controller = controller;
             obj.dimension = controller.model.number_of_inputs*controller.horizon;
         end
-        % generate the cost function and general constraints function using casadi
+        
         function [cost_function,cost_function_derivative_combined] = generate_cost_function(obj)
+            % generate the cost function and general constraints function using casadi
             initial_state = casadi.SX.sym('initial_state', obj.controller.model.number_of_states, 1);
             state_reference = casadi.SX.sym('state_reference', obj.controller.model.number_of_states, 1);
             input_reference = casadi.SX.sym('input_reference', obj.controller.model.number_of_inputs, 1);

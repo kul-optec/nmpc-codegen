@@ -1,18 +1,24 @@
 classdef Single_shot_definition
-    %SINGLE_SHOT_DEFINITION Summary of this class goes here
-    %   Detailed explanation goes here
+    %SINGLE_SHOT_DEFINITION The single shot cost function used by
+    %nmpc_controller
+    %   This internal class is used by nmpc_controller to generate the 
+    %   casadi cost function of the single shot definition. And calls the
+    %   Globals_generator class to generate the c-file.
     
     properties
-        controller
-        dimension
+        controller % nmpc_controller object provided by the construct.
+        dimension % Dimension of the optimization problem, calculated by the constructor.
     end
     
     methods
         function obj = Single_shot_definition(controller)
+            % controller = nmpc_controller object
             obj.controller = controller;
             obj.dimension = controller.model.number_of_inputs*controller.horizon;
         end
         function [cost_function,cost_function_derivative_combined] = generate_cost_function(obj)
+            % Generate the casdi cost function and calls the 
+            % Globals_generator class to generate the c-file.
             initial_state = casadi.SX.sym('initial_state', obj.controller.model.number_of_states, 1);
             state_reference = casadi.SX.sym('state_reference', obj.controller.model.number_of_states, 1);
             input_reference = casadi.SX.sym('input_reference', obj.controller.model.number_of_inputs, 1);
@@ -20,8 +26,7 @@ classdef Single_shot_definition
 
             obstacle_weights = casadi.SX.sym('obstacle_weights', obj.controller.number_of_obstacles, 1);
         
-            input_all_steps = casadi.SX.sym('input_all_steps', obj.controller.model.number_of_inputs*obj.controller.horizon, 1);
-%             cost=casadi.SX.sym('cost',1,1);% TODO, check if this is really needed.       
+            input_all_steps = casadi.SX.sym('input_all_steps', obj.controller.model.number_of_inputs*obj.controller.horizon, 1);     
 
             cost=0;
             current_state=initial_state;

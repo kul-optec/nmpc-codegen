@@ -12,6 +12,8 @@ classdef Obstacle < matlab.mixin.Heterogeneous
     end
     methods(Static)
         function tqs_x = trim(x)
+            % Used internally by all the obstacles to trim the cost,  as in
+            % make the cost only positive.
             tqs_x = max(x,0);
         end
     end
