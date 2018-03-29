@@ -16,6 +16,7 @@ More information in the  [user manual](tutorial.pdf) and the used [example scrip
 - Cmake
 
 ## How to install
+- make sure Cmake,make and gcc are installed
 - git clone the repo 
 - add src_matlab or src_python to you python/matlab path
 - !! no compilation is required when installing , Python/Matlab takes care of any compilation !!
