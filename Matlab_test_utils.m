@@ -45,5 +45,5 @@ end
 % -
 function [available] = test_if_command_available(command,pattern)
     [~,cmdout] = system(command);
-    available = contains(cmdout,pattern);
+    available = ~isempty(strfind(cmdout,pattern));
 end
