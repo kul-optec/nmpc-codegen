@@ -11,30 +11,18 @@ The first version of Python is ready to be used, a Matlab version is on its way,
 More information in the  [user manual](tutorial.pdf) and the used [example script](tutorial_nmpc_codegen.py). A short introduction to the underlying algorithm can be found [here](PANOC.pdf)
 
 ## What do I need?
-- GNU toolchain with gcc
-- python 3 with casadi 3.4.x and numpy installed on it
+- GNU toolchain with make
+- python 3 with casadi 3.2.x or higher and numpy/matplotlib installed on it
 - Cmake
 
 ## How to install
-- make sure Cmake,make and gcc are installed
+- make sure Cmake,make and gcc are installed (run Matlab_test_utils.m to test if they are available)
 - git clone the repo 
 - add src_matlab or src_python to you python/matlab path
 - !! no compilation is required when installing , Python/Matlab takes care of any compilation !!
-- check out demos/Matlab or demos/Python
-
-## How to compile and test me?
-This is only for those who want to check if the library works on there device. 
-### Windows with Mingw/Mingw-W64 (!!! make sure python and the toolchain are either BOTH 32 or BOTH 64 bit)
-- Generate the test functions by running the generate_test_files.py script with python3
-- Run Cmake to generate the make files: cmake -H. -Bbuild -G "MinGW Makefiles"
-- Run Make to compile everything: make
-- Run make test to test everything: make test
-
-### Unix-like operating systems
-- Generate the test functions by running the generate_test_files.py script with python3
-- Run Cmake to generate the make files: cmake -H. -Bbuild
-- Run Make inside the ./build folder to compile everything: make
-- Run make test to test everything: make test
+- Python: install the following library's numpy,casadi,matplotlib
+- Matlab: install the following library's [casadi](http://casadi.org), No toolboxes are required 
+- Check out demos/Matlab or demos/Python
 
 ### Notes
 - The library is tested with casadi version 3.2, using other versions will lead to problems
@@ -54,3 +42,17 @@ cmake: /usr/local/MATLAB/R2016a/sys/os/glnxa64/libstdc++.so.6: version `CXXABI_1
 This is due to Matlab using some old version from gcc. 
 
 solution: start matlab as following: "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6 matlab" 
+
+## How to compile and test me? (only for internal developers !)
+This is only for those who want to check if the library works on there device. 
+### Windows with Mingw/Mingw-W64 (!!! make sure python and the toolchain are either BOTH 32 or BOTH 64 bit)
+- Generate the test functions by running the generate_test_files.py script with python3
+- Run Cmake to generate the make files: cmake -H. -Bbuild -G "MinGW Makefiles"
+- Run Make to compile everything: make
+- Run make test to test everything: make test
+
+### Unix-like operating systems
+- Generate the test functions by running the generate_test_files.py script with python3
+- Run Cmake to generate the make files: cmake -H. -Bbuild
+- Run Make inside the ./build folder to compile everything: make
+- Run make test to test everything: make test
