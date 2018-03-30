@@ -2,6 +2,11 @@
 
 New: check out our [new site](https://kul-forbes.github.io/nmpc-codegen/) for more information(still under construction)
 
+## Install instructions
+[Install with Python3](https://kul-forbes.github.io/nmpc-codegen/install/Python_install.html)
+
+[Install with Matlab](https://kul-forbes.github.io/nmpc-codegen/install/Matlab_install.html)
+
 ## What is this?
 This project is still under construction but the goal is to generate an MPC controller. The user will provide the dynamics of the system, a number of conditions and some MPC parameters in python. The program will then generate an NMPC controller in c89 code that can be used on embedded devices.
 
