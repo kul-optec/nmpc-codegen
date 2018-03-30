@@ -28,13 +28,14 @@ classdef Nmpc_panoc
     
     methods(Access =  public)
         function obj = Nmpc_panoc( location_lib,model,stage_cost,terminal_cost)
-            % location_lib = Location of the folder in which the control
-            % should be generated.
-            % model = The discrete or continues model.
-            % stage_cost = The stage cost object
-            % terminal_cost = The optional terminal cost of object, if no
-            % terminal costs is provided than the stage cost will be used as
-            % terminal cost.
+            % Constructor of controller
+            %   -location_lib : Location of the folder in which the control
+            %   should be generated.
+            %   -model : The discrete or continues model.
+            %   -stage_cost : The stage cost object
+            %   -terminal_cost : The optional terminal cost of object, if no
+            %   -terminal costs is provided than the stage cost will be used as
+            %   terminal cost.
             obj.location=location_lib;
             obj.model=model;
             obj.stage_cost=stage_cost;

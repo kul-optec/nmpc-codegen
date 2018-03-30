@@ -15,7 +15,7 @@ classdef Globals_generator
         function generate_globals(obj,nmpc_controller)
             % Generated the header file at the location specified by the
             % construct.
-            %   nmpc_controller=Controller object that contains the attributes
+            %   nmpc_controller : Controller object that contains the attributes
             %   used in generating the header file.
             disp(['Generating globals file at: ' obj.location_globals]);
             obj.init_globals_file();

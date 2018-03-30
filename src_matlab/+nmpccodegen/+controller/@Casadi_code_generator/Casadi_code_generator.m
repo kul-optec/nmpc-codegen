@@ -1,6 +1,6 @@
 classdef Casadi_code_generator
     %CASADI_CODE_GENERATOR Generates the casadi c code
-    %   Detailed explanation goes here
+    %   This is class is used internally by Nmpc_panoc
 
     methods(Static)
         function [cost_function,cost_function_derivative_combined] = ...

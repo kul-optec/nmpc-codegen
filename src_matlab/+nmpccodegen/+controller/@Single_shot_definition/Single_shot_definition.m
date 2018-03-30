@@ -12,7 +12,8 @@ classdef Single_shot_definition
     
     methods
         function obj = Single_shot_definition(controller)
-            % controller = nmpc_controller object
+            % Constructor single shot definition
+            %   -controller : nmpc_controller object
             obj.controller = controller;
             obj.dimension = controller.model.number_of_inputs*controller.horizon;
         end

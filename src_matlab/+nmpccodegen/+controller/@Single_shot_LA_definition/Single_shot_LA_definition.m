@@ -44,9 +44,10 @@ classdef Single_shot_LA_definition
     end
     methods(Access =  public)
         function obj = Single_shot_LA_definition(controller)
-            % Saves the controller and calculates the dimension of the
-            % optimization problem.
-            %   controller = nmpc_controller object
+            % Constructor single shot definition
+            %   Saves the controller and calculates the dimension of the
+            %   optimization problem.
+            %       controller = nmpc_controller object
             obj.controller = controller;
             obj.dimension = controller.model.number_of_inputs*controller.horizon;
         end
