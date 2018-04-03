@@ -10,7 +10,8 @@ R = diag([1. 1.]) * 0.01;
 Q_terminal = Q;
 R_terminal = R;
 
-trailer_controller = prepare_demo_trailer(step_size,Q,R,Q_terminal,R_terminal);
+controller_folder_name = 'demo_controller_matlab';
+trailer_controller = prepare_demo_trailer(controller_folder_name,step_size,Q,R,Q_terminal,R_terminal);
 %%
 trailer_controller.horizon = 50; % NMPC parameter
 trailer_controller.integrator_casadi = true; % optional  feature that can generate the integrating used  in the cost function

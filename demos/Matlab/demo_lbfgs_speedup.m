@@ -15,7 +15,7 @@ trailer_controller = prepare_demo_trailer(controller_folder_name,step_size,Q,R,Q
 
 trailer_controller.horizon = 40; % NMPC parameter
 trailer_controller.integrator_casadi = true; % optional  feature that can generate the integrating used  in the cost function
-trailer_controller.panoc_max_steps = 2000; % the maximum amount of iterations the PANOC algorithm is allowed to do.
+trailer_controller.panoc_max_steps = 1000000; % the maximum amount of iterations the PANOC algorithm is allowed to do.
 trailer_controller.min_residual=-3;
 trailer_controller.lbgfs_buffer_size=50;
 % trailer_controller.pure_prox_gradient=true;
@@ -43,46 +43,51 @@ reference_input = [0; 0];
 obstacle_weights = [700.;700.;700.;700.];
 %%
 [state_history,time_history,iteration_history,simulator] = simulate_demo_trailer(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights);
+simulator.force_unload();
+clear simulator;
 %%
-[state_history_forbes,time_history_forbes,iteration_history_forbes] = simulate_demo_trailer_panoc_matlab(trailer_controller,simulator,initial_state,reference_state,reference_input);
+trailer_controller.lbgfs_buffer_size=20;
+trailer_controller.generate_code();
+[state_history_small_buffer,time_history_small_buffer,iteration_history_small_buffer,~] = simulate_demo_trailer(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights);
+%% 
+trailer_controller.lbgfs_buffer_size=200;
+trailer_controller.generate_code();
+[state_history_big_buffer,time_history_big_buffer,iteration_history_big_buffer,~] = simulate_demo_trailer(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights);
 %%
-% [state_history_fmincon,time_history_fmincon,iteration_history_fmincon] = simulate_demo_trailer_interior_point_matlab(trailer_controller,simulator,initial_state,reference_state,reference_input);
-%%
-[state_history_fmincon,time_history_fmincon_interior_point] = simulate_demo_trailer_fmincon('interior-point',trailer_controller,simulator,initial_state,reference_state,reference_input);
-%%
-[~,time_history_fmincon_sqp] = simulate_demo_trailer_fmincon('sqp',trailer_controller,simulator,initial_state,reference_state,reference_input);
-%%
-[~,time_history_fmincon_active_set] = simulate_demo_trailer_fmincon('active-set',trailer_controller,simulator,initial_state,reference_state,reference_input);
+trailer_controller.pure_prox_gradient = true;
+trailer_controller.generate_code();
+[state_history_pure_prox,time_history_pure_prox,iteration_history_pure_prox,~] = simulate_demo_trailer(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights);
 %%
 figure;
 hold on;
 nmpccodegen.example_models.trailer_printer(state_history,0.03,'red');
-nmpccodegen.example_models.trailer_printer(state_history_forbes,0.03,'black');
-nmpccodegen.example_models.trailer_printer(state_history_fmincon,0.03,'blue');
+nmpccodegen.example_models.trailer_printer(state_history_pure_prox,0.03,'black');
 circle1.plot();
 circle2.plot();
 circle3.plot();
 circle4.plot();
 ylabel('y coordinate');
 xlabel('x coordinate');
-title('black = Forbes red=nmpc-codegen blue=fmincon interior point');
+title('black =no lbfgs red=with bfgs');
 %%
 figure;
 set(gca, 'YScale', 'log')
 hold on;
 semilogy(time_history);
-semilogy(time_history_forbes);
-semilogy(time_history_fmincon_interior_point);
-semilogy(time_history_fmincon_sqp);
-semilogy(time_history_fmincon_active_set);
+semilogy(iteration_history_small_buffer);
+semilogy(iteration_history_big_buffer);
+semilogy(time_history_pure_prox);
 ylabel('time till convergence (ms)');
 xlabel('step');
-legend('nmpc-codegen','ForBEs: zeropfr2','fmincon: interior-point','fmincon: sqp','fmincon: active-set');
+legend('with lbfgs buffersize=50','with lbfgs buffersize=20','with lbfgs buffersize=200','no bfgs');
 %%
 figure;
+set(gca, 'YScale', 'log')
 hold on;
-plot(iteration_history);
-plot(iteration_history_forbes);
-ylabel('number of iterations till convergence ');
+semilogy(iteration_history);
+semilogy(iteration_history_small_buffer);
+semilogy(iteration_history_big_buffer);
+semilogy(iteration_history_pure_prox);
+ylabel('number of iterations till convergence');
 xlabel('step');
-legend('nmpc-codegen','ForBEs');
+legend('with lbfgs buffersize=50','with lbfgs buffersize=20','with lbfgs buffersize=200','no bfgs');
