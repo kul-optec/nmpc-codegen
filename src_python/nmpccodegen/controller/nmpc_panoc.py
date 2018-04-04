@@ -6,6 +6,7 @@ from pathlib import Path
 from .globals_generator import Globals_generator
 from .casadi_code_generator import Casadi_code_generator as ccg
 from .nmpc_problem_single_shot import Single_shot_definition
+from .nmpc_problem_single_shot_LA import Single_shot_LA_definition
 from .nmpc_problem_multiple_shot import Multiple_shot_definition
 
 class Nmpc_panoc:
@@ -34,6 +35,13 @@ class Nmpc_panoc:
         self._integrator_casadi=False
         self._pure_prox_gradient=False
 
+        # Accelerated Lagrangian related properties
+        self._general_constraints=[]
+        self._constraint_optimal_value=1e3
+        self._constraint_max_weight=1e5
+        self._start_residual=1
+        self._max_steps_LA=4
+
         # generate the dynamic_globals file
         self._globals_generator = Globals_generator(self._location_lib + "/globals/globals_dyn.h")
 
@@ -44,7 +52,10 @@ class Nmpc_panoc:
         """ Generate code controller """
         # start with generating the cost function
         if(self._shooting_mode=='single shot'):
-            self.__generate_cost_function_singleshot()
+            if(self.number_of_general_constraints==0):
+                self.__generate_cost_function_singleshot()
+            else:
+                self.__generate_cost_function_singleshot()
         elif(self._shooting_mode=='multiple shot'):
             self.__generate_cost_function_multipleshot()
         else:
@@ -71,6 +82,11 @@ class Nmpc_panoc:
         ssd = Single_shot_definition(self)
         (self._cost_function, self._cost_function_derivative_combined) = ssd.generate_cost_function()
         self._dimension_panoc=ssd.dimension
+    def __generate_cost_function_singleshot_LA(self):
+        """ private function, generates part of the casadi cost function with single shot, using the accelerated Lagrangian """
+        ssd = Single_shot_LA_definition(self)
+        (self._cost_function, self._cost_function_derivative_combined) = ssd.generate_cost_function()
+        self._dimension_panoc=ssd.dimension
 
     def __generate_cost_function_multipleshot(self):
         """ private function, generates part of the casadi cost function with multiple shot """
@@ -92,11 +108,19 @@ class Nmpc_panoc:
                 cost += obstacle_weights[i]*self._obstacle[i].evaluate_cost(state[self._model.indices_coordinates])
 
             return cost
+
     def add_obstacle(self,obstacle):
         self._obstacle.append(obstacle)
     @property
     def number_of_obstacles(self):
         return len(self._obstacle)
+
+    def add_general_constraint(self,general_constraint):
+        self._general_constraints.append(general_constraint)
+    @property
+    def number_of_general_constraints(self):
+        return len(self._general_constraints)
+
     @property
     def shooting_mode(self):
         return self._shooting_mode
@@ -181,6 +205,9 @@ class Nmpc_panoc:
     def number_of_obstacles(self):
         return len(self._obstacle)
 
+    @property
+    def general_constraints(self):
+        return self._general_constraints
     @property
     def cost_function(self):
         return self._cost_function

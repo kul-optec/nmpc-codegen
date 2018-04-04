@@ -19,7 +19,7 @@ def init_controller_files(controller_name):
     ## -- GENERATE STATIC FILES --
     # start by generating the static files and folder of the controller
     trailer_controller_location = "../../../test_controller_builds/" + controller_name
-    tools.Bootstrapper.bootstrap(trailer_controller_location, python_interface_enabled=True)
+    tools.Bootstrapper.bootstrap(trailer_controller_location, simulation_tools=True)
     return trailer_controller_location
     ## -----------------------------------------------------------------
 
@@ -91,6 +91,7 @@ def generate_controller_with_obs(trailer_controller_location,reference_state,Q,R
         # plt.clf()
 
     return state
+
 def main():
     # create static files
     trailer_move_diag_obs_location_ = init_controller_files("trailer_move_diag_obs")
@@ -107,15 +108,15 @@ def main():
                                                  rectangular_width, rectangular_height)
 
 
-    Q = np.diag([1., 10., 1.])
-    R = np.diag([1., 1.]) * 0.001
-    obstacle_weight = 10000000.
-    horizon = 100
+    Q = np.diag([10., 10., 1.])
+    R = np.diag([1., 1.]) * 0.01
+    obstacle_weight = 10000.
+    horizon = 50
 
     reference_state = np.array([2, 0.5, 0])
-    # current_state = generate_controller_with_obs(trailer_move_diag_obs_location_, reference_state, Q,R, \
-    #                                              rectangular_obstacle_1 , obstacle_weight,\
-    #                                              horizon,display_figure=True,index_figure=0)
+    current_state = generate_controller_with_obs(trailer_move_diag_obs_location_, reference_state, Q,R, \
+                                                 rectangular_obstacle_1 , obstacle_weight,\
+                                                 horizon,display_figure=True,index_figure=0)
 
     # TEST 2
     rectangular_center_coordinates_2 = np.array([1, 0.])
@@ -124,12 +125,12 @@ def main():
     rectangular_obstacle_2 = obstacles.Obstacle_rectangular(rectangular_center_coordinates_2, \
                                                             rectangular_width_2, rectangular_height_2)
 
-    Q = np.diag([70., 10., 1.])*1.
+    Q = np.diag([10., 10., 1.])*1.
     R = np.diag([1., 1.]) * 0.01
-    obstacle_weight = 1000000000.
-    horizon = 100
+    obstacle_weight = 1000.
+    horizon = 50
 
-    reference_state = np.array([3, 0, 0])
+    reference_state = np.array([2, 0, 0])
     current_state = generate_controller_with_obs(trailer_move_right_obs_location_, reference_state, Q, R,\
                                           rectangular_obstacle_2,obstacle_weight,horizon,\
                                           display_figure=True,index_figure=1)
@@ -143,15 +144,15 @@ def main():
     rectangular_obstacle_3 = obstacles.Obstacle_rectangular(rectangular_center_coordinates, \
                                                             rectangular_width, rectangular_height)
 
-    Q = np.diag([1., 100., 1.])
+    Q = np.diag([10., 10., 0.1])
     R = np.diag([1., 1.]) * 0.01
     obstacle_weight = 10000.
     horizon = 50
 
     reference_state = np.array([0, 2, 0])
-    # current_state = generate_controller_with_obs(trailer_move_move_up_obs_location_, reference_state, Q, R,
-    #                                         ,rectangular_obstacle_3,obstacle_weight,horizon,\
-    #                                          display_figure=True,index_figure=2)
+    current_state = generate_controller_with_obs(trailer_move_move_up_obs_location_, reference_state, Q, R,\
+                                             rectangular_obstacle_3,obstacle_weight,horizon,\
+                                             display_figure=True,index_figure=2)
 
     plt.show()
 if __name__ == '__main__':
