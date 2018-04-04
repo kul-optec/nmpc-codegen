@@ -37,6 +37,8 @@ trailer_controller = trailer_controller.add_general_constraint(max_speed_constra
 
 trailer_controller.shooting_mode='single shot';
 
+trailer_controller.shift_input=true;
+
 % generate the dynamic code
 trailer_controller = trailer_controller.generate_code();
 %%

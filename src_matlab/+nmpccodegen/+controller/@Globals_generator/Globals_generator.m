@@ -25,16 +25,19 @@ classdef Globals_generator
             obj.define_variable('DIMENSION_STATE', num2str(nmpc_controller.model.number_of_states));
             obj.define_variable('DIMENSION_PANOC', num2str(nmpc_controller.dimension_panoc));
             obj.define_variable('MPC_HORIZON', num2str(nmpc_controller.horizon));
+            if(nmpc_controller.shift_input)
+                obj.define_variable('SHIFT_INPUT', num2str(1));
+            end
             
             obj.generate_title('Lagrangian related values, only visible if there are general constraints');
             if(~isempty(nmpc_controller.general_constraints))
                 obj.define_variable('USE_LA', '1');
                 obj.define_variable('NUMBER_OF_GENERAL_CONSTRAINTS', num2str(length(nmpc_controller.general_constraints)*nmpc_controller.horizon));
                 obj.define_variable('NUMBER_OF_GENERAL_CONSTRAINTS_PER_STEP', num2str(length(nmpc_controller.general_constraints)));
-                obj.define_variable('CONSTRAINT_OPTIMAL_VALUE', '(1e3)');
-                obj.define_variable('CONSTRAINT_MAX_WEIGHT', '(1e5)');
-                obj.define_variable('START_RESIDUAL', '1');
-                obj.define_variable('MAX_STEPS_LA', '4');
+                obj.define_variable('CONSTRAINT_OPTIMAL_VALUE', num2str(nmpc_controller.constraint_optimal_value));
+                obj.define_variable('CONSTRAINT_MAX_WEIGHT', num2str(nmpc_controller.constraint_max_weight));
+                obj.define_variable('START_RESIDUAL', num2str(nmpc_controller.start_residual));
+                obj.define_variable('MAX_STEPS_LA', num2str(nmpc_controller.max_steps_LA));
             end
 
             obj.define_variable('NUMBER_OF_OBSTACLES', ...
