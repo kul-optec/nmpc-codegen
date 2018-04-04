@@ -12,6 +12,16 @@ import math
 import casadi as cd
 import numpy as np
 
+import fileinput
+import sys
+
+# thanks stackoverflow: https://stackoverflow.com/questions/39086/search-and-replace-a-line-in-a-file-in-python
+def replaceAll(file,searchExp,replaceExp):
+    for line in fileinput.input(file, inplace=1):
+        if searchExp in line:
+            line = line.replace(searchExp,replaceExp)
+        sys.stdout.write(line)
+
 def main():
     (system_equations, number_of_states, number_of_inputs,indices_coordinates) = nmpc.example_models.get_chain_model()
     dimension = 2
@@ -44,6 +54,10 @@ def main():
     nmpc_controller.integrator_casadi=True
 
     nmpc_controller.generate_code()
+
+    # replace the panoc dimension by 2
+    dyn_globals_location = './globals/globals_dyn.h'
+    replaceAll(dyn_globals_location,'DIMENSION_PANOC 100','DIMENSION_PANOC 2')
 
 if __name__ == "__main__":
     main()

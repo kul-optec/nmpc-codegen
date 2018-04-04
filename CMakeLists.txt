@@ -9,6 +9,11 @@ project (npmc C)
 # set the compiler with its flags
 # SET(CMAKE_C_COMPILER gcc)
 SET(CMAKE_BUILD_TYPE Debug)
+if(NOT MSVC)
+    set(CMAKE_C_FLAGS_DEBUG "-g -O0 -Wall -Wextra -fprofile-arcs -ftest-coverage")
+    set(LDFLAGS "-O0 -fprofile-arcs -ftest-coverage")
+    SET(CMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage")
+endif()
 
 # subdirectories with libraries
 include_directories ("${PROJECT_SOURCE_DIR}/PANOC")
@@ -41,7 +46,33 @@ add_subdirectory(tst)
 add_test(NAME matrix_operations_norms COMMAND  tst/matrix_operations_norms)
 add_test(NAME matrix_operations_vectors COMMAND  tst/matrix_operations_vectors)
 add_test(NAME lbfgs_poly_test COMMAND  tst/lbfgs_poly_test)
-add_test(NAME lipschitz_estimator_test COMMAND  tst/lipschitz_estimator_test)
+#add_test(NAME lipschitz_estimator_test COMMAND  tst/lipschitz_estimator_test)
 add_test(NAME prox_grad_descent_poly_test COMMAND  tst/prox_grad_descent_poly_test)
 add_test(NAME panoc_poly_test COMMAND  tst/panoc_poly_test)
-add_test(NAME casadi_interface_test COMMAND  tst/casadi_interface_test)
+#add_test(NAME casadi_interface_test COMMAND  tst/casadi_interface_test)
+
+add_custom_target(gcov
+    COMMAND mkdir -p coverage
+    COMMAND ${CMAKE_MAKE_PROGRAM} test
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
+
+add_dependencies(gcov matrix_operations_norms)
+add_dependencies(gcov matrix_operations_vectors)
+add_dependencies(gcov lbfgs_poly_test)
+#add_dependencies(gcov lipschitz_estimator_test)
+add_dependencies(gcov prox_grad_descent_poly_test)
+add_dependencies(gcov panoc_poly_test)
+#add_dependencies(gcov casadi_interface_test)
+
+
+add_custom_command(TARGET gcov
+    COMMAND echo "=================== GCOV ===================="
+    COMMAND gcov -b ${CMAKE_SOURCE_DIR}/panoc/*.c -o "${CMAKE_BINARY_DIR}/tst/CMakeFiles/matrix_operations_norms.dir/src/matrix_operations_norms.c.gcno"
+    COMMAND gcov -b ${CMAKE_SOURCE_DIR}/panoc/*.c -o "${CMAKE_BINARY_DIR}/tst/CMakeFiles/matrix_operations_vectors.dir/src/matrix_operations_vectors.c.gcno"
+    COMMAND gcov -b ${CMAKE_SOURCE_DIR}/panoc/*.c -o "${CMAKE_BINARY_DIR}/tst/CMakeFiles/lbfgs_poly_test.dir/src/lbfgs_poly_test.c.gcno"
+    COMMAND gcov -b ${CMAKE_SOURCE_DIR}/panoc/*.c -o "${CMAKE_BINARY_DIR}/tst/CMakeFiles/prox_grad_descent_poly_test.dir/src/prox_grad_descent_poly_test.c.gcno"
+    COMMAND gcov -b ${CMAKE_SOURCE_DIR}/panoc/*.c -o "${CMAKE_BINARY_DIR}/tst/CMakeFiles/panoc_poly_test.dir/src/panoc_poly_test.c.gcno"
+    COMMAND echo "-- Coverage files have been output to ${CMAKE_BINARY_DIR}/coverage"
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coverage 
+    )
