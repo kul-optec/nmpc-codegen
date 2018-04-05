@@ -20,7 +20,7 @@ class Casadi_code_generator:
 
     @staticmethod
     def generate_c_constraints(initial_state, input_all_steps, constraint_values, location_lib):
-        constraints_function = cd.Function("evaluate_constraints", {initial_state, input_all_steps},{constraint_values})
+        constraints_function = cd.Function("evaluate_constraints", [initial_state, input_all_steps],[constraint_values])
         Casadi_code_generator.translate_casadi_to_c(constraints_function, location_lib,filename="evaluate_constraints")
 
     @ staticmethod

@@ -55,7 +55,7 @@ class Nmpc_panoc:
             if(self.number_of_general_constraints==0):
                 self.__generate_cost_function_singleshot()
             else:
-                self.__generate_cost_function_singleshot()
+                self.__generate_cost_function_singleshot_LA()
         elif(self._shooting_mode=='multiple shot'):
             self.__generate_cost_function_multipleshot()
         else:
@@ -200,6 +200,40 @@ class Nmpc_panoc:
     @min_residual.setter
     def min_residual(self, value):
         self._min_residual = value
+
+    @property
+    def constraint_optimal_value(self):
+        return self._constraint_optimal_value
+
+    @constraint_optimal_value.setter
+    def constraint_optimal_value(self, value):
+        self._constraint_optimal_value = value
+
+    @property
+    def constraint_max_weight(self):
+        return self._constraint_max_weight
+
+    @constraint_max_weight.setter
+    def constraint_max_weight(self, value):
+        self._constraint_max_weight = value
+
+    @property
+    def start_residual(self):
+        return self._start_residual
+
+    @start_residual.setter
+    def start_residual(self, value):
+        self._start_residual = value
+
+    @property
+    def max_steps_LA(self):
+        return self._max_steps_LA
+
+    @max_steps_LA.setter
+    def max_steps_LA(self, value):
+        self._max_steps_LA = value
+
+
 
     @property
     def number_of_obstacles(self):
