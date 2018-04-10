@@ -31,6 +31,8 @@ trailer_controller = trailer_controller.add_obstacle(right_circle);
 % experimental feature !!!!
 trailer_controller.shooting_mode='single shot';
 
+trailer_controller.shift_input=true;
+
 % generate the dynamic code
 trailer_controller.generate_code();
 %%
@@ -51,6 +53,8 @@ left_circle.plot();
 hold on;
 right_circle.plot();
 nmpccodegen.example_models.trailer_printer(state_history,0.03,'red');
+plot(state_history(1,end),state_history(2,end),'black*') 
+plot(state_history(1,1),state_history(2,1),'blacko')
 title('path taken bij trailer');
 xlabel('X coordinate');
 ylabel('Y coordinate');

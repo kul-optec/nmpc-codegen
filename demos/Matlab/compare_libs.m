@@ -33,7 +33,7 @@ trailer_controller = trailer_controller.add_obstacle(circle3);
 trailer_controller = trailer_controller.add_obstacle(circle4);
 
 % generate the dynamic code
-trailer_controller.generate_code();
+trailer_controller = trailer_controller.generate_code();
 
 % simulate everything
 initial_state = [0.; -0.5 ; pi/2];
@@ -46,19 +46,25 @@ obstacle_weights = [700.;700.;700.;700.];
 %%
 [state_history_forbes,time_history_forbes,iteration_history_forbes] = simulate_demo_trailer_panoc_matlab(trailer_controller,simulator,initial_state,reference_state,reference_input);
 %%
-% [state_history_fmincon,time_history_fmincon,iteration_history_fmincon] = simulate_demo_trailer_interior_point_matlab(trailer_controller,simulator,initial_state,reference_state,reference_input);
-%%
 [state_history_fmincon,time_history_fmincon_interior_point] = simulate_demo_trailer_fmincon('interior-point',trailer_controller,simulator,initial_state,reference_state,reference_input);
 %%
 [~,time_history_fmincon_sqp] = simulate_demo_trailer_fmincon('sqp',trailer_controller,simulator,initial_state,reference_state,reference_input);
 %%
 [~,time_history_fmincon_active_set] = simulate_demo_trailer_fmincon('active-set',trailer_controller,simulator,initial_state,reference_state,reference_input);
 %%
+[ state_history_ipopt,time_history_ipopt ]  = simulate_demo_trailer_OPTI_ipopt( trailer_controller,simulator, ...
+    initial_state,reference_state,reference_input,obstacle_weights );
+%%
+% [ state_history_,time_history_ ] = simulate_demo_trailer_casadi_ipopt( trailer_controller, ...
+%     initial_state,reference_state,reference_input,obstacle_weights );
+%%
 figure;
 hold on;
 nmpccodegen.example_models.trailer_printer(state_history,0.03,'red');
 nmpccodegen.example_models.trailer_printer(state_history_forbes,0.03,'black');
 nmpccodegen.example_models.trailer_printer(state_history_fmincon,0.03,'blue');
+% nmpccodegen.example_models.trailer_printer(state_history_ipopt,0.03,'green');
+
 circle1.plot();
 circle2.plot();
 circle3.plot();
@@ -75,9 +81,10 @@ semilogy(time_history_forbes);
 semilogy(time_history_fmincon_interior_point);
 semilogy(time_history_fmincon_sqp);
 semilogy(time_history_fmincon_active_set);
+semilogy(time_history_ipopt);
 ylabel('time till convergence (ms)');
 xlabel('step');
-legend('nmpc-codegen','ForBEs: zeropfr2','fmincon: interior-point','fmincon: sqp','fmincon: active-set');
+legend('nmpc-codegen','ForBEs: zeropfr2','fmincon: interior-point','fmincon: sqp','fmincon: active-set','OPTI toolbox: ipopt');
 %%
 figure;
 hold on;
