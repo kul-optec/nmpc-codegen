@@ -8,12 +8,17 @@ classdef Obstacle_nonconvex_constraints < nmpccodegen.controller.obstacles.Obsta
     end
     methods
         function obj = Obstacle_nonconvex_constraints()
-            obj.constraints=[];
+            obj.constraints={};
         end
         function obj = add_constraint(obj,constraint)
             % Add an nonconvex constraint.
             %   constraint = Matlab function.
-            obj.constraints = [obj.constraints constraint];
+            number_of_constraints = obj.get_number_of_constraints();
+            if(number_of_constraints==0)
+                obj.constraints ={constraint};
+            else
+                obj.constraints{end+1} = constraint;
+            end
         end
         function number_of_constraints = get_number_of_constraints(obj)
             % Get the number of nonconvex constraints.
@@ -25,8 +30,8 @@ classdef Obstacle_nonconvex_constraints < nmpccodegen.controller.obstacles.Obsta
             if (obj.get_number_of_constraints() ~= 0)
                 value=1;
                 for i=1:obj.get_number_of_constraints()
-                    h = obj.constraints(i);
-                    value = value*Obstacle.trim( ...
+                    h = obj.constraints{i};
+                    value = value*nmpccodegen.controller.obstacles.Obstacle.trim( ...
                         h(coordinates_state)...
                         );
                 end
