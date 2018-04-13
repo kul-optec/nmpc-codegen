@@ -93,12 +93,6 @@ real_t casadi_interface_f(const real_t* input){
 
     cost_function(input_function, output, NULL, NULL, MEM_CASADI);
 
-    /* old code, the arrays are unused this way
-    cost_function_data->cost_function(input_function,output,\
-        cost_function_data->buffer_int,\
-        cost_function_data->buffer_real,\
-        MEM_CASADI);
-    */
     return *output[0];
 }
 #endif
@@ -110,12 +104,6 @@ real_t casadi_interface_f_df(const real_t* input,real_t* data_output){
 
     cost_function_derivative_combined(input_function, output, NULL, NULL, MEM_CASADI);
 
-    /* old code, the arrays are unused this way
-    cost_function_derivative_combined_data->cost_function(input_function,output,\
-        cost_function_derivative_combined_data->buffer_int,\
-        cost_function_derivative_combined_data->buffer_real,\
-        MEM_CASADI);
-    */
     return f_value;
 }
 
