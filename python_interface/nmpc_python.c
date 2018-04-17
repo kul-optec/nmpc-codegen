@@ -43,11 +43,11 @@ void simulation_cleanup(){
     nmpc_cleanup();
 }
 
-real_t simulation_get_weight_obstacles(int index_obstacle){
-    return nmpc_get_weight_obstacles(index_obstacle);
+real_t simulation_get_weight_constraints(int index_constraint){
+    return nmpc_get_weight_constraints(index_constraint);
 }
-int simulation_set_weight_obstacles(int index_obstacle,real_t weight){
-    return nmpc_set_weight_obstacles(index_obstacle,weight);
+int simulation_set_weight_constraints(int index_constraint,real_t weight){
+    return nmpc_set_weight_constraints(index_constraint,weight);
 }
 int simulation_set_buffer_solution(real_t value, int index){
     return nmpc_set_buffer_solution(value,index);

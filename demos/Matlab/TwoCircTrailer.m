@@ -25,8 +25,8 @@ left_circle = nmpccodegen.controller.obstacles.Obstacle_circular([0.2; 0.2],0.2)
 right_circle = nmpccodegen.controller.obstacles.Obstacle_circular([0.7; 0.2], 0.2);
 
 % add obstacles to controller
-trailer_controller = trailer_controller.add_obstacle(left_circle);
-trailer_controller = trailer_controller.add_obstacle(right_circle);
+trailer_controller = trailer_controller.add_constraint(left_circle);
+trailer_controller = trailer_controller.add_constraint(right_circle);
 
 % experimental feature !!!!
 trailer_controller.shooting_mode='single shot';

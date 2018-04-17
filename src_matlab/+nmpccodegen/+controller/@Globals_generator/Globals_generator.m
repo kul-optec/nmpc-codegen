@@ -40,9 +40,10 @@ classdef Globals_generator
                 obj.define_variable('MAX_STEPS_LA', num2str(nmpc_controller.max_steps_LA));
             end
 
-            obj.define_variable('NUMBER_OF_OBSTACLES', ...
-                num2str(nmpc_controller.get_number_of_obstacles()) );
-            obj.define_variable('DEFAULT_OBSTACLE_WEIGHT', num2str(1));
+            obj.generate_title('Constraint related values');
+            obj.define_variable('NUMBER_OF_CONSTRAINTS', ...
+                num2str(nmpc_controller.get_number_of_constraints()) );
+            obj.define_variable('DEFAULT_CONSTRAINT_WEIGHT', num2str(1));
             obj.set_data_type(nmpc_controller.data_type);
 
             obj.generate_title('lbgfs solver definitions');

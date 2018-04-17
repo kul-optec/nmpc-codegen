@@ -126,12 +126,12 @@ class Simulator:
         self.nmpc_python_interface.restype = ctypes.c_int
 
         self.nmpc_python_interface.simulation_set_buffer_solution(value_ctype,index_ctype)
-    def set_weight_obstacle(self,index_obstacle,weight_obstacle):
+    def set_weight_constraint(self,index_constraint,weight_constraint):
 
-        index_obstacle_ctype = ctypes.c_int(index_obstacle)
-        weight_obstacle_ctype = ctypes.c_double(weight_obstacle)
+        index_constraint_ctype = ctypes.c_int(index_constraint)
+        weight_constraint_ctype = ctypes.c_double(weight_constraint)
 
-        self.nmpc_python_interface.simulation_set_weight_obstacles(index_obstacle_ctype,weight_obstacle_ctype)
+        self.nmpc_python_interface.simulation_set_weight_constraints(index_constraint_ctype,weight_constraint_ctype)
 
     def _make_build_system(self):
         cwd = os.getcwd()

@@ -64,7 +64,7 @@ classdef Single_shot_LA_definition
             static_casadi_parameters = vertcat(initial_state, state_reference,input_reference,...
                 lambdas,general_constraint_weights);
 
-            obstacle_weights = casadi.SX.sym('obstacle_weights', obj.controller.number_of_obstacles, 1);
+            constraint_weights = casadi.SX.sym('constraint_weights', obj.controller.number_of_constraints, 1);
             input_all_steps = casadi.SX.sym('input_all_steps', obj.controller.model.number_of_inputs*obj.controller.horizon, 1);
 
             cost=0;
@@ -77,7 +77,7 @@ classdef Single_shot_LA_definition
                 current_state = obj.controller.model.get_next_state(current_state,input);
 
                 cost = cost + obj.controller.calculate_stage_cost(current_state,input,i,state_reference,input_reference);
-                cost = cost + obj.controller.generate_cost_obstacles(current_state,obstacle_weights);
+                cost = cost + obj.controller.generate_cost_constraints(current_state,constraint_weights);
                 
                 % Extra terms associated with the lagrangian - lambda*c(x) + mu*c(c)^2
                 general_constraints_cost = obj.generate_cost_general_constraints(...
@@ -86,11 +86,10 @@ classdef Single_shot_LA_definition
             end
             [cost_function, cost_function_derivative_combined] = ...
                 nmpccodegen.controller.Casadi_code_generator.setup_casadi_functions_and_generate_c(...
-                    static_casadi_parameters,input_all_steps,obstacle_weights,cost, ...
+                    static_casadi_parameters,input_all_steps,constraint_weights,cost, ...
                     obj.controller.location);
             
             % generate the general constraints functions
-            state = casadi.SX.sym('state', obj.controller.model.number_of_states, 1);
             constraint_values = casadi.SX.sym('constraint_values',length(obj.controller.general_constraints)*obj.controller.horizon, 1);
             
             state = initial_state;

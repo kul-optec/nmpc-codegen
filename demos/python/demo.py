@@ -17,7 +17,7 @@ def calculate_horizon(trailer_controller,sim,initial_state,reference_state,refer
     number_of_steps = math.ceil(simulation_time / trailer_controller.model.step_size)
     # setup the weights on a simulator to test
     for i in range(0,len(obstacle_weights)):
-        sim.set_weight_obstacle(i, obstacle_weights[i])
+        sim.set_weight_constraint(i, obstacle_weights[i])
     for i in range(0,len(reference_state)*trailer_controller.horizon):
         sim.set_init_value_solver(0.,i)
 
@@ -71,7 +71,7 @@ def simulate_demo(trailer_controller,initial_state,reference_state,reference_inp
     # setup a simulator to test
     sim = tools.Simulator(trailer_controller.location)
     for i in range(0,len(obstacle_weights)):
-        sim.set_weight_obstacle(i, obstacle_weights[i])
+        sim.set_weight_constraint(i, obstacle_weights[i])
 
     state = initial_state
     state_history = np.zeros((trailer_controller.model.number_of_states, number_of_steps))
@@ -99,4 +99,3 @@ def draw_obstacle_border(h,xlim,number_of_points):
         y[i]=h(x[i])
 
     plt.plot(x,y)
-

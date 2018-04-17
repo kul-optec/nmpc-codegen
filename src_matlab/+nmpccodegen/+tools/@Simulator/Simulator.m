@@ -114,11 +114,11 @@ classdef Simulator
             [f_value] = calllib('nmpc_panoc','simulation_evaluate_f',...
                 static_casadi_parameters,location);
         end
-        function set_weight_obstacle(obj,obstacle_id,weight)
-            % Set the weight of an obstacle to an different weight than the
+        function set_weight_constraint(obj,constraint_id,weight)
+            % Set the weight of an constraint to an different weight than the
             % default value.
             
-            calllib('nmpc_panoc','simulation_set_weight_obstacles',int32(obstacle_id),weight);
+            calllib('nmpc_panoc','simulation_set_weight_constraints',int32(constraint_id),weight);
         end
     end
     

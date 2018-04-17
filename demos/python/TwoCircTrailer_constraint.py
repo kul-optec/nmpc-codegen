@@ -39,8 +39,8 @@ if __name__ == '__main__':
     right_circle = obstacles.Obstacle_circle(np.array([0.7, 0.2]), 0.2)
 
     # add obstacles to controller
-    trailer_controller.add_obstacle(left_circle)
-    trailer_controller.add_obstacle(right_circle)
+    trailer_controller.add_constraint(left_circle)
+    trailer_controller.add_constraint(right_circle)
 
     # experimental feature !!!! this will activate the Lagrangian !
     max_speed = 2

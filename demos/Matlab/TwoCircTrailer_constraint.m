@@ -26,11 +26,11 @@ left_circle = nmpccodegen.controller.obstacles.Obstacle_circular([0.2; 0.2],0.2)
 right_circle = nmpccodegen.controller.obstacles.Obstacle_circular([0.7; 0.2], 0.2);
 
 % add obstacles to controller
-trailer_controller = trailer_controller.add_obstacle(left_circle);
-trailer_controller = trailer_controller.add_obstacle(right_circle);
+trailer_controller = trailer_controller.add_constraint(left_circle);
+trailer_controller = trailer_controller.add_constraint(right_circle);
 
 % experimental feature !!!! this will activate the Lagrangian !
-max_speed = 2;
+max_speed = 1.5;
 max_speed_constraint = nmpccodegen.controller.constraints.Input_norm(max_speed);
 trailer_controller = trailer_controller.add_general_constraint(max_speed_constraint);
 

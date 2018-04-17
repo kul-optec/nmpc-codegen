@@ -42,7 +42,7 @@ if __name__ == '__main__':
     costum_obstacle.add_constraint(h_1)
 
     # add obstacles to controller
-    trailer_controller.add_obstacle(costum_obstacle)
+    trailer_controller.add_constraint(costum_obstacle)
 
     # generate the dynamic code
     trailer_controller.generate_code()

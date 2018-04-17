@@ -9,7 +9,7 @@ function [ state_history,time_history,iteration_history,sim ] = simulate_demo_tr
     sim = nmpccodegen.tools.Simulator(trailer_controller.location);
     
     for i=1:length(obstacle_weights)
-        sim.set_weight_obstacle(i-1, obstacle_weights(i))
+        sim.set_weight_constraint(i-1, obstacle_weights(i))
     end
 
     state = initial_state;

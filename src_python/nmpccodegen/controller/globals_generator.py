@@ -26,8 +26,9 @@ class Globals_generator:
             self._define_variable('START_RESIDUAL', str(nmpc_controller.start_residual))
             self._define_variable('MAX_STEPS_LA', str(nmpc_controller.max_steps_LA))
 
-        self._define_variable("NUMBER_OF_OBSTACLES", nmpc_controller.number_of_obstacles)
-        self._define_variable("DEFAULT_OBSTACLE_WEIGHT", 1)
+        self._generate_title("Constraint related values")
+        self._define_variable("NUMBER_OF_CONSTRAINTS", nmpc_controller.number_of_constraints)
+        self._define_variable("DEFAULT_CONSTRAINT_WEIGHT", 1)
 
         self.set_data_type(nmpc_controller.data_type)
 

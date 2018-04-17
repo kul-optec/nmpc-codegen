@@ -42,10 +42,10 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     circle4 = nmpccodegen.controller.obstacles.Obstacle_circular([5.; 4.], 1.05);
 
     % add obstacles to controller
-    trailer_controller = trailer_controller.add_obstacle(circle1);
-    trailer_controller = trailer_controller.add_obstacle(circle2);
-    trailer_controller = trailer_controller.add_obstacle(circle3);
-    trailer_controller = trailer_controller.add_obstacle(circle4);
+    trailer_controller = trailer_controller.add_constraint(circle1);
+    trailer_controller = trailer_controller.add_constraint(circle2);
+    trailer_controller = trailer_controller.add_constraint(circle3);
+    trailer_controller = trailer_controller.add_constraint(circle4);
 
     % generate the dynamic code
     trailer_controller = trailer_controller.generate_code();
@@ -96,9 +96,9 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     right_circle = nmpccodegen.controller.obstacles.Obstacle_circular([0.7; 0.2], 0.2);
 
     % add obstacles to controller
-    trailer_controller = trailer_controller.add_obstacle(rectangular);
-    trailer_controller = trailer_controller.add_obstacle(left_circle);
-    trailer_controller = trailer_controller.add_obstacle(right_circle);
+    trailer_controller = trailer_controller.add_constraint(rectangular);
+    trailer_controller = trailer_controller.add_constraint(left_circle);
+    trailer_controller = trailer_controller.add_constraint(right_circle);
 
     % generate the dynamic code
     trailer_controller.generate_code();
@@ -146,9 +146,9 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     circle = nmpccodegen.controller.obstacles.Obstacle_circular([0.2;0.2],0.2);
 
     % add obstacles to controller
-    trailer_controller = trailer_controller.add_obstacle(rectangular_up);
-    trailer_controller = trailer_controller.add_obstacle(rectangular_down);
-    trailer_controller = trailer_controller.add_obstacle(circle);
+    trailer_controller = trailer_controller.add_constraint(rectangular_up);
+    trailer_controller = trailer_controller.add_constraint(rectangular_down);
+    trailer_controller = trailer_controller.add_constraint(circle);
 
     % generate the dynamic code
     trailer_controller.generate_code();

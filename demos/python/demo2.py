@@ -40,9 +40,9 @@ if __name__ == '__main__':
     circle = obstacles.Obstacle_circle(np.array([0.2,0.2]),0.2)
 
     # add obstacles to controller
-    trailer_controller.add_obstacle(rectangular_up)
-    trailer_controller.add_obstacle(rectangular_down)
-    trailer_controller.add_obstacle(circle)
+    trailer_controller.add_constraint(rectangular_up)
+    trailer_controller.add_constraint(rectangular_down)
+    trailer_controller.add_constraint(circle)
 
     # generate the dynamic code
     trailer_controller.generate_code()

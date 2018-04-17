@@ -45,8 +45,8 @@ class Nmpc_panoc:
         # generate the dynamic_globals file
         self._globals_generator = Globals_generator(self._location_lib + "/globals/globals_dyn.h")
 
-        # at first assume no obstacles
-        self._obstacle=[]
+        # at first assume no constraints
+        self._constraints=[]
 
     def generate_code(self):
         """ Generate code controller """
@@ -99,21 +99,21 @@ class Nmpc_panoc:
             return self._terminal_cost.evaluate_cost(current_state,input,i,state_reference,input_reference)
         return self._stage_cost.evaluate_cost(current_state,input,i,state_reference,input_reference)
 
-    def generate_cost_obstacles(self,state,obstacle_weights):
-        if(self.number_of_obstacles is 0):
+    def generate_cost_constraints(self,state,constraint_weights):
+        if(self.number_of_constraints is 0):
             return 0.
         else:
             cost = 0.
-            for i in range(0,self.number_of_obstacles):
-                cost += obstacle_weights[i]*self._obstacle[i].evaluate_cost(state[self._model.indices_coordinates])
+            for i in range(0,self.number_of_constraints):
+                cost += constraint_weights[i]*self._constraints[i].evaluate_cost(state[self._model.indices_coordinates])
 
             return cost
 
-    def add_obstacle(self,obstacle):
-        self._obstacle.append(obstacle)
+    def add_constraint(self,constraint):
+        self._constraints.append(constraint)
     @property
-    def number_of_obstacles(self):
-        return len(self._obstacle)
+    def number_of_constraints(self):
+        return len(self._constraints)
 
     def add_general_constraint(self,general_constraint):
         self._general_constraints.append(general_constraint)
@@ -236,9 +236,8 @@ class Nmpc_panoc:
 
 
     @property
-    def number_of_obstacles(self):
-        return len(self._obstacle)
-
+    def constraints(self):
+        return self._constraints
     @property
     def general_constraints(self):
         return self._general_constraints

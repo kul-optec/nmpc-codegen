@@ -12,8 +12,8 @@ int npmc_solve( const real_t* current_state,
                 real_t* optimal_inputs);
 int nmpc_get_last_full_solution(real_t* output);
 
-real_t nmpc_get_weight_obstacles(int index_obstacle);/* returns zero if index was out of range */
-int nmpc_set_weight_obstacles(int index_obstacle,real_t weight);/* returns failure if the index is out of range */
+real_t nmpc_get_weight_constraints(int index_constraint);/* returns zero if index was out of range */
+int nmpc_set_weight_constraints(int index_constraint,real_t weight);/* returns failure if the index is out of range */
 int nmpc_set_buffer_solution(real_t value, int index); /* set the internal value of the input of the cost function */
 
 #endif

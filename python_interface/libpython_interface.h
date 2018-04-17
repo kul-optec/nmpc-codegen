@@ -14,8 +14,8 @@ struct Panoc_time* simulate_nmpc_panoc( real_t* current_state,
 
 int get_last_full_solution(real_t* output);
 void simulation_cleanup();
-real_t simulation_get_weight_obstacles(int index_obstacle);
-int simulation_set_weight_obstacles(int index_obstacle,real_t weight);
+real_t simulation_get_weight_constraints(int index_constraint);
+int simulation_set_weight_constraints(int index_constraint,real_t weight);
 int simulation_set_buffer_solution(real_t value, int index);
 real_t simulation_evaluate_f_df(real_t* static_casadi_parameters,real_t* input, real_t* output);
 real_t simulation_evaluate_f(real_t* static_casadi_parameters,real_t* input);
