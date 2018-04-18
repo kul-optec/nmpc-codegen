@@ -152,7 +152,8 @@ const real_t* lbfgs_get_direction(void){
             buffer_limit=buffer_size;
         }
 
-        real_t q[DIMENSION_PANOC]; vector_copy(direction_prox_gradient,q,DIMENSION_PANOC);
+        real_t* q = direction; /* use the direction variable temporarily as q */
+        vector_copy(direction_prox_gradient,q,DIMENSION_PANOC);
 
         /*
          * First loop lbfgs
@@ -164,7 +165,8 @@ const real_t* lbfgs_get_direction(void){
             alpha[i]= rho[i]*inner_product(s[i],q,DIMENSION_PANOC);
             vector_add_ntimes(q,y[i],DIMENSION_PANOC,-alpha[i]);
         }
-        real_t z[DIMENSION_PANOC];
+
+        real_t* z = direction; /* use the direction variable temporarily as z */
         vector_real_mul(q,DIMENSION_PANOC,hessian_estimate,z);
         /*
          * Second loop lbfgs
