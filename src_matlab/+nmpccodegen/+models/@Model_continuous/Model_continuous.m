@@ -37,6 +37,13 @@ classdef Model_continuous < nmpccodegen.models.Model
             % get next state of discrete system
             next_state = discrete_system_equations(state);
         end
+        function next_state = get_next_state_double(obj,state,input)
+            % Get the next state of the system using the input and the
+            % current state in doubles and not in casadi variables.
+            
+            next_state_casadi = get_next_state(obj,state,input);
+            next_state = double(full(next_state_casadi(1).evalf));
+        end
     end
     
 end

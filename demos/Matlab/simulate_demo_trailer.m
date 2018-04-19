@@ -27,7 +27,7 @@ function [ state_history,time_history,iteration_history,sim ] = simulate_demo_tr
         time_history(i)=result_simulation.seconds*1000+result_simulation.milli_seconds;
         iteration_history(i)=result_simulation.panoc_interations;
         
-        state = trailer_controller.model.get_next_state(state, result_simulation.optimal_input);
+        state = trailer_controller.model.get_next_state_double(state, result_simulation.optimal_input);
         state_history(:, i) = state;
     end
     

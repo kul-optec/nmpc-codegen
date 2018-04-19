@@ -34,6 +34,7 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     trailer_controller.min_residual=-3;
     trailer_controller.lbgfs_buffer_size=50;
     % trailer_controller.pure_prox_gradient=true;
+    trailer_controller.shift_input=false;
 
     % construct left circle
     circle1 = nmpccodegen.controller.obstacles.Obstacle_circular([1.5; 0.], 1.);

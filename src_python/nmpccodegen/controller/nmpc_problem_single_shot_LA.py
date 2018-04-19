@@ -40,6 +40,10 @@ class Single_shot_LA_definition:
         return constraint_values
 
     def generate_cost_function(self):
+        """ Generate Casadi code of cost and gradient function: 
+                - c-code
+                - Casadi functions
+        """
         initial_state = cd.SX.sym('initial_state', self._controller.model.number_of_states, 1)
         state_reference = cd.SX.sym('state_reference', self._controller.model.number_of_states, 1)
         input_reference = cd.SX.sym('input_reference', self._controller.model.number_of_inputs, 1)
