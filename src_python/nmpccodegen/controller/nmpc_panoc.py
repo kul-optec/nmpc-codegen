@@ -34,6 +34,7 @@ class Nmpc_panoc:
 
         self._integrator_casadi=False
         self._pure_prox_gradient=False
+        self._shift_input=True
 
         # Accelerated Lagrangian related properties
         self._general_constraints=[]
@@ -138,6 +139,13 @@ class Nmpc_panoc:
     @horizon.setter
     def horizon(self, value):
         self._horizon = value
+
+    @property
+    def shift_input(self):
+        return self._shift_input
+    @shift_input.setter
+    def shift_input(self, value):
+        self._shift_input = value
 
     @property
     def model(self):

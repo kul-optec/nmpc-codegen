@@ -13,6 +13,8 @@ class Globals_generator:
         self._define_variable("DIMENSION_STATE", nmpc_controller.model.number_of_states)
         self._define_variable("DIMENSION_PANOC", nmpc_controller.dimension_panoc)
         self._define_variable("MPC_HORIZON", nmpc_controller.horizon)
+        if(nmpc_controller.shift_input):
+            self._define_variable("SHIFT_INPUT", str(1.))
 
         self._generate_title("Lagrangian related values, only visible if there are general constraints")
         if(len(nmpc_controller.general_constraints)>0):

@@ -52,6 +52,7 @@ classdef Globals_generator
             obj.generate_title('NMPC-PANOC solver definitions');
             obj.define_variable('PANOC_MAX_STEPS',num2str(nmpc_controller.panoc_max_steps));
             obj.define_variable('PANOC_MIN_STEPS',num2str(nmpc_controller.panoc_min_steps));
+            obj.define_variable('MIN_RESIDUAL',num2str(1e-3));
             
             obj.generate_title('options used to test:')
             if(nmpc_controller.pure_prox_gradient)
@@ -60,7 +61,7 @@ classdef Globals_generator
 
             obj.generate_title('Optional features');
             if( nmpc_controller.integrator_casadi)
-                obj.define_variable('INTEGRATOR_CASADI',1);
+                obj.define_variable('INTEGRATOR_CASADI',num2str(1));
             end
             
         end

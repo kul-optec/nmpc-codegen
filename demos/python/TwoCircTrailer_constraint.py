@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     trailer_controller = prepare_demo_trailer(step_size,Q,R,Q_terminal,R_terminal)
 
-    trailer_controller.horizon = 50 # NMPC parameter
+    trailer_controller.horizon = 30 # NMPC parameter
     trailer_controller.integrator_casadi = True # optional  feature that can generate the integrating used  in the cost function
     trailer_controller.panoc_max_steps = 500 # the maximum amount of iterations the PANOC algorithm is allowed to do.
     trailer_controller.min_residual=-3
@@ -43,9 +43,12 @@ if __name__ == '__main__':
     trailer_controller.add_constraint(right_circle)
 
     # experimental feature !!!! this will activate the Lagrangian !
-    max_speed = 2
+    max_speed = 1.5
     max_speed_constraint = controller.constraints.Input_norm(max_speed)
     trailer_controller.add_general_constraint(max_speed_constraint)
+
+    trailer_controller.shift_input=True
+    trailer_controller.shooting_mode="single shot"
 
     # generate the dynamic code
     trailer_controller.generate_code()
