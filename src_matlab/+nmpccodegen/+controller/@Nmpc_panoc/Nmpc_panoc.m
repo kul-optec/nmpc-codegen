@@ -106,7 +106,7 @@ classdef Nmpc_panoc
             % get the number of constraints.
             number_of_constraints = length(obj.constraints);
         end
-        function cost = generate_cost_constraints(obj,state,constraint_weights)
+        function cost = generate_cost_constraints(obj,state,input,constraint_weights)
             % Function used internally to calculate the costs of the
             % constraints.
             if(obj.number_of_constraints == 0)
@@ -115,7 +115,7 @@ classdef Nmpc_panoc
                 cost = 0.;
                 for i=1:obj.number_of_constraints
                     cost = cost + constraint_weights(i)*...
-                        (obj.constraints(i).evaluate_cost(state(obj.model.indices_coordinates))).^2;
+                        (obj.constraints(i).evaluate_cost(state,input)).^2;
                 end
             end
         end

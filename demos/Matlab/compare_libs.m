@@ -1,6 +1,6 @@
 clear all;
 addpath(genpath('../../src_matlab'));
-shift_horizon=true;
+shift_horizon=false;
 %%
 name = "controller_compare_libs";
 [ trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = demo_set_obstacles( name,shift_horizon );

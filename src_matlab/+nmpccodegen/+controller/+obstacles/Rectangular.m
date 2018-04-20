@@ -1,5 +1,5 @@
-classdef Obstacle_rectangular < nmpccodegen.controller.obstacles.Obstacle
-    %RECTANGLE A simple rectangular obstacle.
+classdef Rectangular < nmpccodegen.controller.obstacles.Obstacle
+    %RECTANGULAR A simple rectangular obstacle.
     %  A simple two-dimensional rectangular obstacle.
     
     properties
@@ -9,21 +9,23 @@ classdef Obstacle_rectangular < nmpccodegen.controller.obstacles.Obstacle
     end
     
     methods
-        function obj = Obstacle_rectangular(center_coordinates,width,height)
+        function obj = Rectangular(center_coordinates,width,height,model)
             % - width = The width of the rectangular.
             % - height = The height of the rectangular.
             % - center_coordinates = The center coordinates of the rectangular.
+            % - model = Model of the controlled system.
+            obj@nmpccodegen.controller.obstacles.Obstacle(model)
             obj.center_coordinates=center_coordinates;
             obj.width=width;
             obj.height=height;
         end
-        function cost = evaluate_cost(obj,coordinates_state)
+        function cost = evaluate_coordinate_state_cost(obj,coordinates_state)
             % Evaluate the cost of the obstacle at a particular location.
             [x_up,x_down,y_up,y_down] = get_corner_coordinates(obj);
             a = ([-1. 0.; 1., 0. ;0., -1.; 0., 1.])';
             b = [x_up; -x_down; y_up; -y_down];
             
-            cost =  nmpccodegen.controller.obstacles.Obstacle_polyhedral(a, b).evaluate_cost(coordinates_state);
+            cost =  nmpccodegen.controller.obstacles.Polyhedral(a, b, obj.model).evaluate_coordinate_state_cost(coordinates_state);
         end
         function plot(obj)
             % Plots the rectangular obstacle to the active figure.

@@ -77,7 +77,7 @@ classdef Single_shot_LA_definition
                 current_state = obj.controller.model.get_next_state(current_state,input);
 
                 cost = cost + obj.controller.calculate_stage_cost(current_state,input,i,state_reference,input_reference);
-                cost = cost + obj.controller.generate_cost_constraints(current_state,constraint_weights);
+                cost = cost + obj.controller.generate_cost_constraints(current_state,input,constraint_weights);
                 
                 % Extra terms associated with the lagrangian - lambda*c(x) + mu*c(c)^2
                 general_constraints_cost = obj.generate_cost_general_constraints(...

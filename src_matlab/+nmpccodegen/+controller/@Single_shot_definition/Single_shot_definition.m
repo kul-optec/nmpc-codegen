@@ -39,7 +39,7 @@ classdef Single_shot_definition
                 current_state = obj.controller.model.get_next_state(current_state,input);
 
                 cost = cost + obj.controller.calculate_stage_cost(current_state,input,i,state_reference,input_reference);
-                cost = cost + obj.controller.generate_cost_constraints(current_state,constraint_weights);
+                cost = cost + obj.controller.generate_cost_constraints(current_state,input,constraint_weights);
             end
             [cost_function, cost_function_derivative_combined] = ...
                 nmpccodegen.controller.Casadi_code_generator.setup_casadi_functions_and_generate_c(...

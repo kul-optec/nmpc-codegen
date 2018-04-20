@@ -21,10 +21,10 @@ trailer_controller.panoc_max_steps = 500; % the maximum amount of iterations the
 trailer_controller.min_residual=-3;
 
 % construct left circle
-left_circle = nmpccodegen.controller.obstacles.Obstacle_circular([0.2; 0.2],0.2);
+left_circle = nmpccodegen.controller.obstacles.Circular([0.2; 0.2],0.2,trailer_controller.model);
 
 % construct right circle
-right_circle = nmpccodegen.controller.obstacles.Obstacle_circular([0.7; 0.2], 0.2);
+right_circle = nmpccodegen.controller.obstacles.Circular([0.7; 0.2], 0.2,trailer_controller.model);
 
 % add obstacles to controller
 trailer_controller = trailer_controller.add_constraint(left_circle);

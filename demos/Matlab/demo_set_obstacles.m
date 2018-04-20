@@ -37,10 +37,10 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     trailer_controller.shift_input=shift_horizon; % is true by default
 
     % construct left circle
-    circle1 = nmpccodegen.controller.obstacles.Obstacle_circular([1.5; 0.], 1.);
-    circle2 = nmpccodegen.controller.obstacles.Obstacle_circular([3.5; 2.], 0.6);
-    circle3 = nmpccodegen.controller.obstacles.Obstacle_circular([2.; 2.5], 0.8);
-    circle4 = nmpccodegen.controller.obstacles.Obstacle_circular([5.; 4.], 1.05);
+    circle1 = nmpccodegen.controller.obstacles.Circular([1.5; 0.], 1.,trailer_controller.model);
+    circle2 = nmpccodegen.controller.obstacles.Circular([3.5; 2.], 0.6,trailer_controller.model);
+    circle3 = nmpccodegen.controller.obstacles.Circular([2.; 2.5], 0.8,trailer_controller.model);
+    circle4 = nmpccodegen.controller.obstacles.Circular([5.; 4.], 1.05,trailer_controller.model);
 
     % add obstacles to controller
     trailer_controller = trailer_controller.add_constraint(circle1);
@@ -88,14 +88,14 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     rectangular_center_coordinates = [0.45;-0.1];
     rectangular_width = 0.4;
     rectangular_height = 0.1;
-    rectangular = nmpccodegen.controller.obstacles.Obstacle_rectangular(rectangular_center_coordinates,...
-                                                     rectangular_width,rectangular_height);
+    rectangular = nmpccodegen.controller.obstacles.Rectangular(rectangular_center_coordinates,...
+                                                     rectangular_width,rectangular_height,trailer_controller.model);
 
     % construct left circle
-    left_circle = nmpccodegen.controller.obstacles.Obstacle_circular([0.2; 0.2],0.2);
+    left_circle = nmpccodegen.controller.obstacles.Circular([0.2; 0.2],0.2,trailer_controller.model);
 
     % construct right circle
-    right_circle = nmpccodegen.controller.obstacles.Obstacle_circular([0.7; 0.2], 0.2);
+    right_circle = nmpccodegen.controller.obstacles.Circular([0.7; 0.2], 0.2,trailer_controller.model);
 
     % add obstacles to controller
     trailer_controller = trailer_controller.add_constraint(rectangular);
@@ -140,13 +140,13 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     trailer_controller.shift_input=shift_horizon; % is true by default
     
     % construct upper rectangular
-    rectangular_up = nmpccodegen.controller.obstacles.Obstacle_rectangular([1;0.5],0.4,0.5);
+    rectangular_up = nmpccodegen.controller.obstacles.Rectangular([1;0.5],0.4,0.5,trailer_controller.model);
 
     % construct lower rectangular
-    rectangular_down = nmpccodegen.controller.obstacles.Obstacle_rectangular([1; -0.2], 0.4, 0.5);
+    rectangular_down = nmpccodegen.controller.obstacles.Rectangular([1; -0.2], 0.4, 0.5,trailer_controller.model);
 
     % construct circle
-    circle = nmpccodegen.controller.obstacles.Obstacle_circular([0.2;0.2],0.2);
+    circle = nmpccodegen.controller.obstacles.Circular([0.2;0.2],0.2,trailer_controller.model);
 
     % add obstacles to controller
     trailer_controller = trailer_controller.add_constraint(rectangular_up);
@@ -191,7 +191,7 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     trailer_controller.shift_input=shift_horizon; % is true by default
 
     % construct upper rectangular
-    costum_obstacle = nmpccodegen.controller.obstacles.Obstacle_nonconvex_constraints();
+    costum_obstacle = nmpccodegen.controller.obstacles.Nonconvex_constraints(trailer_controller.model);
     h_0 = @(x) x(2)-x(1)^2;
     h_1 = @(x) 1 + (x(1)^2)/2 - x(2);
     costum_obstacle = costum_obstacle.add_constraint(h_0);
@@ -239,7 +239,7 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     trailer_controller.shift_input=shift_horizon; % is true by default
 
     % construct upper rectangular
-    costum_obstacle = nmpccodegen.controller.obstacles.Obstacle_nonconvex_constraints();
+    costum_obstacle = nmpccodegen.controller.obstacles.Nonconvex_constraints(trailer_controller.model);
     h_0 = @(x) x(2) - 2.*math.sin(-x(1)/2.);
     h_1 = @(x) 3.*sin(x(1)/2 -1) - x(2);
     h_2 = @(x) x(1) - 1;

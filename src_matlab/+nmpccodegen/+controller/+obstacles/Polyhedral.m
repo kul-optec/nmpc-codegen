@@ -1,4 +1,4 @@
-classdef Obstacle_polyhedral < nmpccodegen.controller.obstacles.Obstacle
+classdef Polyhedral < nmpccodegen.controller.obstacles.Obstacle
     %POLYHEDRAL A simple polyhedral obstacles
     %   construct obstacle of form a[i,:]^Tb +b , for all i
     
@@ -10,9 +10,11 @@ classdef Obstacle_polyhedral < nmpccodegen.controller.obstacles.Obstacle
     end
     
     methods
-        function obj = Obstacle_polyhedral(a,b)
+        function obj = Polyhedral(a,b,model)
             % a = The matrix a of a[i,:]^Tb +b , for all i
             % b = The matrix b of a[i,:]^Tb +b , for all i
+            % - model = Model of the controlled system.
+            obj@nmpccodegen.controller.obstacles.Obstacle(model)
             
             obj.a=a;
             obj.b=b;
@@ -22,7 +24,7 @@ classdef Obstacle_polyhedral < nmpccodegen.controller.obstacles.Obstacle
             obj.dimension = dimension;
             obj.number_of_constraints = number_of_constraints;
         end
-        function value = evaluate_cost(obj,coordinates_state)
+        function value = evaluate_coordinate_state_cost(obj,coordinates_state)
             % Evaluate the cost of the obstacle at a particular state.
             value=1.;
             for i=1:obj.number_of_constraints

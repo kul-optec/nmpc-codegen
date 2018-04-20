@@ -1,5 +1,5 @@
-classdef Obstacle_nonconvex_constraints < nmpccodegen.controller.obstacles.Obstacle
-    %OBSTACLE_NON_CONVEX_CONSTRAINTS obstacle excisting of non convex
+classdef Nonconvex_constraints < nmpccodegen.controller.obstacles.Obstacle
+    %NON_CONVEX_CONSTRAINTS obstacle excisting of non convex
     %constrains
     %   This obstacle allows the users to easily find a custom object.
     
@@ -7,12 +7,15 @@ classdef Obstacle_nonconvex_constraints < nmpccodegen.controller.obstacles.Obsta
         constraints
     end
     methods
-        function obj = Obstacle_nonconvex_constraints()
+        function obj = Nonconvex_constraints(model)
+            % - model = Model of the controlled system.
+            obj@nmpccodegen.controller.obstacles.Obstacle(model)
             obj.constraints={};
         end
         function obj = add_constraint(obj,constraint)
             % Add an nonconvex constraint.
             %   constraint = Matlab function.
+            
             number_of_constraints = obj.get_number_of_constraints();
             if(number_of_constraints==0)
                 obj.constraints ={constraint};
@@ -24,7 +27,7 @@ classdef Obstacle_nonconvex_constraints < nmpccodegen.controller.obstacles.Obsta
             % Get the number of nonconvex constraints.
             number_of_constraints = length(obj.constraints);
         end
-        function value =  evaluate_cost(obj,coordinates_state)
+        function value =  evaluate_coordinate_state_cost(obj,coordinates_state)
             value = 0;
             % if there actually are constraints
             if (obj.get_number_of_constraints() ~= 0)
