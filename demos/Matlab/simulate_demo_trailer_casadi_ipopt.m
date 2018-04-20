@@ -1,5 +1,5 @@
 function [ state_history,time_history ] = simulate_demo_trailer_casadi_ipopt( trailer_controller, ...
-    initial_state,reference_state,reference_input,obstacle_weights )
+    initial_state,reference_state,reference_input,obstacle_weights,shift_horizon )
 %SIMULATE_DEMO_TRAILER_PANOC_MATLAB Summary of this function goes here
 %   Detailed explanation goes here
     % -- simulate controller --
@@ -46,6 +46,11 @@ function [ state_history,time_history ] = simulate_demo_trailer_casadi_ipopt( tr
         iteration_history(i)=0;% not relevant put to zero
         
         optimal_input=full(inputs(1:trailer_controller.model.number_of_inputs));
+        if(shift_horizon)
+            % shift the iputs in prepartion of the next iteration
+            inputs(1:end-trailer_controller.model.number_of_inputs) = ...
+                inputs(trailer_controller.model.number_of_inputs+1:end); 
+        end
         disp(['The optimal input is[' num2str(optimal_input(1)) ' ; ' num2str(optimal_input(2)) ']']);
         
         state = trailer_controller.model.get_next_state_double(state, optimal_input);

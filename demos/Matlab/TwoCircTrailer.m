@@ -1,5 +1,6 @@
 clear all;
 addpath(genpath('../../src_matlab'));
+shift_horizon=false;
 %%
 step_size=0.03;
 
@@ -30,8 +31,7 @@ trailer_controller = trailer_controller.add_constraint(right_circle);
 
 % experimental feature !!!!
 trailer_controller.shooting_mode='single shot';
-
-trailer_controller.shift_input=true;
+trailer_Controller.shift_input=shift_horizon;
 
 % generate the dynamic code
 trailer_controller.generate_code();

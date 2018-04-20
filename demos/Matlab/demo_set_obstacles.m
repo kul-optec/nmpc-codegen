@@ -1,21 +1,21 @@
-function [ trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = demo_set_obstacles( name )
+function [ trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = demo_set_obstacles( name,shift_horizon )
 %DEMO_SET_OBSTACLES 
     if(strcmp(name,"controller_compare_libs"))
-        [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_controller_compare_libs();
+        [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_controller_compare_libs(shift_horizon);
     elseif(strcmp(name,"demo1"))
-        [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo1();
+        [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo1(shift_horizon);
     elseif(strcmp(name,"demo2"))
-        [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo2();
+        [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo2(shift_horizon);
     elseif(strcmp(name,"demo3"))
-        [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo3();
+        [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo3(shift_horizon);
     elseif(strcmp(name,"demo4"))
-        [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo4();
+        [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo4(shift_horizon);
     else
         error("error name not found");
     end
 end
 
-function [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_controller_compare_libs()
+function [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_controller_compare_libs(shift_horizon)
     step_size=0.05;
 
     % Q and R matrixes determined by the control engineer.
@@ -34,7 +34,7 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     trailer_controller.min_residual=-3;
     trailer_controller.lbgfs_buffer_size=50;
     % trailer_controller.pure_prox_gradient=true;
-    trailer_controller.shift_input=false;
+    trailer_controller.shift_input=shift_horizon; % is true by default
 
     % construct left circle
     circle1 = nmpccodegen.controller.obstacles.Obstacle_circular([1.5; 0.], 1.);
@@ -66,7 +66,7 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     circle4.plot();
 end
 
-function [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo1()
+function [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo1(shift_horizon)
     step_size=0.03;
 
     % Q and R matrixes determined by the control engineer.
@@ -83,6 +83,7 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     trailer_controller.integrator_casadi = true; % optional  feature that can generate the integrating used  in the cost function
     trailer_controller.panoc_max_steps = 500; % the maximum amount of iterations the PANOC algorithm is allowed to do.
     trailer_controller.min_residual=-3;
+    trailer_controller.shift_input=shift_horizon; % is true by default
 
     rectangular_center_coordinates = [0.45;-0.1];
     rectangular_width = 0.4;
@@ -118,7 +119,7 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     right_circle.plot();
 end
 
-function [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo2()
+function [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo2(shift_horizon)
     step_size=0.03;
 
     % Q and R matrixes determined by the control engineer.
@@ -136,7 +137,8 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     trailer_controller.panoc_max_steps = 500; % the maximum amount of iterations the PANOC algorithm is allowed to do.
     trailer_controller.min_residual=-3;
     trailer_controller.lbgfs_buffer_size = 50;
-
+    trailer_controller.shift_input=shift_horizon; % is true by default
+    
     % construct upper rectangular
     rectangular_up = nmpccodegen.controller.obstacles.Obstacle_rectangular([1;0.5],0.4,0.5);
 
@@ -168,7 +170,7 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     circle.plot();
 end
 
-function [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo3()
+function [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo3(shift_horizon)
     step_size=0.03;
 
     % Q and R matrixes determined by the control engineer.
@@ -186,6 +188,7 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     trailer_controller.panoc_max_steps = 500; % the maximum amount of iterations the PANOC algorithm is allowed to do.
     trailer_controller.min_residual=-3;
     trailer_controller.lbgfs_buffer_size = 50;
+    trailer_controller.shift_input=shift_horizon; % is true by default
 
     % construct upper rectangular
     costum_obstacle = nmpccodegen.controller.obstacles.Obstacle_nonconvex_constraints();
@@ -195,7 +198,7 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     costum_obstacle = costum_obstacle.add_constraint(h_1);
 
     % add obstacles to controller
-    trailer_controller = trailer_controller.add_obstacle(costum_obstacle);
+    trailer_controller = trailer_controller.add_constraint(costum_obstacle);
 
     % generate the dynamic code
     trailer_controller.generate_code();
@@ -215,7 +218,7 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     draw_obstacle_border(h_1_border, [-2;2], 100);
 end
 
-function [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo4()
+function [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo4(shift_horizon)
     step_size=0.03;
 
     % Q and R matrixes determined by the control engineer.
@@ -233,6 +236,7 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     trailer_controller.panoc_max_steps = 10000; % the maximum amount of iterations the PANOC algorithm is allowed to do.
     trailer_controller.min_residual=-3;
     trailer_controller.lbgfs_buffer_size = 50;
+    trailer_controller.shift_input=shift_horizon; % is true by default
 
     % construct upper rectangular
     costum_obstacle = nmpccodegen.controller.obstacles.Obstacle_nonconvex_constraints();
@@ -246,7 +250,7 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     costum_obstacle.add_constraint(h_3);
 
     % add obstacles to controller
-    trailer_controller = trailer_controller.add_obstacle(costum_obstacle);
+    trailer_controller = trailer_controller.add_constraint(costum_obstacle);
 
     % generate the dynamic code
     trailer_controller.generate_code();
