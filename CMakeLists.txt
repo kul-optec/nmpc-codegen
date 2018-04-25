@@ -4,6 +4,10 @@ if ( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR} )
 endif()
 ###
 
+if (NOT EXISTS "${PROJECT_SOURCE_DIR}/casadi/cost_function_derivative_combined.c")
+    message( FATAL_ERROR "Run generate_test_files.py first, with python3 and library casadi installed")
+endif()
+
 cmake_minimum_required (VERSION 2.6)
 project (npmc C)
 # set the compiler with its flags
