@@ -9,9 +9,9 @@ If you want to use this library for research feel free to contact willem.melis a
 [Install with Matlab](https://kul-forbes.github.io/nmpc-codegen/install/Matlab_install.html)
 
 ## What is this?
-Nmpc-codegen generates controllers in C, in contrast to many other existing tools it does not use other code generation tools except for casadi. The Matlab or Python code generates fast and readable source files. It makes use of the panoc algorithm to solve the optimization problem.
+Nmpc-codegen generates controllers in C, in contrast to many other existing tools it does not use other code generation tools except for casadi. The Matlab or Python code generates fast and readable source files. It makes use of the panoc algorithm to solve the optimization problem. If you are not familiar with the panoc algorithm a minimalistic implementation is available [on github here](https://github.com/Zilleplus/draf_panoc).
 
-The user must provide the dynamics of the system, a number of conditions and some MPC parameters in python. The program will generate an NMPC controller in c89 code that can be used on embedded devices.
+The user provides the dynamics of the system, a number of conditions and some MPC parameters in python. The program will generate an NMPC controller in c89 code that can be used on embedded devices.
 
 Below you can find a comparison between the Matlab implementation (ForBes zerofpr2) fmincon(interior point method of matlab) and nmpc-codegen. The time represents the time till convergence in milliseconds of every step of the controller simulation.(source code: ./demos/Matlab/compare_libs.m).
 
