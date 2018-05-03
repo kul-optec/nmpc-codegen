@@ -17,7 +17,7 @@ end
 
 command = 'gcc';
 pattern = 'no input files';
-if(test_if_command_available(command,pattern))
+if(Matlab_test_utils_test_if_command_available(command,pattern))
     disp('GNU compiler [OK]');
 else
     disp('Error the GNU compiler is not available [NOT OK]');
@@ -25,7 +25,7 @@ end
 
 command='make foobar';
 pattern = 'No rule to make target `foobar';
-if(test_if_command_available(command,pattern))
+if(Matlab_test_utils_test_if_command_available(command,pattern))
     disp('make [OK]');
 else
     disp('Error the make is not available [NOT OK]');
@@ -33,17 +33,8 @@ end
 
 command='cmake --help';
 pattern='Specify a source directory';
-if(test_if_command_available(command,pattern))
+if(Matlab_test_utils_test_if_command_available(command,pattern))
     disp('cmake [OK]');
 else
     disp('Error cmake is not available [NOT OK]');
-end
-
-% Test if a command is available by executing it and checking if it
-% contains a specific pattern
-% - command contains the command
-% -
-function [available] = test_if_command_available(command,pattern)
-    [~,cmdout] = system(command);
-    available = ~isempty(strfind(cmdout,pattern));
 end
