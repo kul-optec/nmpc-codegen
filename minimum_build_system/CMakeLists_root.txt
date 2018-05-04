@@ -10,8 +10,10 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_C_FLAGS_DEBUG "-g -Wall -Wextra")
-set(CMAKE_C_FLAGS_RELEASE "-O3")
+if(NOT MSVC)
+  set(CMAKE_C_FLAGS_DEBUG "-g -Wall -Wextra")
+  set(CMAKE_C_FLAGS_RELEASE "-O3")
+endif(MSVC)
 
 # subdirectory with lib
 include_directories ("${PROJECT_SOURCE_DIR}/PANOC")
