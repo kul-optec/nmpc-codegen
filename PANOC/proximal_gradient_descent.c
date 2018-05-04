@@ -15,7 +15,7 @@ static int proximal_gradient_descent_push(void);
 static int proximal_gradient_descent_linesearch(void);
 static real_t proximal_gradient_descent_forward_backward_envelop_precomputed_step(const real_t f_location,const real_t* df_location);
 
-/* variables safed between direction calls */
+/* variables saved between direction calls */
 static size_t iteration_index=0; /* is 0 at first and 1 after first time you call get direction */
 static real_t linesearch_gamma=0; /* linesearch parameter */
 static real_t last_current_residual_inf_norm=0;
@@ -77,7 +77,7 @@ int proximal_gradient_descent_reset_iteration_counters(void){
 const real_t* proximal_gradient_descent_get_direction(void){
    /* 
     * If this is the first time you call me, find the initial gamma value
-    * by estimating the lipschitz value of df
+    * by estimating the Lipschitz value of df
     */
     if(iteration_index==0){
         real_t lipschitz_value = get_lipschitz();

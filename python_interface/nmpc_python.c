@@ -5,14 +5,9 @@
 #include "timer.h"
 #include <stdio.h>
 
-void simulation_init();
-void simulation_cleanup();
-static struct Panoc_time* time_difference;
+#include"../libpython_interface.h"
 
-int get_last_full_solution(real_t* output);
-struct Panoc_time* simulate_nmpc_panoc(real_t* current_state,real_t* optimal_inputs,
-                                        real_t* state_reference,real_t* input_reference);
-int simulation_set_buffer_solution(real_t value, int index);
+static struct Panoc_time* time_difference;
 
 /*
  * Simulates the controller and fill optimal_input with the optimal input.
