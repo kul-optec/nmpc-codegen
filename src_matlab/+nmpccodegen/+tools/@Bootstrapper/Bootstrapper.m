@@ -86,7 +86,7 @@ classdef Bootstrapper
             % At the source files of the dynamic library used by the
             % simulator.
             
-            src_files = {'nmpc_python.c','timer.h','timer_linux.c','timer_windows.c','timer_mac.c'};
+            src_files = {'nmpc_python.c','nmpc_python.h','timer.h','timer_linux.c','timer_windows.c','timer_mac.c'};
             number_of_src_files = size(src_files,2);
             
             for i=1:number_of_src_files

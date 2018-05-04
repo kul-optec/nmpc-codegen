@@ -13,7 +13,7 @@ endif()
 if(NOT MSVC)
   set(CMAKE_C_FLAGS_DEBUG "-g -Wall -Wextra")
   set(CMAKE_C_FLAGS_RELEASE "-O3")
-endif(MSVC)
+endif()
 
 # subdirectory with lib
 include_directories ("${PROJECT_SOURCE_DIR}/PANOC")
