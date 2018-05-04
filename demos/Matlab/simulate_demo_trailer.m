@@ -1,5 +1,5 @@
 function [ state_history,time_history,iteration_history,sim ] = simulate_demo_trailer( trailer_controller, ...
-    initial_state,reference_state,reference_input,obstacle_weights )
+    initial_state,reference_state,reference_input,obstacle_weights,noise_amplitude )
 %SIMULATE_DEMO_TRAILER Simulate 3 seconds of the trailer controller
 
     % -- simulate controller --
@@ -27,7 +27,7 @@ function [ state_history,time_history,iteration_history,sim ] = simulate_demo_tr
         time_history(i)=result_simulation.seconds*1000+result_simulation.milli_seconds;
         iteration_history(i)=result_simulation.panoc_interations;
         
-        state = trailer_controller.model.get_next_state_double(state, result_simulation.optimal_input);
+        state = trailer_controller.model.get_next_state_double(state, result_simulation.optimal_input)+((rand - 0.5)*2)*noise_amplitude;
         state_history(:, i) = state;
     end
     

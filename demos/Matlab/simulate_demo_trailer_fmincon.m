@@ -1,5 +1,5 @@
 function [ state_history,time_history ] = simulate_demo_trailer_fmincon( algorithm,trailer_controller, simulator, ...
-    initial_state,reference_state,reference_input,shift_horizon )
+    initial_state,reference_state,reference_input,shift_horizon,noise_amplitude )
 %SIMULATE_DEMO_TRAILER_PANOC_MATLAB Summary of this function goes here
 %   Detailed explanation goes here
     % -- simulate controller --
@@ -26,9 +26,9 @@ function [ state_history,time_history ] = simulate_demo_trailer_fmincon( algorit
         cost = @(inputs_horizon) simulator.evaluate_cost_gradient(...
             state,reference_state,reference_input,inputs_horizon);
         to=tic;
-%         options = optimset('TolFun', 1e-3, 'MaxIter',10000,'MaxFunEvals',10000);
         options = optimoptions(@fmincon,'Algorithm',algorithm,'SpecifyObjectiveGradient',true,'TolFun', 1e-3, 'MaxIter',10000,'MaxFunEvals',10000);
         inputs = fmincon(cost,inputs,A,b,[],[],[],[],[],options);
+        
         time_history(i)=toc(to)*1000;% get time in ms
         iteration_history(i)=0;        
         
@@ -39,7 +39,7 @@ function [ state_history,time_history ] = simulate_demo_trailer_fmincon( algorit
         end
         disp(['The optimal input is[' num2str(optimal_input(1)) ' ; ' num2str(optimal_input(2)) ']']);
         
-        state = trailer_controller.model.get_next_state_double(state, optimal_input);
+        state = trailer_controller.model.get_next_state_double(state, optimal_input)+((rand - 0.5)*2)*noise_amplitude;
         state_history(:, i) = state;
     end
     

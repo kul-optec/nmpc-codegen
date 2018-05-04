@@ -198,7 +198,8 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     costum_obstacle = costum_obstacle.add_constraint(h_1);
 
     % add obstacles to controller
-    trailer_controller = trailer_controller.add_constraint(costum_obstacle);
+%     trailer_controller = trailer_controller.add_constraint(costum_obstacle);
+    trailer_controller = trailer_controller.add_general_constraint(costum_obstacle);
 
     % generate the dynamic code
     trailer_controller.generate_code();

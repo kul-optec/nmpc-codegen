@@ -1,5 +1,5 @@
 function [ state_history,time_history,iteration_history ] = simulate_demo_trailer_OPTI_ipopt( trailer_controller, simulator, ...
-    initial_state,reference_state,reference_input,obstacle_weights,shift_horizon)
+    initial_state,reference_state,reference_input,obstacle_weights,shift_horizon,noise_amplitude)
 %SIMULATE_DEMO_TRAILER_PANOC_MATLAB Summary of this function goes here
 %   Detailed explanation goes here
     % -- simulate controller --
@@ -46,7 +46,7 @@ function [ state_history,time_history,iteration_history ] = simulate_demo_traile
         end
         disp(['The optimal input is[' num2str(optimal_input(1)) ' ; ' num2str(optimal_input(2)) ']']);
         
-        state = trailer_controller.model.get_next_state_double(state, optimal_input);
+        state = trailer_controller.model.get_next_state_double(state, optimal_input)+((rand - 0.5)*2)*noise_amplitude;
         state_history(:, i) = state;
     end
     

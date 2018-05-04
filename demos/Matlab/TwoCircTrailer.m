@@ -1,6 +1,7 @@
 clear all;
 addpath(genpath('../../src_matlab'));
 shift_horizon=false;
+noise_amplitude=[0;0;0];
 %%
 step_size=0.03;
 
@@ -44,7 +45,7 @@ reference_input = [0; 0];
 obstacle_weights = [1000.; 1000.];
 
 [ state_history,time_history,iteration_history,~ ] = simulate_demo_trailer(trailer_controller,initial_state,...
-    reference_state,reference_input,obstacle_weights);
+    reference_state,reference_input,obstacle_weights,noise_amplitude);
 %% plot everything TODO make proper plot !
 figure;
 

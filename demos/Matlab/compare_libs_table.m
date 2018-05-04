@@ -3,20 +3,22 @@
 
 clear all;
 addpath(genpath('../../src_matlab'));
+noise_amplitude=[0;0;0];
+shift_horizon=false;
 %%
 names={"controller_compare_libs","demo2","demo3"};
 result_mean = zeros(length(names),6);
 result_min = zeros(length(names),6);
 result_max = zeros(length(names),6);
 
-for i=1:length(names)
+for i=3:length(names)
     name=names{i}; % change this to demo1,demo2,demo3 or demo4
-    [ trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = demo_set_obstacles( name );
+    [ trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = demo_set_obstacles( name,shift_horizon );
 
     % simulate with different methods
     [min_convergence_time,mean_convergence_time,max_convergence_time]= ...
         simulate_example(trailer_controller,initial_state,reference_state,...
-        reference_input,obstacle_weights);
+        reference_input,obstacle_weights,shift_horizon,noise_amplitude);
 
     result_mean(i,:) = mean_convergence_time;
     result_min(i,:) = min_convergence_time;
@@ -44,20 +46,20 @@ generate_latex_rel_table(result_mean_rel','tables/mean_rel.tex');
 %%
 function [min_convergence_time,mean_convergence_time,max_convergence_time]= ...
     simulate_example(trailer_controller,initial_state,reference_state,...
-    reference_input,obstacle_weights)
+    reference_input,obstacle_weights,shift_horizon,noise_amplitude)
 
-    [~,time_history,~,simulator] = simulate_demo_trailer(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights);
+    [~,time_history,~,simulator] = simulate_demo_trailer(trailer_controller,initial_state,reference_state,reference_input,obstacle_weights,noise_amplitude);
     
-    [~,time_history_forbes,~] = simulate_demo_trailer_panoc_matlab(trailer_controller,simulator,initial_state,reference_state,reference_input);
+    [~,time_history_forbes,~] = simulate_demo_trailer_panoc_matlab(trailer_controller,simulator,initial_state,reference_state,reference_input,shift_horizon,noise_amplitude);
     
-    [~,time_history_fmincon_interior_point] = simulate_demo_trailer_fmincon('interior-point',trailer_controller,simulator,initial_state,reference_state,reference_input);
+    [~,time_history_fmincon_interior_point] = simulate_demo_trailer_fmincon('interior-point',trailer_controller,simulator,initial_state,reference_state,reference_input,shift_horizon,noise_amplitude);
     
-    [~,time_history_fmincon_sqp] = simulate_demo_trailer_fmincon('sqp',trailer_controller,simulator,initial_state,reference_state,reference_input);
+    [~,time_history_fmincon_sqp] = simulate_demo_trailer_fmincon('sqp',trailer_controller,simulator,initial_state,reference_state,reference_input,shift_horizon,noise_amplitude);
     
-    [~,time_history_fmincon_active_set] = simulate_demo_trailer_fmincon('active-set',trailer_controller,simulator,initial_state,reference_state,reference_input);
+    [~,time_history_fmincon_active_set] = simulate_demo_trailer_fmincon('active-set',trailer_controller,simulator,initial_state,reference_state,reference_input,shift_horizon,noise_amplitude);
     
     [ ~,time_history_ipopt ]  = simulate_demo_trailer_OPTI_ipopt( trailer_controller,simulator, ...
-        initial_state,reference_state,reference_input,obstacle_weights );
+        initial_state,reference_state,reference_input,obstacle_weights,shift_horizon,noise_amplitude );
     
     clear simulator;
     
