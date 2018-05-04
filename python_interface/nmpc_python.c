@@ -5,7 +5,7 @@
 #include "timer.h"
 #include <stdio.h>
 
-#include"../libpython_interface.h"
+#include"nmpc_python.h"
 
 static struct Panoc_time* time_difference;
 

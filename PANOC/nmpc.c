@@ -25,7 +25,6 @@
 static real_t* current_input;
 static real_t* new_input;
 static real_t* static_casadi_parameters;
-static real_t current_residual;
 
 static int nmpc_prepare(real_t* static_casadi_parameters,const real_t* current_state,const real_t* state_reference,\
         const real_t* input_reference,const real_t* optimal_inputs);
