@@ -30,6 +30,7 @@ static int nmpc_prepare(real_t* static_casadi_parameters,const real_t* current_s
         const real_t* input_reference,const real_t* optimal_inputs);
 static int nmpc_solve_classic_way(real_t minimum_residual);
 static int shift_input(void);
+static real_t current_residual;
 
 #ifdef USE_LA
 static int nmpc_solve_with_lagrangian(real_t* static_casadi_parameters);
@@ -228,7 +229,7 @@ static int nmpc_solve_with_lagrangian(real_t* static_casadi_parameters){
             /*
              * calibrate the constraint weights
              */
-            if(constraint_values[j]!=0 && constraint_values[j]<CONSTRAINT_OPTIMAL_VALUE && weights_constraints[j]<CONSTRAINT_MAX_WEIGHT){
+            if(constraint_values[j]>CONSTRAINT_OPTIMAL_VALUE && weights_constraints[j]<CONSTRAINT_MAX_WEIGHT){
                 weights_constraints[j] = weights_constraints[j]*10;
             }
         }
