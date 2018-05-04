@@ -6,6 +6,7 @@ classdef Simulator
     
     properties
         nmpc_controller_location % The location of the controller source code.
+        visual_studio=false;
     end
     methods(Static)
         function force_unload()
@@ -25,18 +26,23 @@ classdef Simulator
             elseif isunix
                 !cmake -H. -Bbuild
             elseif ispc
-                !cmake -H. -Bbuild -G "MinGW Makefiles"
+                if(obj.visual_studio)
+                    !cmake -H. -Bbuild -DCMAKE_GENERATOR_PLATFORM=x64
+                else
+                    !cmake -H. -Bbuild -G "MinGW Makefiles"
+                end
             else
                 disp('Platform not supported');
             end
             cd(current_location); % go back to start location
         end
         function obj = compile_interface(obj)
-            % Call make to compile the dynamic library.
+            % Call cmake to compile the dynamic library.
+            current_location = pwd; % save starting location
+            cd(obj.nmpc_controller_location);
             
-            current_location = pwd;  % save starting location
-            cd([obj.nmpc_controller_location '/build']);
-            !make python_interface
+            !cmake --build ./build --config Release --target python_interface
+            
             cd(current_location); % go back to start location
         end
         function obj = load_library(obj)
@@ -50,7 +56,13 @@ classdef Simulator
             end
             if not(libisloaded('nmpc_panoc'))
                 disp('Loading nmpc_panoc library \n');
-                lib_file_name = [obj.nmpc_controller_location '/build/libpython_interface.' extension];
+                lib_file_location= [obj.nmpc_controller_location '/build'];
+                if(obj.visual_studio)
+                    lib_file_name = [lib_file_location '/Release/python_interface.dll'];
+                else
+                    lib_file_name = [lib_file_location '/libpython_interface.' extension];
+                end
+                
                 lib_file_header_name = [obj.nmpc_controller_location '/libpython_interface.h'];
                 
                 [notfound,warnings] = loadlibrary(lib_file_name,lib_file_header_name,'alias','nmpc_panoc');
@@ -58,11 +70,16 @@ classdef Simulator
         end
     end
     methods
-        function obj = Simulator(nmpc_controller_location)
+        function obj = Simulator(nmpc_controller_location,option)
             % nmpc_controller_location = The location of the controller source code.
+            if(nargin>1)
+               if(strcmp(option,'visual studio')) 
+                   obj.visual_studio=true;
+               end
+            end
             
             % Safety measure, if library is still loaded due to crash,
-            % unload it irst.
+            % unload it first.
             if libisloaded('nmpc_panoc')
                 unloadlibrary('nmpc_panoc');
             end
