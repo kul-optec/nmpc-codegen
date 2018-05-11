@@ -30,7 +30,22 @@ classdef Circular < nmpccodegen.controller.obstacles.Obstacle
                 obj.radius * sin(angles) + obj.center_coordinates(2), 'linewidth', 2, ...
                 'Color', 'black');
         end
-        
+        function plot3(obj)
+            % create sphere around orgin with radius one
+            [x,y,z] = sphere;
+            
+            % amplify the radius
+            x=x.*obj.radius;
+            y=y.*obj.radius;
+            z=z.*obj.radius;
+            
+            % shift the center
+            x=x+obj.center_coordinates(1);
+            y=y+obj.center_coordinates(2);
+            z=z+obj.center_coordinates(3);
+            
+            surf(x,y,z);
+        end
     end
     
 end
