@@ -7,6 +7,7 @@ classdef Simulator
     properties
         nmpc_controller_location % The location of the controller source code.
         visual_studio=false;
+        debug=false;
     end
     methods(Static)
         function force_unload()
@@ -41,7 +42,11 @@ classdef Simulator
             current_location = pwd; % save starting location
             cd(obj.nmpc_controller_location);
             
-            !cmake --build ./build --config Release --target python_interface
+            if(obj.debug)
+                !cmake --build ./build --config Debug --target python_interface
+            else
+                !cmake --build ./build --config Release --target python_interface
+            end
             
             cd(current_location); % go back to start location
         end
@@ -58,7 +63,11 @@ classdef Simulator
                 disp('Loading nmpc_panoc library \n');
                 lib_file_location= [obj.nmpc_controller_location '/build'];
                 if(obj.visual_studio)
-                    lib_file_name = [lib_file_location '/Release/python_interface.dll'];
+                    if(obj.debug)
+                        lib_file_name = [lib_file_location '/Debug/python_interface.dll'];
+                    else
+                        lib_file_name = [lib_file_location '/Release/python_interface.dll'];
+                    end
                 else
                     lib_file_name = [lib_file_location '/libpython_interface.' extension];
                 end
@@ -75,6 +84,10 @@ classdef Simulator
             if(nargin>1)
                if(strcmp(option,'visual studio')) 
                    obj.visual_studio=true;
+               end
+               if(strcmp(option,'visual studio debug')) 
+                   obj.visual_studio=true;
+                   obj.debug=true;
                end
             end
             
