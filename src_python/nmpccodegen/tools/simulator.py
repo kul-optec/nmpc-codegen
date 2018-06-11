@@ -65,15 +65,17 @@ class Simulator:
     def __init__(self,nmpc_controller_location,option=""):
         self._nmpc_controller_location=nmpc_controller_location
 
+        if (option == "visual studio"):
+            self._visual_studio = True
+            print("using visual studio")
+        else:
+            self._visual_studio = False
+            print("not using visual studio")
+
         self._make_build_system()
         self._compile_interface()
         self._load_library()
         self.nmpc_python_interface.simulation_init()
-
-        if(option=="visual studio"):
-            print("using visual studio")
-        else:
-            print("not using visual studio")
 
     def __del__(self):
         self.nmpc_python_interface.simulation_cleanup()
@@ -148,7 +150,7 @@ class Simulator:
                 if(self._visual_studio):
                     os.system("cmake -H. -Bbuild -DCMAKE_GENERATOR_PLATFORM=x64")
                 else:
-                    os.system(" cmake -H. -Bbuild -G \"MinGW Makefiles\"")
+                    os.system("cmake -H. -Bbuild -G \"MinGW Makefiles\"")
             elif (platform.system() == 'Darwin'):
                 os.system(" cmake -H. -Bbuild ")
             else:

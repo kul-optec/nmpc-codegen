@@ -15,7 +15,7 @@ import math
 from demo import prepare_demo_trailer,simulate_demo,draw_obstacle_border
 
 if __name__ == '__main__':
-    step_size=0.05
+    step_size=0.025
 
     # Q and R matrixes determined by the control engineer.
     Q = np.diag([1., 1., 0.1])*2
@@ -26,11 +26,11 @@ if __name__ == '__main__':
 
     trailer_controller = prepare_demo_trailer(step_size,Q,R,Q_terminal,R_terminal)
 
-    trailer_controller.horizon = 40 # NMPC parameter
+    trailer_controller.horizon = 50 # NMPC parameter
     trailer_controller.integrator_casadi = True # optional  feature that can generate the integrating used  in the cost function
     trailer_controller.panoc_max_steps = 2000 # the maximum amount of iterations the PANOC algorithm is allowed to do.
     trailer_controller.min_residual=-3
-    trailer_controller.lbgfs_buffer_size = 50
+    trailer_controller.lbgfs_buffer_size = 10
     # trailer_controller.pure_prox_gradient = True  # this will ignore the lbgfs, only usefull when testing !!!
 
     # construct upper rectangular
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     costum_obstacle.add_constraint(h_3)
 
     # add obstacles to controller
-    trailer_controller.add_obstacle(costum_obstacle)
+    trailer_controller.add_constraint(costum_obstacle)
 
     # generate the dynamic code
     trailer_controller.generate_code()
