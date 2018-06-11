@@ -6,7 +6,7 @@ function [ state_history,time_history,iteration_history,sim ] = simulate_demo_co
     simulation_time = 3;
     number_of_steps = ceil(simulation_time / controller.model.step_size);
     % setup a simulator to test
-    sim = nmpccodegen.tools.Simulator(controller.location,'visual studio');
+    sim = nmpccodegen.tools.Simulator(controller.location);
     
     for i=1:length(obstacle_weights)
         sim.set_weight_constraint(i-1, obstacle_weights(i))

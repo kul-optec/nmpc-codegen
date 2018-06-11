@@ -1,5 +1,7 @@
 clear all;
 % close all;
+noise_amplitude=zeros(12,1);
+% noise_amplitude=[ones(6,1)*0.01;zeros(6,1)];
 %%
 step_size=0.01;
 
@@ -18,8 +20,6 @@ controller.horizon = 100; % NMPC parameter
 controller.panoc_max_steps = 10000; % the maximum amount of iterations the PANOC algorithm is allowed to do.
 controller.min_residual=-3;
 controller.lbgfs_buffer_size=100;
-% trailer_controller.pure_prox_gradient=true;
-% trailer_controller.shift_input=shift_horizon; % is true by default
 
 %% Add obstacles
 radius =1;
@@ -33,7 +33,7 @@ circle2 = nmpccodegen.controller.obstacles.Circular(center_coordinates2,radius,c
 
 controller = controller.add_constraint(circle2);
 
-obstacle_weights=[1e4;1e3]; % weights used for constraints in simulation
+obstacle_weights=[1e2;1e2]; % weights used for constraints in simulation
 %% Generate the C code
 controller = controller.generate_code();
 %%
@@ -41,12 +41,12 @@ initial_state = zeros(12,1);initial_state(3)=2;
 reference_state = zeros(12,1);
 reference_state(1)=15.;
 reference_state(2)=0.;
-reference_state(3)=3.;
+reference_state(3)=5.;
 
 reference_input=[41;41;41;41]; % hover
 
 %%
-[state_history,time_history,iteration_history,simulator] = simulate_demo_controller(controller,initial_state,reference_state,reference_input,obstacle_weights);
+[state_history,time_history,iteration_history,simulator] = simulate_demo_controller(controller,initial_state,reference_state,reference_input,obstacle_weights,noise_amplitude);
 
 nmpccodegen.tools.Simulator.force_unload()
 %% Visualize the result
@@ -64,3 +64,21 @@ disp(['Distance from reference point [' num2str(reference_state(1)) ',' ...
 
 circle1.plot3();
 circle2.plot3();
+
+figure(2);clf; % plot x vs y
+circle(center_coordinates1(1),center_coordinates1(2),radius);
+circle(center_coordinates2(1),center_coordinates2(2),radius);
+hold on;
+plot(state_history(1,:),state_history(2,:));
+hold off;
+xlabel('x');
+ylabel('y');
+
+figure(3);clf; % plot x vs z
+circle(center_coordinates1(1),center_coordinates1(3),radius);
+circle(center_coordinates2(1),center_coordinates2(3),radius);
+hold on;
+plot(state_history(1,:),state_history(3,:));
+hold off;
+xlabel('x');
+ylabel('z');

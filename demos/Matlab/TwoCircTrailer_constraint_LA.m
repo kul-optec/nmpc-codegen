@@ -20,6 +20,7 @@ trailer_controller.horizon = 50; % NMPC parameter
 trailer_controller.integrator_casadi = true; % optional  feature that can generate the integrating used  in the cost function
 trailer_controller.panoc_max_steps = 500; % the maximum amount of iterations the PANOC algorithm is allowed to do.
 trailer_controller.min_residual=-3;
+trailer_controller.constraint_optimal_value=0.1;
 
 % construct left circle
 left_circle = nmpccodegen.controller.obstacles.Circular([0.2; 0.2],0.2,trailer_controller.model);
@@ -34,7 +35,7 @@ trailer_controller = trailer_controller.add_constraint(right_circle);
 % experimental feature !!!! this will activate the Lagrangian !
 max_speed = 1;
 max_speed_constraint = nmpccodegen.controller.constraints.Input_norm(max_speed);
-trailer_controller = trailer_controller.add_constraint(max_speed_constraint);
+trailer_controller = trailer_controller.add_general_constraint(max_speed_constraint);
 
 trailer_controller.shooting_mode='single shot';
 trailer_Controller.shift_input=shift_horizon;
@@ -47,9 +48,9 @@ initial_state = [0.2; 0.6; 0];
 reference_state = [0.7; -0.02; pi/2];
 reference_input = [0; 0];
 
-obstacle_weights = [1e3; 1e3; 1e2];
+obstacle_weights = [1000.; 1000.];
 
-[ state_history_constraint,time_history_constraint,iteration_history_constraint,input_history_constraint,sim ] = simulate_demo_trailer(trailer_controller,initial_state,...
+[ state_history_constraint_LA,time_history_constraint_LA,iteration_history_constraint_LA,input_history_constraint_LA,sim ] = simulate_demo_trailer(trailer_controller,initial_state,...
     reference_state,reference_input,obstacle_weights,noise_amplitude);
 clear sim;
 %% plot everything TODO make proper plot !
@@ -57,7 +58,7 @@ figure(1);clf
 left_circle.plot();
 hold on;
 right_circle.plot();
-nmpccodegen.example_models.trailer_printer(state_history_constraint,0.03,'black');
+nmpccodegen.example_models.trailer_printer(state_history_constraint_LA,0.03,'black');
 plot(initial_state(1),initial_state(2),'kO')
 plot(reference_state(1),reference_state(2),'k*')
 title('path trailer');
@@ -65,10 +66,9 @@ xlabel('X coordinate');
 ylabel('Y coordinate');
 
 figure(2);clf
-plot(iteration_history_constraint);
+plot(iteration_history_constraint_LA);
 title('amount of iterations till convergence');
 xlabel('index simulation step');
 ylabel('amount of iterations');
-
 %% Save the data
-save('TwoCircTrailer_constraint.mat','state_history_constraint','time_history_constraint','iteration_history_constraint','input_history_constraint');
+save('TwoCircTrailer_constraint_LA.mat','state_history_constraint_LA','time_history_constraint_LA','iteration_history_constraint_LA','input_history_constraint_LA');

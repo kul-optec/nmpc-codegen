@@ -1,18 +1,18 @@
-function [ state_history,time_history,iteration_history ] = simulate_demo_trailer_OPTI_ipopt( trailer_controller, simulator, ...
+function [ state_history,time_history,iteration_history ] = simulate_demo_trailer_OPTI_ipopt( controller, simulator, ...
     initial_state,reference_state,reference_input,obstacle_weights,shift_horizon,noise_amplitude)
 %SIMULATE_DEMO_TRAILER_PANOC_MATLAB Summary of this function goes here
 %   Detailed explanation goes here
     % -- simulate controller --
     simulation_time = 3;
-    number_of_steps = ceil(simulation_time / trailer_controller.model.step_size);
+    number_of_steps = ceil(simulation_time / controller.model.step_size);
     % setup a simulator to test
     
-    inputs = repmat(zeros(trailer_controller.model.number_of_inputs, 1), ...
-        trailer_controller.horizon, 1);
+    inputs = repmat(zeros(controller.model.number_of_inputs, 1), ...
+        controller.horizon, 1);
     
     %%
     state = initial_state;
-    state_history = zeros(trailer_controller.model.number_of_states, number_of_steps);
+    state_history = zeros(controller.model.number_of_states, number_of_steps);
     time_history = zeros(number_of_steps,1);
     iteration_history = zeros(number_of_steps,1);    
     
@@ -23,8 +23,8 @@ function [ state_history,time_history,iteration_history ] = simulate_demo_traile
             simulator,state,reference_state,reference_input,x);
         
         % Bounds
-        lb = ones(trailer_controller.horizon*trailer_controller.model.number_of_inputs,1).*-4;
-        ub = ones(trailer_controller.horizon*trailer_controller.model.number_of_inputs,1).*4;
+        lb = ones(controller.horizon*controller.model.number_of_inputs,1).*-4;
+        ub = ones(controller.horizon*controller.model.number_of_inputs,1).*4;
         
         opts = optiset('solver','ipopt','tolrfun',1e-3,'tolafun',1e-3);
 %         Opt = opti('fun',cost_f,'grad',gradient_f,'bounds', lb, ub,'options' ,opts);
@@ -39,14 +39,14 @@ function [ state_history,time_history,iteration_history ] = simulate_demo_traile
         inputs = x;
         iteration_history(i)=0;        
         
-        optimal_input=inputs(1:trailer_controller.model.number_of_inputs);
+        optimal_input=inputs(1:controller.model.number_of_inputs);
         if(shift_horizon)
-            inputs(1:end-trailer_controller.model.number_of_inputs) = ...
-                inputs(trailer_controller.model.number_of_inputs+1:end); 
+            inputs(1:end-controller.model.number_of_inputs) = ...
+                inputs(controller.model.number_of_inputs+1:end); 
         end
         disp(['The optimal input is[' num2str(optimal_input(1)) ' ; ' num2str(optimal_input(2)) ']']);
         
-        state = trailer_controller.model.get_next_state_double(state, optimal_input)+((rand - 0.5)*2)*noise_amplitude;
+        state = controller.model.get_next_state_double(state, optimal_input)+((rand - 0.5)*2)*noise_amplitude;
         state_history(:, i) = state;
     end
     

@@ -198,8 +198,8 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     costum_obstacle = costum_obstacle.add_constraint(h_1);
 
     % add obstacles to controller
-%     trailer_controller = trailer_controller.add_constraint(costum_obstacle);
-    trailer_controller = trailer_controller.add_general_constraint(costum_obstacle);
+    trailer_controller = trailer_controller.add_constraint(costum_obstacle);
+%     trailer_controller = trailer_controller.add_general_constraint(costum_obstacle);
 
     % generate the dynamic code
     trailer_controller.generate_code();
@@ -215,12 +215,12 @@ function [trailer_controller,initial_state,reference_state,reference_input,obsta
     hold all;
     h_0_border = @(x) x.^2;
     h_1_border = @(x) 1 + (x.^2)/2;
-    draw_obstacle_border(h_0_border,[-2;2],100);
-    draw_obstacle_border(h_1_border, [-2;2], 100);
+    draw_obstacle_border(h_0_border,[-1.5;1.5],100);
+    draw_obstacle_border(h_1_border, [-1.5;1.5], 100);
 end
 
 function [trailer_controller,initial_state,reference_state,reference_input,obstacle_weights ] = generate_demo4(shift_horizon)
-    step_size=0.03;
+    step_size=0.015;
 
     % Q and R matrixes determined by the control engineer.
     Q = diag([1. 1. 0.01])*0.2;

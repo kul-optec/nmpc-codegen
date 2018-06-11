@@ -9,7 +9,7 @@ step_size=0.03;
 Q = diag([1. 1. 0.0])*0.2;
 R = diag([1. 1.]) * 0.01;
 
-Q_terminal = diag([1. 1. 0.0])*2;
+Q_terminal = diag([1. 1. 0.01])*2;
 R_terminal = diag([1. 1.]) * 0.01;
 
 controller_folder_name = 'demo_controller_matlab';
@@ -44,24 +44,25 @@ reference_input = [0; 0];
 
 obstacle_weights = [1000.; 1000.];
 
-[ state_history,time_history,iteration_history,~ ] = simulate_demo_trailer(trailer_controller,initial_state,...
+[ state_history,time_history,iteration_history,input_history,~ ] = simulate_demo_trailer(trailer_controller,initial_state,...
     reference_state,reference_input,obstacle_weights,noise_amplitude);
 %% plot everything TODO make proper plot !
-figure;
-
-subplot(2,1,1);
+figure(1);clf
 left_circle.plot();
 hold on;
 right_circle.plot();
-nmpccodegen.example_models.trailer_printer(state_history,0.03,'red');
-plot(state_history(1,end),state_history(2,end),'black*') 
-plot(state_history(1,1),state_history(2,1),'blacko')
-title('path taken bij trailer');
+nmpccodegen.example_models.trailer_printer(state_history,0.03,'black');
+plot(initial_state(1),initial_state(2),'kO')
+plot(reference_state(1),reference_state(2),'k*')
+title('path trailer');
 xlabel('X coordinate');
 ylabel('Y coordinate');
 
-subplot(2,1,2);
+figure(2);clf
 plot(iteration_history);
 title('amount of iterations till convergence');
 xlabel('index simulation step');
 ylabel('amount of iterations');
+
+%% Save the data
+save('TwoCircTrailer.mat','state_history','time_history','iteration_history','input_history');
