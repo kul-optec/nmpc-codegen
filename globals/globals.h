@@ -78,7 +78,12 @@
     #ifndef NUMBER_OF_OBSTACLES
         #define NUMBER_OF_OBSTACLES 0
     #endif // !NUMBER_OF_OBSTACLES
-
+    #ifndef DEFAULT_WEIGHT_GENERAL_CONSTRAINT
+        #define DEFAULT_WEIGHT_GENERAL_CONSTRAINT 1e-2 /* maybe 1? */
+    #endif
+    #ifndef DEFAULT_VALUE_LAMBDA
+        #define DEFAULT_VALUE_LAMBDA 0 /* maybe 1? */
+    #endif
     /* ---------------------------------
     * lbgfs solver definitions
     * ---------------------------------

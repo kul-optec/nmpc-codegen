@@ -58,8 +58,8 @@ int nmpc_init(void){
             lambdas = &static_casadi_parameters[2*DIMENSION_STATE+DIMENSION_INPUT];
             int i;
             for(i=0;i<NUMBER_OF_GENERAL_CONSTRAINTS;i++){
-                weights_constraints[i]=1;
-                lambdas[i]=1;
+                weights_constraints[i]=DEFAULT_WEIGHT_GENERAL_CONSTRAINT;
+                lambdas[i]=DEFAULT_VALUE_LAMBDA;
             }
         }
     #else
@@ -193,7 +193,7 @@ static int shift_weights_and_lambda(void){
     /* reset the last lambda and weight to one */
     offset = (NUMBER_OF_GENERAL_CONSTRAINTS-1)*NUMBER_OF_GENERAL_CONSTRAINTS_PER_STEP;
     for (i_constraint = 0; i_constraint < NUMBER_OF_GENERAL_CONSTRAINTS_PER_STEP; i_constraint++){
-        weights_constraints[i_constraint+offset]=1;
+        /* weights_constraints[i_constraint+offset]=1; */
         lambdas[i_constraint+offset]=0;
     }
 }
