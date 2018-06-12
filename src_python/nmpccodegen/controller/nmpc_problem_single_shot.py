@@ -24,7 +24,7 @@ class Single_shot_definition:
             current_state = self._controller.model.get_next_state(current_state,input)
 
             cost = cost + self._controller.stage_cost(current_state,input,i,state_reference,input_reference)
-            cost = cost + self._controller.generate_cost_constraints(current_state,constraint_weights)
+            cost = cost + self._controller.generate_cost_constraints(current_state,input,constraint_weights)
 
         (cost_function, cost_function_derivative_combined) = \
             ccg.setup_casadi_functions_and_generate_c(static_casadi_parameters,input_all_steps,constraint_weights,cost,\

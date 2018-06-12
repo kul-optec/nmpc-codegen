@@ -35,7 +35,7 @@ if __name__ == '__main__':
     # trailer_controller.pure_prox_gradient=True
 
     # construct upper rectangular
-    costum_obstacle = obstacles.Obstacle_nonconvex_constraints()
+    costum_obstacle = obstacles.Nonconvex_constraints(trailer_controller.model)
     h_0 = lambda x: x[1]-x[0]**2
     h_1 = lambda x: 1 + (x[0]**2)/2 - x[1]
     costum_obstacle.add_constraint(h_0)

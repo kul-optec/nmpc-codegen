@@ -34,7 +34,7 @@ if __name__ == '__main__':
     # trailer_controller.pure_prox_gradient = True  # this will ignore the lbgfs, only usefull when testing !!!
 
     # construct upper rectangular
-    costum_obstacle = obstacles.Obstacle_nonconvex_constraints()
+    costum_obstacle = obstacles.Nonconvex_constraints(trailer_controller.model)
     h_0 = lambda x: x[1] - 2.*math.sin(-x[0]/2.)
     h_1 = lambda x: 3.*math.sin(x[0]/2 -1) - x[1]
     h_2 = lambda x: x[0] - 1

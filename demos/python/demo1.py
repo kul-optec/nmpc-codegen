@@ -32,14 +32,14 @@ if __name__ == '__main__':
     rectangular_center_coordinates = np.array([0.45,-0.1])
     rectangular_width = 0.4
     rectangular_height = 0.1
-    rectangular = obstacles.Obstacle_rectangular(rectangular_center_coordinates,\
+    rectangular = obstacles.Rectangular(trailer_controller.model,rectangular_center_coordinates,\
                                                  rectangular_width,rectangular_height)
 
     # construct left circle
-    left_circle = obstacles.Obstacle_circle(np.array([0.2,0.2]),0.2)
+    left_circle = obstacles.Circular(trailer_controller.model,np.array([0.2,0.2]),0.2)
 
     # construct right circle
-    right_circle = obstacles.Obstacle_circle(np.array([0.7, 0.2]), 0.2)
+    right_circle = obstacles.Circular(trailer_controller.model,np.array([0.7, 0.2]), 0.2)
 
     # add obstacles to controller
     trailer_controller.add_constraint(rectangular)

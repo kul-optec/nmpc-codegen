@@ -3,13 +3,15 @@ import casadi as cd
 import matplotlib as plt
 import numpy as np
 
-class Obstacle_circle(Obstacle):
-    def __init__(self,center_coordinates,radius):
+class Circular(Obstacle):
+    def __init__(self,model,center_coordinates,radius):
         """ construct obstable of form a[i,:]^Tb +b , for all i """
+        super(Circular, self).__init__(model)
+
         self._center_coordinates=center_coordinates
         self._radius=radius
 
-    def evaluate_cost(self,coordinates_state):
+    def evaluate_coordinate_state_cost(self,coordinates_state):
         """ check how far coordinates are from center, if inside radius punish """
         return Obstacle.trim_and_square(self._radius - cd.sqrt(cd.sum1((self._center_coordinates-coordinates_state)**2)))
 

@@ -32,10 +32,10 @@ if __name__ == '__main__':
     trailer_controller.min_residual=-3
 
     # construct left circle
-    left_circle = obstacles.Obstacle_circle(np.array([0.2,0.2]),0.2)
+    left_circle = obstacles.Circular(trailer_controller.model,np.array([0.2,0.2]),0.2)
 
     # construct right circle
-    right_circle = obstacles.Obstacle_circle(np.array([0.7, 0.2]), 0.2)
+    right_circle = obstacles.Circular(trailer_controller.model,np.array([0.7, 0.2]), 0.2)
 
     # add obstacles to controller
     trailer_controller.add_constraint(left_circle)

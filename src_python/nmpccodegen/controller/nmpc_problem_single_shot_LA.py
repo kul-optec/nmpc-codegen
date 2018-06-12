@@ -65,7 +65,7 @@ class Single_shot_LA_definition:
             current_state = self._controller.model.get_next_state(current_state,input)
 
             cost = cost + self._controller.stage_cost(current_state,input,i,state_reference,input_reference)
-            cost = cost + self._controller.generate_cost_constraints(current_state,constraint_weights)
+            cost = cost + self._controller.generate_cost_constraints(current_state,input,constraint_weights)
 
             # Extra terms associated with the lagrangian - lambda * c(x) + mu * c(c) ^ 2
             step_horizon = i - 1

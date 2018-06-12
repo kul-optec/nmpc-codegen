@@ -100,13 +100,13 @@ class Nmpc_panoc:
             return self._terminal_cost.evaluate_cost(current_state,input,i,state_reference,input_reference)
         return self._stage_cost.evaluate_cost(current_state,input,i,state_reference,input_reference)
 
-    def generate_cost_constraints(self,state,constraint_weights):
+    def generate_cost_constraints(self,state,input,constraint_weights):
         if(self.number_of_constraints is 0):
             return 0.
         else:
             cost = 0.
             for i in range(0,self.number_of_constraints):
-                cost += constraint_weights[i]*self._constraints[i].evaluate_cost(state[self._model.indices_coordinates])
+                cost += constraint_weights[i]*self._constraints[i].evaluate_cost(state,input)
 
             return cost
 

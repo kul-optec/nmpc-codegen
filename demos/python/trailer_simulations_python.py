@@ -34,16 +34,16 @@ if __name__ == '__main__':
     # trailer_controller.pure_prox_gradient=True
 
     # construct left circle
-    circle1 = obstacles.Obstacle_circle(np.array([1.5,0.]),1.)
-    circle2 = obstacles.Obstacle_circle(np.array([3.5, 2.]), 0.6)
-    circle3 = obstacles.Obstacle_circle(np.array([2., 2.5]), 0.8)
-    circle4 = obstacles.Obstacle_circle(np.array([5., 4.]), 1.05)
+    circle1 = obstacles.Circular(trailer_controller.model,np.array([1.5,0.]),1.)
+    circle2 = obstacles.Circular(trailer_controller.model,np.array([3.5, 2.]), 0.6)
+    circle3 = obstacles.Circular(trailer_controller.model,np.array([2., 2.5]), 0.8)
+    circle4 = obstacles.Circular(trailer_controller.model,np.array([5., 4.]), 1.05)
 
     # add obstacles to controller
-    trailer_controller.add_obstacle(circle1)
-    trailer_controller.add_obstacle(circle2)
-    trailer_controller.add_obstacle(circle3)
-    trailer_controller.add_obstacle(circle4)
+    trailer_controller.add_constraint(circle1)
+    trailer_controller.add_constraint(circle2)
+    trailer_controller.add_constraint(circle3)
+    trailer_controller.add_constraint(circle4)
 
     # generate the dynamic code
     trailer_controller.generate_code()

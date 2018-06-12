@@ -31,18 +31,18 @@ if __name__ == '__main__':
     # trailer_controller.pure_prox_gradient=True
 
     # construct upper rectangular
-    rectangular_up = obstacles.Obstacle_rectangular(np.array([1,0.5]),0.4,0.5)
+    rectangular_up = obstacles.Rectangular(trailer_controller.model,np.array([1,0.5]),0.4,0.5)
 
     # construct lower rectangular
-    rectangular_down = obstacles.Obstacle_rectangular(np.array([1, -0.2]), 0.4, 0.5)
+    rectangular_down = obstacles.Rectangular(trailer_controller.model,np.array([1, -0.2]), 0.4, 0.5)
 
     # construct circle
-    circle = obstacles.Obstacle_circle(np.array([0.2,0.2]),0.2)
+    circle = obstacles.Circular(trailer_controller.model,np.array([0.2,0.2]),0.2)
 
     # add obstacles to controller
-    trailer_controller.add_obstacle(rectangular_up)
-    trailer_controller.add_obstacle(rectangular_down)
-    trailer_controller.add_obstacle(circle)
+    trailer_controller.add_constraint(rectangular_up)
+    trailer_controller.add_constraint(rectangular_down)
+    trailer_controller.add_constraint(circle)
 
     # generate the dynamic code
     trailer_controller.generate_code()
