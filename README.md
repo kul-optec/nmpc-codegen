@@ -1,12 +1,10 @@
 # PANOC NMPC solver
 ## What is this?
-This project is still under construction but the goal is to generate an MPC controller. The user will provide the dynamics of the system, a number of conditions and some MPC parameters in python. The program will then generate an NMPC controller in c89 code that can be used on embedded devices.
+Nmpc-codegen generates MPC controllers. The user provides the dynamics of the system, a number of conditions and some MPC parameters in python. Nmpc-codegen will then generate the NMPC controller in c89 code that can be used on embedded devices.
 
 Below you can find a comparison between the Matlab implementation (ForBes zerofpr2) fmincon(interior point method of matlab) and nmpc-codegen. The time represents the time till convergence in milliseconds of every step of the controller simulation.(source code: ./demos/Matlab/compare_libs.m).
 
 ![alt text](trailer_example_time_log.png "Time till convergence simple simulation")
-
-The first version of Python is ready to be used, a Matlab version is on its way, right now its experimental.(run ./demos/thesis/TwoCircTrailer.py to get an idea what this is about)
 
 More information in the  [user manual](toturial.pdf) and the used [example script](toturial_nmpc_codegen.py). A short introduction to the underlying algorithm can be found [here](PANOC.pdf)
 
