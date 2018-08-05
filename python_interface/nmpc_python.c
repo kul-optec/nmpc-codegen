@@ -5,14 +5,9 @@
 #include "timer.h"
 #include <stdio.h>
 
-void simulation_init();
-void simulation_cleanup();
-static struct Panoc_time* time_difference;
+#include"nmpc_python.h"
 
-int get_last_full_solution(real_t* output);
-struct Panoc_time* simulate_nmpc_panoc(real_t* current_state,real_t* optimal_inputs,
-                                        real_t* state_reference,real_t* input_reference);
-int simulation_set_buffer_solution(real_t value, int index);
+static struct Panoc_time* time_difference;
 
 /*
  * Simulates the controller and fill optimal_input with the optimal input.
@@ -43,11 +38,11 @@ void simulation_cleanup(){
     nmpc_cleanup();
 }
 
-real_t simulation_get_weight_obstacles(int index_obstacle){
-    return nmpc_get_weight_obstacles(index_obstacle);
+real_t simulation_get_weight_constraints(int index_constraint){
+    return nmpc_get_weight_constraints(index_constraint);
 }
-int simulation_set_weight_obstacles(int index_obstacle,real_t weight){
-    return nmpc_set_weight_obstacles(index_obstacle,weight);
+int simulation_set_weight_constraints(int index_constraint,real_t weight){
+    return nmpc_set_weight_constraints(index_constraint,weight);
 }
 int simulation_set_buffer_solution(real_t value, int index){
     return nmpc_set_buffer_solution(value,index);

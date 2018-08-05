@@ -62,8 +62,15 @@ class Panoc_time(ctypes.Structure):
 
 class Simulator:
     """ simulator used to interact in python with an controller in c """
-    def __init__(self,nmpc_controller_location):
+    def __init__(self,nmpc_controller_location,option=""):
         self._nmpc_controller_location=nmpc_controller_location
+
+        if (option == "visual studio"):
+            self._visual_studio = True
+            print("using visual studio")
+        else:
+            self._visual_studio = False
+            print("not using visual studio")
 
         self._make_build_system()
         self._compile_interface()
@@ -126,12 +133,12 @@ class Simulator:
         self.nmpc_python_interface.restype = ctypes.c_int
 
         self.nmpc_python_interface.simulation_set_buffer_solution(value_ctype,index_ctype)
-    def set_weight_obstacle(self,index_obstacle,weight_obstacle):
+    def set_weight_constraint(self,index_constraint,weight_constraint):
 
-        index_obstacle_ctype = ctypes.c_int(index_obstacle)
-        weight_obstacle_ctype = ctypes.c_double(weight_obstacle)
+        index_constraint_ctype = ctypes.c_int(index_constraint)
+        weight_constraint_ctype = ctypes.c_double(weight_constraint)
 
-        self.nmpc_python_interface.simulation_set_weight_obstacles(index_obstacle_ctype,weight_obstacle_ctype)
+        self.nmpc_python_interface.simulation_set_weight_constraints(index_constraint_ctype,weight_constraint_ctype)
 
     def _make_build_system(self):
         cwd = os.getcwd()
@@ -140,16 +147,21 @@ class Simulator:
             if (platform.system() == 'Linux'):
                 os.system(" cmake -H. -Bbuild")
             elif (platform.system() == 'Windows'):
-                os.system(" cmake -H. -Bbuild -G \"MinGW Makefiles\"")
+                if(self._visual_studio):
+                    os.system("cmake -H. -Bbuild -DCMAKE_GENERATOR_PLATFORM=x64")
+                else:
+                    os.system("cmake -H. -Bbuild -G \"MinGW Makefiles\"")
+            elif (platform.system() == 'Darwin'):
+                os.system(" cmake -H. -Bbuild ")
             else:
-                print("ERROR Platform not supported use either Linux or Windows")
+                print("ERROR Platform not supported use either Linux,Mac or Windows")
         finally:
             os.chdir(cwd)
     def _compile_interface(self):
         cwd = os.getcwd()
         try:
-            os.chdir(self._nmpc_controller_location + "/build")
-            os.system("make clean python_interface")
+            os.chdir(self._nmpc_controller_location)
+            os.system("cmake --build ./build --config Release --target python_interface")
         finally:
             os.chdir(cwd)
     def _load_library(self):
@@ -162,10 +174,20 @@ class Simulator:
                 lib_location = self._nmpc_controller_location + "/build/libpython_interface" + extension_lib
                 self.nmpc_python_interface = ctypes.CDLL(lib_location)
             elif (platform.system() == 'Windows'):
-                extension_lib = '.dll'
-                lib_location = self._nmpc_controller_location + "/build/libpython_interface" + extension_lib
-                print("Compiling python interface for Windows: " + lib_location)
+                if(self._visual_studio):
+                    extension_lib = '.dll'
+                    lib_location = self._nmpc_controller_location + "/build/Release/libpython_interface" + extension_lib
+                    print("Compiling python interface for Windows using Visual Studio toolset: " + lib_location)
+                else:
+                    extension_lib = '.dll'
+                    lib_location = self._nmpc_controller_location + "/build/libpython_interface" + extension_lib
+                    print("Compiling python interface for Windows using MINGW: " + lib_location)
                 self.nmpc_python_interface = ctypes.windll.LoadLibrary(lib_location)
+            elif(platform.system() == 'Darwin'):
+                print("Compiling python interface for Mac")
+                extension_lib = '.dylib'
+                lib_location = self._nmpc_controller_location + "/build/libpython_interface" + extension_lib
+                self.nmpc_python_interface = ctypes.CDLL(lib_location)
             else:
                 print("ERROR platform can't be detected, using Linux")
                 extension_lib = '.so'

@@ -13,9 +13,24 @@ class Globals_generator:
         self._define_variable("DIMENSION_STATE", nmpc_controller.model.number_of_states)
         self._define_variable("DIMENSION_PANOC", nmpc_controller.dimension_panoc)
         self._define_variable("MPC_HORIZON", nmpc_controller.horizon)
+        if(nmpc_controller.shift_input):
+            self._define_variable("SHIFT_INPUT", str(1.))
 
-        self._define_variable("NUMBER_OF_OBSTACLES", nmpc_controller.number_of_obstacles)
-        self._define_variable("DEFAULT_OBSTACLE_WEIGHT", 1)
+        self._generate_title("Lagrangian related values, only visible if there are general constraints")
+        if(len(nmpc_controller.general_constraints)>0):
+            self._define_variable('USE_LA', '1')
+            self._define_variable('NUMBER_OF_GENERAL_CONSTRAINTS',
+                                  str(len(nmpc_controller.general_constraints) * nmpc_controller.horizon))
+            self._define_variable('NUMBER_OF_GENERAL_CONSTRAINTS_PER_STEP',
+                                  str(len(nmpc_controller.general_constraints)))
+            self._define_variable('CONSTRAINT_OPTIMAL_VALUE', str(nmpc_controller.constraint_optimal_value))
+            self._define_variable('CONSTRAINT_MAX_WEIGHT', str(nmpc_controller.constraint_max_weight))
+            self._define_variable('START_RESIDUAL', str(nmpc_controller.start_residual))
+            self._define_variable('MAX_STEPS_LA', str(nmpc_controller.max_steps_LA))
+
+        self._generate_title("Constraint related values")
+        self._define_variable("NUMBER_OF_CONSTRAINTS", nmpc_controller.number_of_constraints)
+        self._define_variable("DEFAULT_CONSTRAINT_WEIGHT", 1)
 
         self.set_data_type(nmpc_controller.data_type)
 

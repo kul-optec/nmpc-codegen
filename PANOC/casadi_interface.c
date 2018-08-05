@@ -18,9 +18,7 @@ CasadiFunction* init_buffer_casadi_function( \
         );
 int cleanup_buffer_casadi_function(CasadiFunction* data);
 
-/* static CasadiFunction* cost_function_data; */
-/* static CasadiFunction* cost_function_derivative_combined_data; */
-static real_t* obstacle_weights;
+static real_t* constraint_weights;
 static const real_t* state;
 
 #ifdef INTEGRATOR_CASADI
@@ -28,14 +26,14 @@ static const real_t* state;
 #endif
 
 int casadi_interface_init(){
-    if(NUMBER_OF_OBSTACLES>0){
-        obstacle_weights=malloc(sizeof(real_t)*NUMBER_OF_OBSTACLES);
-        if(obstacle_weights==NULL) goto fail_1;
+    if(NUMBER_OF_CONSTRAINTS>0){
+        constraint_weights=malloc(sizeof(real_t)*NUMBER_OF_CONSTRAINTS);
+        if(constraint_weights==NULL) goto fail_1;
         else{
             size_t i;
-            for (i = 0; i < NUMBER_OF_OBSTACLES; i++)
+            for (i = 0; i < NUMBER_OF_CONSTRAINTS; i++)
             {
-                obstacle_weights[i]=DEFAULT_OBSTACLE_WEIGHT;
+                constraint_weights[i]=DEFAULT_CONSTRAINT_WEIGHT;
             }
         }
     }
@@ -45,7 +43,7 @@ int casadi_interface_init(){
         return FAILURE;
 }
 int casadi_interface_cleanup(){
-    free(obstacle_weights);
+    free(constraint_weights);
     return SUCCESS;
 }
 #ifdef INTEGRATOR_CASADI
@@ -54,13 +52,6 @@ int casadi_integrate(const real_t* current_state,const real_t* input,real_t* new
     real_t* output_casadi[1]={new_state};
 
     return integrator(input_casadi, output_casadi, NULL, NULL, MEM_CASADI);
-
-    /* old code, the arrays are unused this way
-    integrator_data->cost_function(input_casadi,output_casadi,\
-        integrator_data->buffer_int,\
-        integrator_data->buffer_real,\
-        MEM_CASADI);
-    */
 }
 #endif
 
@@ -89,16 +80,10 @@ real_t casadi_interface_f(const real_t* input){
     real_t data_output;
     real_t* output[1] = {&data_output};
 
-    const real_t* input_function[3]={state,input,obstacle_weights};
+    const real_t* input_function[3]={state,input,constraint_weights};
 
     cost_function(input_function, output, NULL, NULL, MEM_CASADI);
 
-    /* old code, the arrays are unused this way
-    cost_function_data->cost_function(input_function,output,\
-        cost_function_data->buffer_int,\
-        cost_function_data->buffer_real,\
-        MEM_CASADI);
-    */
     return *output[0];
 }
 #endif
@@ -106,16 +91,10 @@ real_t casadi_interface_f(const real_t* input){
 real_t casadi_interface_f_df(const real_t* input,real_t* data_output){
     real_t f_value;
     real_t* output[2] = {&f_value,data_output};
-    const real_t* input_function[3]={state,input,obstacle_weights};
+    const real_t* input_function[3]={state,input,constraint_weights};
 
     cost_function_derivative_combined(input_function, output, NULL, NULL, MEM_CASADI);
 
-    /* old code, the arrays are unused this way
-    cost_function_derivative_combined_data->cost_function(input_function,output,\
-        cost_function_derivative_combined_data->buffer_int,\
-        cost_function_derivative_combined_data->buffer_real,\
-        MEM_CASADI);
-    */
     return f_value;
 }
 
@@ -165,13 +144,13 @@ CasadiFunction* init_buffer_casadi_function( \
         return NULL;
 }
 
-real_t casadi_get_weight_obstacles(int index_obstacle){
-    if(index_obstacle<NUMBER_OF_OBSTACLES && index_obstacle>=0)return obstacle_weights[index_obstacle];
+real_t casadi_get_weight_constraints(int index_constraint){
+    if(index_constraint<NUMBER_OF_CONSTRAINTS && index_constraint>=0)return constraint_weights[index_constraint];
     return 0;
 }
-int casadi_set_weight_obstacles(int index_obstacle,real_t weight){
-    if(index_obstacle<NUMBER_OF_OBSTACLES && index_obstacle>=0){
-        obstacle_weights[index_obstacle]=weight;
+int casadi_set_weight_constraints(int index_constraint,real_t weight){
+    if(index_constraint<NUMBER_OF_CONSTRAINTS && index_constraint>=0){
+        constraint_weights[index_constraint]=weight;
         return SUCCESS;
     }
     return FAILURE;

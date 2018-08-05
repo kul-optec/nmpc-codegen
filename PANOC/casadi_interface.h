@@ -23,9 +23,9 @@ int casadi_integrate(const real_t* state,const real_t* input,real_t* new_state);
 #endif
 /* size_t casadi_interface_get_dimension(); */
 
-/* obstacle related functions */
-real_t casadi_get_weight_obstacles(int index_obstacle);/* returns zero if index was out of range */
-int casadi_set_weight_obstacles(int index_obstacle,real_t weight);/* returns failure if the index is out of range */
+/* constraint related functions */
+real_t casadi_get_weight_constraints(int index_constraint);/* returns zero if index was out of range */
+int casadi_set_weight_constraints(int index_constraint,real_t weight);/* returns failure if the index is out of range */
 
 /* cost functions */
 #ifndef SINGLE_COST_MODE

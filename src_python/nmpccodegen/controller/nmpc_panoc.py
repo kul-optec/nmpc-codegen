@@ -6,6 +6,7 @@ from pathlib import Path
 from .globals_generator import Globals_generator
 from .casadi_code_generator import Casadi_code_generator as ccg
 from .nmpc_problem_single_shot import Single_shot_definition
+from .nmpc_problem_single_shot_LA import Single_shot_LA_definition
 from .nmpc_problem_multiple_shot import Multiple_shot_definition
 
 class Nmpc_panoc:
@@ -33,18 +34,29 @@ class Nmpc_panoc:
 
         self._integrator_casadi=False
         self._pure_prox_gradient=False
+        self._shift_input=True
+
+        # Accelerated Lagrangian related properties
+        self._general_constraints=[]
+        self._constraint_optimal_value=1e3
+        self._constraint_max_weight=1e5
+        self._start_residual=1
+        self._max_steps_LA=4
 
         # generate the dynamic_globals file
         self._globals_generator = Globals_generator(self._location_lib + "/globals/globals_dyn.h")
 
-        # at first assume no obstacles
-        self._obstacle=[]
+        # at first assume no constraints
+        self._constraints=[]
 
     def generate_code(self):
         """ Generate code controller """
         # start with generating the cost function
         if(self._shooting_mode=='single shot'):
-            self.__generate_cost_function_singleshot()
+            if(self.number_of_general_constraints==0):
+                self.__generate_cost_function_singleshot()
+            else:
+                self.__generate_cost_function_singleshot_LA()
         elif(self._shooting_mode=='multiple shot'):
             self.__generate_cost_function_multipleshot()
         else:
@@ -71,6 +83,11 @@ class Nmpc_panoc:
         ssd = Single_shot_definition(self)
         (self._cost_function, self._cost_function_derivative_combined) = ssd.generate_cost_function()
         self._dimension_panoc=ssd.dimension
+    def __generate_cost_function_singleshot_LA(self):
+        """ private function, generates part of the casadi cost function with single shot, using the accelerated Lagrangian """
+        ssd = Single_shot_LA_definition(self)
+        (self._cost_function, self._cost_function_derivative_combined) = ssd.generate_cost_function()
+        self._dimension_panoc=ssd.dimension
 
     def __generate_cost_function_multipleshot(self):
         """ private function, generates part of the casadi cost function with multiple shot """
@@ -83,20 +100,28 @@ class Nmpc_panoc:
             return self._terminal_cost.evaluate_cost(current_state,input,i,state_reference,input_reference)
         return self._stage_cost.evaluate_cost(current_state,input,i,state_reference,input_reference)
 
-    def generate_cost_obstacles(self,state,obstacle_weights):
-        if(self.number_of_obstacles is 0):
+    def generate_cost_constraints(self,state,input,constraint_weights):
+        if(self.number_of_constraints is 0):
             return 0.
         else:
             cost = 0.
-            for i in range(0,self.number_of_obstacles):
-                cost += obstacle_weights[i]*self._obstacle[i].evaluate_cost(state[self._model.indices_coordinates])
+            for i in range(0,self.number_of_constraints):
+                cost += constraint_weights[i]*self._constraints[i].evaluate_cost(state,input)
 
             return cost
-    def add_obstacle(self,obstacle):
-        self._obstacle.append(obstacle)
+
+    def add_constraint(self,constraint):
+        self._constraints.append(constraint)
     @property
-    def number_of_obstacles(self):
-        return len(self._obstacle)
+    def number_of_constraints(self):
+        return len(self._constraints)
+
+    def add_general_constraint(self,general_constraint):
+        self._general_constraints.append(general_constraint)
+    @property
+    def number_of_general_constraints(self):
+        return len(self._general_constraints)
+
     @property
     def shooting_mode(self):
         return self._shooting_mode
@@ -114,6 +139,13 @@ class Nmpc_panoc:
     @horizon.setter
     def horizon(self, value):
         self._horizon = value
+
+    @property
+    def shift_input(self):
+        return self._shift_input
+    @shift_input.setter
+    def shift_input(self, value):
+        self._shift_input = value
 
     @property
     def model(self):
@@ -178,9 +210,45 @@ class Nmpc_panoc:
         self._min_residual = value
 
     @property
-    def number_of_obstacles(self):
-        return len(self._obstacle)
+    def constraint_optimal_value(self):
+        return self._constraint_optimal_value
 
+    @constraint_optimal_value.setter
+    def constraint_optimal_value(self, value):
+        self._constraint_optimal_value = value
+
+    @property
+    def constraint_max_weight(self):
+        return self._constraint_max_weight
+
+    @constraint_max_weight.setter
+    def constraint_max_weight(self, value):
+        self._constraint_max_weight = value
+
+    @property
+    def start_residual(self):
+        return self._start_residual
+
+    @start_residual.setter
+    def start_residual(self, value):
+        self._start_residual = value
+
+    @property
+    def max_steps_LA(self):
+        return self._max_steps_LA
+
+    @max_steps_LA.setter
+    def max_steps_LA(self, value):
+        self._max_steps_LA = value
+
+
+
+    @property
+    def constraints(self):
+        return self._constraints
+    @property
+    def general_constraints(self):
+        return self._general_constraints
     @property
     def cost_function(self):
         return self._cost_function

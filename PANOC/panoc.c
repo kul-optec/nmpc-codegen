@@ -86,7 +86,7 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
     
     /* precompute FBE used in linesearch check, static fields ! */
     FBE_current_location = proximal_gradient_descent_get_current_forward_backward_envelop();
-    direction_norm=sq(vector_norm2(forward_backward_step,DIMENSION_PANOC));
+    direction_norm=inner_product(forward_backward_step,forward_backward_step,DIMENSION_PANOC);
 
     if(lbfgs_get_active_buffer_size()>0)
         panoc_linesearch(forward_backward_step,direction_residue,linesearch_gamma,new_location);
@@ -97,6 +97,13 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
 
     #ifndef PURE_PROX_GRADIENT /* if PURE_PROX_GRADIENT is defined, we wont use lbgfs step */
         lbfgs_update_hessian(tau,current_location,new_location);
+    #else
+        /* 
+         * If lbfgs update was not called the inf norm will not be buffered.
+         * Call the function manual so inf_norm of the current residual is buffered.
+         * */
+        real_t residual[DIMENSION_PANOC];
+        proximal_gradient_descent_get_current_residual(residual);
     #endif
 
         
@@ -136,9 +143,6 @@ static int panoc_check_linesearch_condition(real_t* new_location,const real_t li
     const real_t FBE_potential_new_location = proximal_gradient_descent_forward_backward_envelop(new_location);
     const real_t factor = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*linesearch_gamma);
 
-    const real_t f_current_location = buffer_get_current_f();
-    const real_t f_potential_new_location = buffer_get_new_location_f();
-
     /*
      * possible extra condition to get monotone behavior
      */
@@ -163,8 +167,17 @@ static int panoc_get_new_potential_location(const  real_t* forward_backward_step
     const real_t* direction_residue,const real_t tau,real_t* potential_new_location){
 
     const real_t* current_location = buffer_get_current_location();
-    vector_add_2_vectors_a_times(current_location,forward_backward_step,direction_residue,DIMENSION_PANOC,\
-        -(1-tau),tau,potential_new_location); 
+    if(tau>0 && tau<1)
+        vector_add_2_vectors_a_times(current_location,forward_backward_step,direction_residue,DIMENSION_PANOC,\
+            -(1-tau),tau,potential_new_location); 
+    else if (tau==1){
+        vector_copy(current_location,potential_new_location,DIMENSION_PANOC);
+        vector_add_ntimes(potential_new_location,direction_residue,DIMENSION_PANOC,1.);
+    }
+    else{ /* tau == 0 */
+        vector_copy(current_location,potential_new_location,DIMENSION_PANOC);
+        vector_add_ntimes(potential_new_location,forward_backward_step,DIMENSION_PANOC,-1.);
+    }
     return SUCCESS;
 }
 

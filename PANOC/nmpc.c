@@ -25,12 +25,12 @@
 static real_t* current_input;
 static real_t* new_input;
 static real_t* static_casadi_parameters;
-static real_t current_residual;
 
 static int nmpc_prepare(real_t* static_casadi_parameters,const real_t* current_state,const real_t* state_reference,\
         const real_t* input_reference,const real_t* optimal_inputs);
 static int nmpc_solve_classic_way(real_t minimum_residual);
 static int shift_input(void);
+static real_t current_residual;
 
 #ifdef USE_LA
 static int nmpc_solve_with_lagrangian(real_t* static_casadi_parameters);
@@ -58,8 +58,8 @@ int nmpc_init(void){
             lambdas = &static_casadi_parameters[2*DIMENSION_STATE+DIMENSION_INPUT];
             int i;
             for(i=0;i<NUMBER_OF_GENERAL_CONSTRAINTS;i++){
-                weights_constraints[i]=1;
-                lambdas[i]=1;
+                weights_constraints[i]=DEFAULT_WEIGHT_GENERAL_CONSTRAINT;
+                lambdas[i]=DEFAULT_VALUE_LAMBDA;
             }
         }
     #else
@@ -193,7 +193,7 @@ static int shift_weights_and_lambda(void){
     /* reset the last lambda and weight to one */
     offset = (NUMBER_OF_GENERAL_CONSTRAINTS-1)*NUMBER_OF_GENERAL_CONSTRAINTS_PER_STEP;
     for (i_constraint = 0; i_constraint < NUMBER_OF_GENERAL_CONSTRAINTS_PER_STEP; i_constraint++){
-        weights_constraints[i_constraint+offset]=1;
+        /* weights_constraints[i_constraint+offset]=1; */
         lambdas[i_constraint+offset]=0;
     }
 }
@@ -229,7 +229,7 @@ static int nmpc_solve_with_lagrangian(real_t* static_casadi_parameters){
             /*
              * calibrate the constraint weights
              */
-            if(constraint_values[j]!=0 && constraint_values[j]<CONSTRAINT_OPTIMAL_VALUE && weights_constraints[j]<CONSTRAINT_MAX_WEIGHT){
+            if(constraint_values[j]>CONSTRAINT_OPTIMAL_VALUE && weights_constraints[j]<CONSTRAINT_MAX_WEIGHT){
                 weights_constraints[j] = weights_constraints[j]*10;
             }
         }
@@ -254,11 +254,11 @@ int nmpc_get_last_full_solution(real_t* output){
     return SUCCESS;
 }
 
-real_t nmpc_get_weight_obstacles(int index_obstacle){
-    return casadi_get_weight_obstacles(index_obstacle);
+real_t nmpc_get_weight_constraints(int index_constraint){
+    return casadi_get_weight_constraints(index_constraint);
 }
-int nmpc_set_weight_obstacles(int index_obstacle,real_t weight){
-    return casadi_set_weight_obstacles(index_obstacle,weight);
+int nmpc_set_weight_constraints(int index_constraint,real_t weight){
+    return casadi_set_weight_constraints(index_constraint,weight);
 }
 int nmpc_set_buffer_solution(real_t value, int index){
     current_input[index]=value;

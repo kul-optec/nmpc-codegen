@@ -22,7 +22,7 @@ def generate_controller(controller_name,reference_state,horizon,panoc_max_steps,
     # controller_name = "trailer_simple_controller"
     trailer_controller_location=location+"/"+ controller_name + "/"
 
-    tools.Bootstrapper.bootstrap(trailer_controller_location,python_interface_enabled=True)
+    tools.Bootstrapper.bootstrap(trailer_controller_location,simulation_tools=True)
     ## -----------------------------------------------------------------
 
     # get the continious system equations
@@ -93,7 +93,7 @@ def main():
    reference_state=np.array([0,2,0])
    horizon = 100
    panoc_max_steps=1000
-   # current_state = generate_controller("trailer_move_up",reference_state,horizon,panoc_max_steps)
+   current_state = generate_controller("trailer_move_up",reference_state,horizon,panoc_max_steps)
 
    reference_state=np.array([2,0,0])
    horizon = 50

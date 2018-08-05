@@ -1,5 +1,5 @@
 function [ state_history,time_history,iteration_history ] = simulate_demo_trailer_panoc_matlab( trailer_controller, simulator, ...
-    initial_state,reference_state,reference_input )
+    initial_state,reference_state,reference_input,shift_horizon,noise_amplitude)
 %SIMULATE_DEMO_TRAILER_PANOC_MATLAB Summary of this function goes here
 %   Detailed explanation goes here
     % -- simulate controller --
@@ -10,7 +10,7 @@ function [ state_history,time_history,iteration_history ] = simulate_demo_traile
     %% forbes panoc specific stuff
     opt_zerofpr2.tol = 0.001;
     opt_zerofpr2.display = 0;
-    opt_zerofpr2.maxit = 10000;
+    opt_zerofpr2.maxit = 1000;
     opt_zerofpr2.adaptive = 1;
     opt_zerofpr2.solver = 'zerofpr2';
     opt_zerofpr2.method = 'lbfgs';
@@ -36,11 +36,15 @@ function [ state_history,time_history,iteration_history ] = simulate_demo_traile
         iteration_history(i)=out_zerofpr2.solver.iterations;
         inputs = out_zerofpr2.x;
         
-        
         optimal_input=out_zerofpr2.x(1:trailer_controller.model.number_of_inputs);
+        if(shift_horizon)
+            % shift the iputs in prepartion of the next iteration
+            inputs(1:end-trailer_controller.model.number_of_inputs) = ...
+                inputs(trailer_controller.model.number_of_inputs+1:end); 
+        end
         disp(['The optimal input is[' num2str(optimal_input(1)) ' ; ' num2str(optimal_input(2)) ']']);
         
-        state = trailer_controller.model.get_next_state(state, optimal_input);
+        state = trailer_controller.model.get_next_state_double(state, optimal_input)+((rand - 0.5)*2)*noise_amplitude;
         state_history(:, i) = state;
     end
     

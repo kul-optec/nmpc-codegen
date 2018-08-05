@@ -10,8 +10,10 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_C_FLAGS_DEBUG "-g -Wall -Wextra")
-set(CMAKE_C_FLAGS_RELEASE "-O3")
+if(NOT MSVC)
+  set(CMAKE_C_FLAGS_DEBUG "-g -Wall -Wextra")
+  set(CMAKE_C_FLAGS_RELEASE "-O3")
+endif()
 
 # subdirectory with lib
 include_directories ("${PROJECT_SOURCE_DIR}/PANOC")
@@ -22,6 +24,8 @@ add_subdirectory (casadi)
 
 if(WIN32)
     SET(TIMER_LIB "${PROJECT_SOURCE_DIR}/python_interface/timer_windows.c")
+elseif(APPLE)
+    SET(TIMER_LIB "${PROJECT_SOURCE_DIR}/python_interface/timer_mac.c" )
 elseif(UNIX)
     SET(TIMER_LIB "${PROJECT_SOURCE_DIR}/python_interface/timer_linux.c")
 endif()

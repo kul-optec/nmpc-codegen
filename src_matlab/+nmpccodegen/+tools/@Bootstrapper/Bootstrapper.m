@@ -1,11 +1,19 @@
 classdef Bootstrapper
-    %BOOTSTRAPPER bootstraps static files of a controller
+    %BOOTSTRAPPER Bootstraps static files of a controller
     %   output_location_controller: Folder where the controller files will be located
     %   simululation_tools: Enable this if you want to use the simulator
     %       class this will provide the nessary build system and src files
     %       to simulate.
     methods(Static)
         function bootstrap(output_location_controller,simulation_tools)
+            % Create a folder that contains all the static files needed to
+            % create a controller.
+            %   - output_location_controller = Output location of the folder.
+            %   - simulation_tools = Should be set on true if you want
+            %   to use the simulator. If set on false, the bootstrapper
+            %   will only provide the absolute minimum files to create a
+            %   controller. 
+            
             location_nmpc_repo = nmpccodegen.tools.Bootstrapper.get_repo_location();
             disp('GENERATING output folders of controller:')
             nmpccodegen.tools.Bootstrapper.bootstrap_folders(output_location_controller);
@@ -26,6 +34,8 @@ classdef Bootstrapper
     end
     methods(Static,Access = private)
         function location_repo = get_repo_location()
+            % Get location of the library.
+            
             Folder = which('nmpccodegen.tools.Bootstrapper');
             relative_location_windows = '\src_matlab\+nmpccodegen\+tools\@Bootstrapper\Bootstrapper.m';
             relative_location_unix = '/src_matlab/+nmpccodegen/+tools/@Bootstrapper/Bootstrapper.m';
@@ -34,6 +44,8 @@ classdef Bootstrapper
             location_repo = Folder;
         end
         function bootstrap_folders(lib_location)
+            % Create the folder structure if it doesn t exist yet.
+            
             nmpccodegen.tools.Bootstrapper.create_folder_if_not_exist(lib_location)
         	nmpccodegen.tools.Bootstrapper.create_folder_if_not_exist([lib_location  '/casadi'])
         	nmpccodegen.tools.Bootstrapper.create_folder_if_not_exist([lib_location  '/globals'])
@@ -42,6 +54,8 @@ classdef Bootstrapper
         	nmpccodegen.tools.Bootstrapper.create_folder_if_not_exist([lib_location  '/python_interface'])
         end
         function generate_PANOC_lib(location,location_nmpc_repo,overwrite)
+            % Puppy over the panoc algorithm.
+            
             src_files = {'buffer.c';'buffer.h';'casadi_definitions.h';...
                          'lbfgs.h';'lbfgs.c';'lipschitz.c';'lipschitz.h';...
                          'matrix_operations.h';'matrix_operations.c';'nmpc.c';'panoc.c';'panoc.h';...
@@ -61,13 +75,18 @@ classdef Bootstrapper
         end
 
         function generate_static_globals(location,location_nmpc_repo,overwrite)
+            % Copy over the static globals file.
+            
             src_location = [location_nmpc_repo '/globals/' 'globals.h'];
             dst_location = [location '/globals/' 'globals.h'];
             nmpccodegen.tools.Bootstrapper.copy_over_file(src_location,dst_location,overwrite);
         end
 
         function generate_python_interface(location, location_nmpc_repo, overwrite)
-            src_files = {'nmpc_python.c','timer.h','timer_linux.c','timer_windows.c'};
+            % At the source files of the dynamic library used by the
+            % simulator.
+            
+            src_files = {'nmpc_python.c','nmpc_python.h','timer.h','timer_linux.c','timer_windows.c','timer_mac.c'};
             number_of_src_files = size(src_files,2);
             
             for i=1:number_of_src_files
@@ -83,6 +102,8 @@ classdef Bootstrapper
         end
 
         function generate_build_system(location,location_nmpc_repo,overwrite)
+            % Copy over the cmake files.
+            
             src_location = [location_nmpc_repo '/minimum_build_system/' 'CMakeLists_root.txt'];
             dst_location = [location  '/CMakeLists.txt'];
             nmpccodegen.tools.Bootstrapper.copy_over_file(src_location,dst_location,overwrite);
@@ -97,6 +118,8 @@ classdef Bootstrapper
         end
 
         function create_folder_if_not_exist(location)
+            % Create a folder if it doesn t exist yet at location, if the
+            % folder exists leave it in place.
             test = exist(location);
             if(test==7 )
                 string = [location ': folder already exists, leaving it in place' ];
@@ -107,6 +130,10 @@ classdef Bootstrapper
         end
 
         function copy_over_file(src_location,dst_location,overwrite)
+            % Copy over a file from src_location to dst_location.
+            %   - If overwrite is true the existing file will be
+            %   overwritten.
+            
             test = exist(dst_location);
             if(test==2 )
                 if(overwrite)
