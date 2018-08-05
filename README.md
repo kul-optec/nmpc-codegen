@@ -1,6 +1,6 @@
 # PANOC NMPC solver
 ## What is this?
-Nmpc-codegen generates MPC controllers. The user provides the dynamics of the system, a number of conditions and some MPC parameters in python. Nmpc-codegen will then generate the NMPC controller in c89 code that can be used on embedded devices.
+Nmpc-codegen generates MPC controllers. The user provides the dynamics of the system, a number of conditions and some MPC parameters in python. Nmpc-codegen will then generate the NMPC controller in c89 code that can be used on embedded devices. Check out the [website](https://kul-forbes.github.io/nmpc-codegen/) for more information.
 
 Below you can find a comparison between the Matlab implementation (ForBes zerofpr2) fmincon(interior point method of matlab) and nmpc-codegen. The time represents the time till convergence in milliseconds of every step of the controller simulation.(source code: ./demos/Matlab/compare_libs.m).
 
@@ -12,6 +12,10 @@ More information in the  [user manual](toturial.pdf) and the used [example scrip
 - GNU toolchain with gcc
 - python 3 with casadi and numpy installed on it
 - Cmake
+
+## How to install?
+- [Matlab](https://kul-forbes.github.io/nmpc-codegen/install/Python_install.html)
+- [Python](https://kul-forbes.github.io/nmpc-codegen/install/Matlab_install.html)
 
 ## How to compile and test me?
 This is only for those who want to check if the library works on there device. 
