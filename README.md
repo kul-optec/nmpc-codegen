@@ -2,16 +2,9 @@
 ## What is this?
 Nmpc-codegen generates MPC controllers. The user provides the dynamics of the system, a number of conditions and some MPC parameters in python. Nmpc-codegen will then generate the NMPC controller in c89 code that can be used on embedded devices. Check out the [website](https://kul-forbes.github.io/nmpc-codegen/) for more information.
 
-Below you can find a comparison between the Matlab implementation (ForBes zerofpr2) fmincon(interior point method of matlab) and nmpc-codegen. The time represents the time till convergence in milliseconds of every step of the controller simulation.(source code: ./demos/Matlab/compare_libs.m).
-
-![alt text](trailer_example_time_log.png "Time till convergence simple simulation")
+If you want to use this library for research feel free to contact willem.melis at student.kuleuven.be .
 
 More information in the  [user manual](toturial.pdf) and the used [example script](toturial_nmpc_codegen.py). A short introduction to the underlying algorithm can be found [here](PANOC.pdf)
-
-## What do I need?
-- GNU toolchain with gcc
-- python 3 with casadi and numpy installed on it
-- Cmake
 
 ## How to install?
 - [Matlab](https://kul-forbes.github.io/nmpc-codegen/install/Python_install.html)
@@ -25,27 +18,9 @@ This is only for those who want to check if the library works on there device.
 - Run Make to compile everything: make
 - Run make test to test everything: make test
 
-### Unix-like operating systems
-- Generate the test functions by running the generate_test_files.py script with python3
-- Run Cmake to generate the make files: cmake -H. -Bbuild
-- Run Make inside the ./build folder to compile everything: make
-- Run make test to test everything: make test
+![alt text](trailer_example_time_log.png "Time till convergence simple simulation")
 
-### Notes
+## Notes
 - The library is tested with casadi version 3.2, using other versions will lead to problems
-- The tested compilers are gcc GNU compiler, Clang LLVM compiler and the Microsoft C Compiler.
-- cmake -H. -Bbuild -DCMAKE_C_COMPILER=clang creates a build system with clang compiler
-
-## common problems
-1. When using the Matlab version the following error appears:
-cmake: /usr/local/MATLAB/R2016a/bin/glnxa64/libcurl.so.4: no version information available (required by cmake)
-cmake: /usr/local/MATLAB/R2016a/sys/os/glnxa64/libstdc++.so.6: version `GLIBCXX_3.4.18' not found (required by cmake)
-cmake: /usr/local/MATLAB/R2016a/sys/os/glnxa64/libstdc++.so.6: version `CXXABI_1.3.9' not found (required by cmake)
-cmake: /usr/local/MATLAB/R2016a/sys/os/glnxa64/libstdc++.so.6: version `GLIBCXX_3.4.20' not found (required by cmake)
-cmake: /usr/local/MATLAB/R2016a/sys/os/glnxa64/libstdc++.so.6: version `GLIBCXX_3.4.21' not found (required by cmake)
-cmake: /usr/local/MATLAB/R2016a/sys/os/glnxa64/libstdc++.so.6: version `GLIBCXX_3.4.21' not found (required by /usr/lib/x86_64-linux-gnu/libjsoncpp.so.1)
-cmake: /usr/local/MATLAB/R2016a/sys/os/glnxa64/libstdc++.so.6: version `CXXABI_1.3.8' not found (required by /usr/lib/x86_64-linux-gnu/libicuuc.so.57)
-
-This is due to Matlab using some old version from gcc. 
-
-solution: start matlab as following: "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6 matlab" 
+- The tested compilers on the raw controller code are gcc GNU compiler, Clang LLVM compiler, Intel C compiler and the Microsoft C Compiler.
+- cmake -H. -Bbuild -DCMAKE_C_COMPILER=clang creates a build system with clang compiler and Cmake

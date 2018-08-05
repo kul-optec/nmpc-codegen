@@ -49,7 +49,7 @@ void vector_minus(const real_t* vector1,real_t* vector2,const int size_vector);
 real_t inner_product(const real_t* vector1,const real_t* vector2,const int size_vector);
 
 /* add vector2 n times to vector1 */
-void vector_add_ntimes(const real_t* vector1,const real_t* vector2,const int size_vector,const real_t n,real_t* result);
+void vector_add_ntimes(real_t* vector1,const real_t* vector2,const int size_vector,const real_t n);
 
 /* add vector2 a_vector2 times to vector1 and add vector3 a_vector3 times to vector1*/
 void vector_add_2_vectors_a_times(const real_t* vector1,const real_t* vector2,const real_t* vector3,const int size_vector,

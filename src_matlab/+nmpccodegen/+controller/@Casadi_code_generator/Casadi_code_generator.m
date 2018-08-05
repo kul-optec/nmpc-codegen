@@ -1,6 +1,6 @@
 classdef Casadi_code_generator
     %CASADI_CODE_GENERATOR Generates the casadi c code
-    %   Detailed explanation goes here
+    %   This is class is used internally by Nmpc_panoc
 
     methods(Static)
         function [cost_function,cost_function_derivative_combined] = ...
@@ -27,8 +27,11 @@ classdef Casadi_code_generator
                  disp('Buffer file present removing it !');
                  delete (['./' buffer_file_name]);
             end
-            
-            version_casadi = casadi.CasadiMeta.version();
+            try
+                version_casadi = casadi.CasadiMeta.version();
+            catch
+                error('unsupported casadi version');
+            end
             version_split = strsplit(version_casadi,'.');
             
             major_version = cell2mat(version_split(1));
@@ -44,7 +47,17 @@ classdef Casadi_code_generator
                                 'with_export',false,...
                                 'casadi_int','long int'...
                                 );
-            else
+            elseif(major_version=='3' && minor_version=='3' )
+                opts =   struct('verbose',false,...
+                                'mex',false,...
+                                'cpp',false,...
+                                'main',false,...
+                                'codegen_scalars',false,...
+                                'with_header',true,...              
+                                'with_mem',false,...
+                                'with_export',false...
+                                );
+            elseif(major_version=='3' && minor_version=='2' )
                 % generate the casadi function in C to a buffer file
                 opts =   struct('verbose',false,...
                                 'mex',false,...
@@ -54,6 +67,8 @@ classdef Casadi_code_generator
                                 'with_header',true,...              
                                 'with_mem',false...
                                 );
+            else
+                error('unsupported casadi version, exiting script');
             end
                         
             file_name_costfunction = [location_lib  '/casadi/' filename];

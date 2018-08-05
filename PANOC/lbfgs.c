@@ -152,7 +152,8 @@ const real_t* lbfgs_get_direction(void){
             buffer_limit=buffer_size;
         }
 
-        real_t q[DIMENSION_PANOC]; vector_copy(direction_prox_gradient,q,DIMENSION_PANOC);
+        real_t* q = direction; /* use the direction variable temporarily as q */
+        vector_copy(direction_prox_gradient,q,DIMENSION_PANOC);
 
         /*
          * First loop lbfgs
@@ -162,9 +163,10 @@ const real_t* lbfgs_get_direction(void){
         {
             rho[i] = 1/inner_product(y[i],s[i],DIMENSION_PANOC);
             alpha[i]= rho[i]*inner_product(s[i],q,DIMENSION_PANOC);
-            vector_add_ntimes(q,y[i],DIMENSION_PANOC,-alpha[i],q);
+            vector_add_ntimes(q,y[i],DIMENSION_PANOC,-alpha[i]);
         }
-        real_t z[DIMENSION_PANOC];
+
+        real_t* z = direction; /* use the direction variable temporarily as z */
         vector_real_mul(q,DIMENSION_PANOC,hessian_estimate,z);
         /*
          * Second loop lbfgs
@@ -173,7 +175,7 @@ const real_t* lbfgs_get_direction(void){
         for (i = buffer_limit - 1; i >= 0; i--)
         {
             beta=rho[i]*inner_product(y[i],z,DIMENSION_PANOC);
-            vector_add_ntimes(z,s[i],DIMENSION_PANOC,(alpha[i]-beta),z); 
+            vector_add_ntimes(z,s[i],DIMENSION_PANOC,(alpha[i]-beta)); 
         }
         vector_minus(z,direction,DIMENSION_PANOC); /* z contains upward direction, multiply with -1 to get downward direction */
     }
@@ -232,7 +234,7 @@ static int check_if_valid_update(const real_t* gradient_current_location){
     const real_t* possible_y = y[buffer_size];
 
     const real_t inner_product_ys = inner_product(possible_y,possible_s,DIMENSION_PANOC);
-    const real_t norm_s = sq(vector_norm2(possible_s,DIMENSION_PANOC));
+    const real_t norm_s = inner_product(possible_s,possible_s,DIMENSION_PANOC);
     const real_t norm_gradient_current_location = vector_norm2(gradient_current_location,DIMENSION_PANOC);
 
     if(inner_product_ys/norm_s < (1e-12)*norm_gradient_current_location)

@@ -1,9 +1,11 @@
 from .obstacle import  Obstacle
 import casadi as cd
 
-class Obstacle_polyhedral(Obstacle):
-    def __init__(self,a,b):
+class Polyhedral(Obstacle):
+    def __init__(self,model,a,b):
         """ construct obstacle of form a[i,:]^Tb +b , for all i """
+        super(Polyhedral, self).__init__(model)
+
         self._a=a
         self._b=b
 
@@ -12,7 +14,7 @@ class Obstacle_polyhedral(Obstacle):
         self._number_of_constraints=number_of_constraints
         self._dimension=dimension
 
-    def evaluate_cost(self,coordinates_state):
+    def evaluate_coordinate_state_cost(self,coordinates_state):
         """ evaluate the function h(x) """
         value=1.
         for i in range(0,self._number_of_constraints):

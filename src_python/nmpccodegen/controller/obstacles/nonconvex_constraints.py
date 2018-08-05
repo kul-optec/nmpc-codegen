@@ -1,13 +1,14 @@
 from .obstacle import  Obstacle
 import casadi as cd
 
-class Obstacle_nonconvex_constraints(Obstacle):
-    def __init__(self):
+class Nonconvex_constraints(Obstacle):
+    def __init__(self,model):
         """ construct obstacle """
+        super(Nonconvex_constraints, self).__init__(model)
         self._constraints=[]
     def add_constraint(self,constraint):
         self._constraints.append(constraint)
-    def evaluate_cost(self,coordinates_state):
+    def evaluate_coordinate_state_cost(self,coordinates_state):
         """ evaluate the function h(x) """
         if self.number_of_constraints == 0:
             return 0

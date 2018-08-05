@@ -1,20 +1,26 @@
 classdef IndicatorBoxFunctionProx <  nmpccodegen.Cfunctions.Cfunction
-    %INDICATORBOXFUNCTION Summary of this class goes here
-    %   Detailed explanation goes here
+    %INDICATORBOXFUNCTIONPROX The proximal of an indicator box function.
+    %   This is the function that the results from taking the proximal
+    %   operator with the indicator function.
     
     properties
-        lower_limits
-        upper_limits
-        dimension
+        lower_limits %  the lower limits of the box.
+        upper_limits % The upper limits of the box.
+        dimension % Dimension of the box, this is equal to the length of the array's lower_limits and upper_limits
     end
     
     methods
         function obj=IndicatorBoxFunctionProx(lower_limits,upper_limits)
+            % lower_limits :  the lower limits of the box.
+            % upper_limits : The upper limits of the box.
+            
             obj.lower_limits=lower_limits;
             obj.upper_limits=upper_limits;
             obj.dimension = min(length(lower_limits),length(upper_limits));
         end
         function obj=generate_c_code(obj,location)
+            % Generate the C code at the folder sepcified in location.
+            
             source_file = nmpccodegen.Cfunctions.Source_file_generator(location,'proxg');
             source_file = source_file.open();
             source_file = source_file.start_for('i','MPC_HORIZON',1);

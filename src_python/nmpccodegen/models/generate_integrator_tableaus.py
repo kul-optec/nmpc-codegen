@@ -6,12 +6,13 @@ import nodepy as nodepy
 import numpy as np
 from nodepy.runge_kutta_method import *
 import tabulate as t
+import scipy.io as spio
 
 def save_integrator(key_name):
     """ save the integrator if its explicit """
     RK=loadRKM(key_name)
     if(RK.is_explicit()):
-        print("Saving "+RK.name+" to file "+str(key_name)+".npz")
+        print("Saving "+RK.name+" to file "+str(key_name)+".npz" + " and file "+str(key_name)+".mat")
 
         # an integrator tablaeu exists out of 3 matrices:
         #A=np.asarray(RK.A)
@@ -24,7 +25,13 @@ def save_integrator(key_name):
 
         output_file="./integrator_tableaus/"+str(key_name)
 
+        # save into python matrix file
         np.savez(output_file, A=A, b=b, c=c)
+
+        output_file="../../../src_matlab/+nmpccodegen/+models/integrator_tableaus/"+str(key_name)
+
+        # save into matlab matrix file
+        spio.savemat( output_file, dict([('A', A), ('b', b), ('c', c)]) )
 
         return True
     return False

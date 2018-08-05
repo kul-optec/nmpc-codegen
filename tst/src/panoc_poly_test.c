@@ -13,6 +13,7 @@ static const real_t theoretical_solution[]={0,0};
 static size_t degree=5;
 int checkIfSolutionIsReached(void);
 int checkIfSolutionIsReached2(void);
+int rosen_test(void);
 
 void print_location_2D(const real_t* location);
 
@@ -24,6 +25,7 @@ void print_location_2D(const real_t* location);
 int main(){
     return checkIfSolutionIsReached()+\
     checkIfSolutionIsReached2();
+    /*rosen_test();*/
 }
 
 int checkIfSolutionIsReached(void){
@@ -116,6 +118,58 @@ int checkIfSolutionIsReached2(void){
     }else{
         printf("--> error on x: x1=%f and x2=%f \n",current_location[0],current_location[1]);
         printf("end of test2:FAILURE --- \n");
+        return FAILURE;
+    }  
+}
+
+int rosen_test(void){
+    printf("test2 --- \n");
+    size_t dimension=2;
+    degree=6;
+    real_t w=3;
+    example_problems_set_init_problem1(w,dimension);
+    f_poly_init(dimension,degree );
+    casadi_interface_test_init(dimension, 
+        g_3,
+        proxg_3,
+        f_rosenbrock,
+        df_rosenbrock);
+    real_t u_min=-5;
+    real_t u_max=5;
+    example_problems_set_init_problem3(u_min,u_max);
+
+    size_t numer_of_iterations=10;
+    
+    real_t* current_location=malloc(dimension*sizeof(real_t));
+    current_location[0]=-1.2;
+    current_location[1]=1.;
+    real_t* next_location=malloc(dimension*sizeof(real_t));
+
+    printf("starting in location x1=%f x2=%f \n",current_location[0],current_location[1]);
+    panoc_init(dimension);
+    
+    size_t i;
+    for ( i = 0; i < numer_of_iterations; i++)
+    {
+            panoc_get_new_location(current_location,next_location);
+            /* move the next location to the current location */
+            real_t* buffer=current_location;
+            current_location=next_location;
+            next_location=buffer;
+            /* print out the location */
+            print_location_2D(current_location);
+    }
+    real_t final_cost = f_poly(current_location);
+    free(current_location);
+    free(next_location);
+    panoc_cleanup();   
+
+    if(final_cost<0.01){
+        printf("end of test3:SUCCESS --- \n");
+        return SUCCESS;
+    }else{
+        printf("--> error on x: x1=%f and x2=%f \n",current_location[0],current_location[1]);
+        printf("end of test3:FAILURE --- \n");
         return FAILURE;
     }  
 }

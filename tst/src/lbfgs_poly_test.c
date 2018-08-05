@@ -114,14 +114,16 @@ real_t backtracking_linesearch(const real_t* direction,const real_t* location){
     real_t alpha=1;
 
     real_t possible_location[DIMENSION];
-    vector_add_ntimes(location,direction,DIMENSION,alpha,possible_location);
+    vector_copy(location,possible_location,DIMENSION);
+    vector_add_ntimes(possible_location,direction,DIMENSION,alpha);
     while(f_rosenbrock(possible_location)>= \
             f_rosenbrock(location) + gamma_armijo * alpha * inner_product(direction,current_df,DIMENSION) ){
         alpha = alpha/2;
         if(alpha<10e-5){
             alpha=0;break;
         }
-        vector_add_ntimes(location,direction,DIMENSION,alpha,possible_location);
+        vector_copy(location,possible_location,DIMENSION);
+        vector_add_ntimes(possible_location,direction,DIMENSION,alpha);
     }
     return alpha;
 }

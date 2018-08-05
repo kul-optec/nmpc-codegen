@@ -1,21 +1,24 @@
 classdef Simulation_data
-    %SIMULATION_DATA Summary of this class goes here
-    %   Detailed explanation goes here
+    %SIMULATION_DATA results of a simulation.
+    %   After the simulator simulates, it will return an
+    %   object of this class.
     
     properties
-        optimal_input
-        hours
-        minutes
-        seconds
-        milli_seconds
-        micro_seconds
-        nano_seconds
-        panoc_interations
-        time_string
+        optimal_input % The optimal input that should be applied to the system.
+        hours % The convergence time is the sum of hours/minutes/seconds/milli_seconds/micro_seconds/nano_seconds
+        minutes % The convergence time is the sum of hours/minutes/seconds/milli_seconds/micro_seconds/nano_seconds
+        seconds % The convergence time is the sum of hours/minutes/seconds/milli_seconds/micro_seconds/nano_seconds
+        milli_seconds % The convergence time is the sum of hours/minutes/seconds/milli_seconds/micro_seconds/nano_seconds
+        micro_seconds % The convergence time is the sum of hours/minutes/seconds/milli_seconds/micro_seconds/nano_seconds
+        nano_seconds % The convergence time is the sum of hours/minutes/seconds/milli_seconds/micro_seconds/nano_seconds
+        panoc_interations % The amount of iterations to convergence.
+        time_string % The time till convergnce formatted as a string.
     end
     
     methods
         function obj = Simulation_data(time_struct_pointer,optimal_input)
+            % constructor used internally by the Simulator class
+            
             obj.optimal_input=optimal_input;
             
             obj.hours=time_struct_pointer.value.hours;

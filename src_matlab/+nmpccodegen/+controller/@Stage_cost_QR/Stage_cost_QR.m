@@ -1,11 +1,14 @@
 classdef Stage_cost_QR
-    %STAGE_COST Summary of this class goes here
-    %   Detailed explanation goes here
+    %STAGE_COST_QR A simple QR stage cost
+    %   The stage cost exists out of two matrixes Q and R.
+    %   - Q: Matrix penalty on the states.
+    %   - R:  Matrix bounty on the inputs.
+    %   The total stage cost can then be represented by: x^T Q x + u^T R u
     
     properties
-        Q
-        R
-        model
+        Q % Matrix penalty on the states.
+        R % Matrix penalty on the inputs.
+        model % Model object of the system.
     end
     
     methods
@@ -16,6 +19,11 @@ classdef Stage_cost_QR
         end
         function stage_cost=evaluate_cost(obj,state,input,iteration_index,...
                 state_reference,input_reference)
+            % Evaluates the stage cost at a certain state.
+            %   - state = current state
+            %   - input = Input applied to get the next state.
+            %   - state_reference = The preferred state.
+            %   - input_reference = The preferred inputs.
             stage_cost=0;
 
             for i_col=1:obj.model.number_of_states

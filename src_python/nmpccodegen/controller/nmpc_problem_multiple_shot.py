@@ -12,7 +12,7 @@ class Multiple_shot_definition:
         input_reference = cd.SX.sym('input_reference', self._controller.model.number_of_inputs, 1)
         static_casadi_parameters = cd.vertcat(initial_state, state_reference, input_reference)
 
-        obstacle_weights = cd.SX.sym('obstacle_weights', self._controller.number_of_obstacles, 1)
+        constraint_weights = cd.SX.sym('constraint_weights', self._controller.number_of_constraints, 1)
 
         input_all_steps = cd.SX.sym('input_all_steps', self._controller.model.number_of_inputs * self._controller.horizon + \
                                     self._controller.model.number_of_states * (self._controller.horizon-1), 1)
@@ -26,7 +26,7 @@ class Multiple_shot_definition:
             next_state_bar = self._controller.model.get_next_state(current_init_state,current_input)
 
             cost = cost + self._controller.stage_cost(next_state_bar, current_input, i, state_reference, input_reference)
-            cost = cost + self._controller.generate_cost_obstacles(next_state_bar, obstacle_weights)
+            cost = cost + self._controller.generate_cost_constraints(next_state_bar, constraint_weights)
 
             # add a soft constraint for the continuity
             weight_continuity = 1000
@@ -45,7 +45,7 @@ class Multiple_shot_definition:
                     offset_inputs + i * self._controller.model.number_of_states]
 
         (cost_function, cost_function_derivative_combined) = \
-            ccg.setup_casadi_functions_and_generate_c(static_casadi_parameters, input_all_steps,obstacle_weights, cost, \
+            ccg.setup_casadi_functions_and_generate_c(static_casadi_parameters, input_all_steps,constraint_weights, cost, \
                                                       self._controller.location)
         return (cost_function, cost_function_derivative_combined)
     @property

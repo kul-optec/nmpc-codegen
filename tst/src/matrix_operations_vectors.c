@@ -136,7 +136,7 @@ int test_vector_add_ntimes(void){
     real_t test_vector2[test_vector_size] = {1, 1, 2, 2};
     real_t test_scalar=2;
 
-    vector_add_ntimes(test_vector1,test_vector2,test_vector_size,test_scalar,test_vector1);
+    vector_add_ntimes(test_vector1,test_vector2,test_vector_size,test_scalar);
 
     if(test_vector1[0]==3 && test_vector1[1]==4 && test_vector1[2]==7 && test_vector1[3]==8){ 
         return SUCCESS; /* sucess of test */
