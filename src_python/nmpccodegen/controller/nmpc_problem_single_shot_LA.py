@@ -2,21 +2,28 @@ import casadi as cd
 from .casadi_code_generator import Casadi_code_generator as ccg
 
 class Single_shot_LA_definition:
-    """ single shot nmpc defintion """
+    """ 
+    single shot nmpc defintion 
+    """
     def __init__(self,controller):
         self._controller=controller
         self._dimension=controller.model.number_of_inputs*controller.horizon
 
     def generate_cost_general_constraints(self, current_state, input, lambdas, general_constraint_weights,
                                           step_horizon):
-        """ Evaluate function cost of all general constraints for 1 step in the horizon
+        """ 
+        Evaluate function cost of all general constraints for 1 step in the horizon
             L = lambda ci(x) + mu ci(x)^2
-                current_state: state of this step in the horizon
-                input: current input applied to the system
-                lambdas: lambda's for this step of the horizon
-                general_constraint_weights: mu's for this step of the horizon
-                step_horizon: the index of the step in the horizon (the first step is index 0)
-        number_of_general_constraints = length(obj.controller.general_constraints);"""
+
+        Parameters
+        ---------
+        current_state: state of this step in the horizon
+        input: current input applied to the system
+        lambdas: lambda's for this step of the horizon
+        general_constraint_weights: mu's for this step of the horizon
+        step_horizon: the index of the step in the horizon (the first step is index 0)
+        number_of_general_constraints = length(obj.controller.general_constraints);
+        """
         offset_constraints = step_horizon * self._controller.number_of_general_constraints
         cost = cd.SX(1, 1)
         for i in range(0, self._controller.number_of_general_constraints):
@@ -27,11 +34,16 @@ class Single_shot_LA_definition:
         return cost
 
     def evaluate_constraints(self, state, input, constraint_values, step_horizon):
-        """ Evaluate cost of general constraints for 1 step in the horizon
-                state: state of this step in the horizon
-                input: current input applied to the system
-                constraint_values: contains the costs of the constraints
-                step_horizon: the index of the step in the horizon (the first step is index 0)"""
+        """ 
+        Evaluate cost of general constraints for 1 step in the horizon
+
+        Parameters
+        ---------
+        state: state of this step in the horizon
+        input: current input applied to the system
+        constraint_values: contains the costs of the constraints
+        step_horizon: the index of the step in the horizon (the first step is index 0)
+        """
         offset_constraint_values = step_horizon * self._controller.number_of_general_constraints
         for i in range(0, self._controller.number_of_general_constraints):
             cost = self._controller.general_constraints[i].evaluate_cost(state, input)
@@ -40,7 +52,8 @@ class Single_shot_LA_definition:
         return constraint_values
 
     def generate_cost_function(self):
-        """ Generate Casadi code of cost and gradient function: 
+        """ 
+        Generate Casadi code of cost and gradient function: 
                 - c-code
                 - Casadi functions
         """

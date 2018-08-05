@@ -15,7 +15,46 @@ def integrator_RK(x,step_size,function_system):
     return  x_new
 
 def integrator_RK_lib(x,step_size,function_system,key_name):
-    """ integrate using an integration tableau from ./integrator_tableaus """
+    """ 
+    Integrate using an explicit integration tableau from ./integrator_tableaus
+
+    Parameters
+    ----------
+    x : current state
+    step_size : discretizator step size
+    function_system : continious differential equation of the system
+    behavior
+    key_name : name of the integrator
+          BS5         Bogacki-Shampine RK5(4)8    
+          BuRK65      Butcher's RK65              
+          CMR6        Calvo 6(5)                  
+          DP5         Dormand-Prince RK5(4)7      
+          FE          Forward Euler               
+          Fehlberg45  Fehlberg RK5(4)6            
+          Heun33      Heun RK 33                  
+          Lambert65   Lambert                     
+          MTE22       Minimal Truncation Error 22 
+          Merson43    Merson RK4(3)               
+          Mid22       Midpoint Runge-Kutta        
+          NSSP32      non-SSPRK 32                
+          NSSP33      non-SSPRK 33                
+          PD8         Prince-Dormand 8(7)         
+          RK44        Classical RK4               
+          SSP104      SSPRK(10,4)                 
+          SSP22       SSPRK 22                    
+          SSP22star   SSPRK22star                 
+          SSP33       SSPRK 33                    
+          SSP53       SSP 53                      
+          SSP54       SSP 54                      
+          SSP63       SSP 63                      
+          SSP75       SSP 75                      
+          SSP85       SSP 85                      
+          SSP95       SSP 95  
+
+    Returns
+    ------
+    The next state
+    """
     script_location = os.path.dirname(os.path.realpath(__file__))
     integrator_tab_location = os.path.join(os.path.join(script_location,"integrator_tableaus"),key_name+".npz")
 
