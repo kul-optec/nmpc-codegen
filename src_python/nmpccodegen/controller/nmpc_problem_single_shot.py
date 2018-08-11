@@ -2,7 +2,9 @@ import casadi as cd
 from .casadi_code_generator import Casadi_code_generator as ccg
 
 class Single_shot_definition:
-    """ single shot nmpc defintion """
+    """ 
+    Single shot nmpc defintion 
+    """
     def __init__(self,controller):
         self._controller=controller
         self._dimension=controller.model.number_of_inputs*controller.horizon

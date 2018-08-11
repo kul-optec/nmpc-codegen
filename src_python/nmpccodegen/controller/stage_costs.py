@@ -1,12 +1,37 @@
 class Stage_cost_QR:
-    """ Simple QR stage cost"""
+    """ 
+    Simple QR stage cost
+    """
     def __init__(self,model,Q,R):
+        """
+        Constructs stage cost
+
+        Parameters
+        ---------
+        model : object of nmpccodegen.models.model or nmpccodegen.models.model_continious 
+        Q : quadratic cost on the state
+        R : quadratic cost on the input
+        """
         self._Q=Q
         self._R=R
         self._model=model
     def evaluate_cost(self,state,input,iteration_index,
         state_reference,input_reference):
-        """ calculate and return stage cost """
+        """ 
+        Calculate stage cost 
+
+        Parameters
+        ---------
+        state : current state of the system
+        input : current input of the system
+        iteration_index : step index of the discrete system
+        state_reference : wanted state of the system
+        input_reference : wanted input of the system
+
+        Returns
+        ------
+        Stage Cost (x'Qx + u'Ru)
+        """
         # As state and input are of the stype csadi.SX we can't just do vector matrix product
         # Everything must be written out in basic operations
         stage_cost=0
