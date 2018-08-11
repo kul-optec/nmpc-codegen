@@ -3,11 +3,23 @@ from pathlib import Path
 import time
 
 class Source_file_generator:
+    """
+    Library to easily generate proximal functions
+    """
     number_of_spaces_in_tab=4
     def __init__(self,location,function_type):
+        """
+        Parameters
+        ---------
+        location : target location 
+        function_type : should be either "g" or "proxg"
+        """
         self._location=location
         self._function_type=function_type
     def open(self):
+        """
+        Open fil stream
+        """
         file = Path(self._location)
         if (file.exists()):
             print(self._location + " already exists, removing it before adding the new file")

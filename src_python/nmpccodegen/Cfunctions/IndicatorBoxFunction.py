@@ -5,7 +5,14 @@ from .source_file_operations import Source_file_generator
 
 class IndicatorBoxFunctionProx(Cfunction):
     def __init__(self,lower_limits,upper_limits):
-        """constructor box function"""
+        """
+        constructs box function
+
+        Parameters
+        ---------
+        lower_limit : array of the lowest values the input can be
+        upper_limit : array of the highest value the input can be
+        """
         self._lower_limits=lower_limits
         self._upper_limits=upper_limits
         self._dimension=min(len(upper_limits),len(lower_limits))
@@ -14,6 +21,13 @@ class IndicatorBoxFunctionProx(Cfunction):
                   +str(self._dimension))
 
     def generate_c_code(self, location):
+        """
+        Generates C code of proximal function
+
+        Parameters
+        ---------
+        location : location function needs to be generated
+        """
         source_file = Source_file_generator(location,"proxg")
         source_file.open()
         source_file.start_for("i","MPC_HORIZON",indent=1)
