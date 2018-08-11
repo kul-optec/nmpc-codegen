@@ -2,9 +2,21 @@ import time
 
 class Globals_generator:
     def __init__(self,location_globals):
+        """
+        Constructs a Globals generator object
+
+        Parameters
+        ---------
+        """
         self._location_globals=location_globals
     def generate_globals(self,nmpc_controller):
-        """ generate globals header file at location defined by constructor """
+        """ 
+        Generate globals header file at location defined by constructor 
+
+        Parameters
+        ---------
+        nmpc_controller : object that represents controller
+        """
         print("Generating globals file at: "+self._location_globals)
         self._init_globals_file()
 
@@ -52,7 +64,9 @@ class Globals_generator:
 
 
     def _init_globals_file(self):
-        """ internal function called at the start of the file generation """
+        """ 
+        Internal function called at the start of the file generation 
+        """
         # replace globals file of it doesnt exist
         globals_file = open(self._location_globals, 'w')
 
@@ -62,7 +76,14 @@ class Globals_generator:
 
         globals_file.close()
     def _define_variable(self,variable_name,variable_value):
-        """ internal function generate a preprocessor variable """
+        """ 
+        Internal function generate a preprocessor variable 
+
+        Parameters
+        ---------
+        variable_name
+        variable_value
+        """
         globals_file = open(self._location_globals, 'a')
 
         lines = ["#define ",variable_name ," ",str(variable_value),"\n"]
@@ -70,14 +91,26 @@ class Globals_generator:
 
         globals_file.close()
     def generate_comment(self,comment):
-        """ internal function generate single comment line """
+        """ 
+        Internal function generate single comment line 
+
+        Parameters
+        ---------
+        comment : string that contains comment line
+        """
         globals_file = open(self._location_globals, 'a')
 
         globals_file.write("/* "+comment+" */ \n")
 
         globals_file.close()
     def _generate_title(self,title):
-        """ internal function used to generate titles in comments """
+        """ 
+        Internal function used to generate titles in comments 
+
+        Parameters
+        ---------
+        title
+        """
         globals_file = open(self._location_globals, 'a')
 
         globals_file.write("/*"+"\n" + "* ---------------------------------"+"\n")
@@ -86,7 +119,13 @@ class Globals_generator:
 
         globals_file.close()
     def set_data_type(self,data_type):
-        """ set the datatype to either "single precision" or "double precision" """
+        """ 
+        Sets the datatype to either "single precision" or "double precision" 
+
+        Parameters
+        ---------
+        data_type : precision of the solver is "single precision" or "double precision" 
+        """
         if(data_type=="single precision"):
             self._generate_title("constants used with float data type")
             self._define_variable("real_t","float")

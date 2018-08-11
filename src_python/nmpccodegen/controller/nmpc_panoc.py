@@ -10,7 +10,9 @@ from .nmpc_problem_single_shot_LA import Single_shot_LA_definition
 from .nmpc_problem_multiple_shot import Multiple_shot_definition
 
 class Nmpc_panoc:
-    """ Defines a nmpc problem of the shape min f(x)+ g(x) """
+    """ 
+    A nmpc problem of the shape min f(x)+ g(x) 
+    """
     def __init__(self, location_lib,model,stage_cost,terminal_cost=None):
         """
         Constructors a controller
