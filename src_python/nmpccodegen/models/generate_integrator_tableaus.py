@@ -11,6 +11,10 @@ import scipy.io as spio
 def save_integrator(key_name):
     """ 
     save the integrator if its explicit 
+
+    Parameters
+    ---------
+    key_name
     """
     RK=loadRKM(key_name)
     if(RK.is_explicit()):
@@ -39,6 +43,9 @@ def save_integrator(key_name):
     return False
 
 def generate_manual_page(keys_explicit_integrators):
+    """
+    Generates latex table with key names
+    """
     tex_tile = open('table_integrators.tex', 'w')
     names_explicit_integrators=[]
     for i in range(0,len(keys_explicit_integrators)):

@@ -3,10 +3,27 @@ import casadi as cd
 import os
 
 def integrator_explicit_euler(x,step_size,function_system):
+    """
+    Integrate with explicit Euler
+
+    Parameters
+    ---------
+    x : state
+    step_size
+    function_system
+    """
     x_dot = function_system(x)
     return x+step_size*x_dot
 
 def integrator_RK(x,step_size,function_system):
+    """
+    Integrate with Runga Kutta
+
+    Parameters
+    x : state
+    step_size
+    function_system
+    """
     k1 = function_system(x)
     k2 = function_system(x + step_size * k1 / 2)
     k3 = function_system(x + step_size * k2 / 2)
