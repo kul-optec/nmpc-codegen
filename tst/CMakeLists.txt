@@ -35,6 +35,7 @@ target_link_libraries(lipschitz_estimator_test problem_set)
 
 add_executable(prox_grad_descent_poly_test src/prox_grad_descent_poly_test.c)
 target_link_libraries (prox_grad_descent_poly_test PANOC_fake)
+target_link_libraries (prox_grad_descent_poly_test proximal_functions_lib)
 if(NOT MSVC)
 target_link_libraries(prox_grad_descent_poly_test m) # link with the math lib, some toolchains need this
 endif()
@@ -42,6 +43,7 @@ target_link_libraries(prox_grad_descent_poly_test problem_set)
 
 add_executable(panoc_poly_test src/panoc_poly_test.c)
 target_link_libraries (panoc_poly_test PANOC_fake)
+target_link_libraries (panoc_poly_test proximal_functions_lib)
 if(NOT MSVC)
 target_link_libraries(panoc_poly_test m) # link with the math lib, some toolchains need this
 endif()

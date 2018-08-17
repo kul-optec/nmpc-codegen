@@ -4,9 +4,9 @@ if ( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR} )
 endif()
 ###
 
-if (NOT EXISTS "${PROJECT_SOURCE_DIR}/casadi/cost_function_derivative_combined.c")
-    message( FATAL_ERROR "Run generate_test_files.py first, with python3 and library casadi installed")
-endif()
+# if (NOT EXISTS "${PROJECT_SOURCE_DIR}/casadi/cost_function_derivative_combined.c")
+#     message( FATAL_ERROR "Run generate_test_files.py first, with python3 and library casadi installed")
+# endif()
 
 cmake_minimum_required (VERSION 2.6)
 project (npmc C)
@@ -25,6 +25,9 @@ add_subdirectory (PANOC) # read out the cmakelist file
 
 include_directories ("${PROJECT_SOURCE_DIR}/casadi")
 add_subdirectory (casadi)
+
+include_directories ("${PROJECT_SOURCE_DIR}/C_proximal_functions/src")
+add_subdirectory (C_proximal_functions/src)
 
 # add the python interface, this target is excluded from all
 if(WIN32)
