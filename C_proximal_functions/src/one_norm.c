@@ -3,6 +3,8 @@
 #include<stdlib.h>
 
 
+#define SUM(arr, len, sum) do { int i; for(i = 0; i < len; ++i) sum += arr[i]; } while(0);
+
 
 struct one_norm* init_one_norm(const unsigned int dimension,const real_t mu){
     struct one_norm* data = malloc(sizeof(struct one_norm));
@@ -16,11 +18,22 @@ struct one_norm* init_one_norm(const unsigned int dimension,const real_t mu){
 
 static real_t sign_x(real_t x) { return x<0 ? -1 : x>0 ? 1 : x;}
 
-real_t prox_one_norm(const struct one_norm* data,real_t* input, real_t gamma){
-    /* prox=sign(x)*,ax{|x_i|-\lambda,0} */
+
+struct L1_norm* prox_one_norm(const struct one_norm* data,real_t* input, real_t gamma){
+    /* prox=sign(x)*max{|x_i|-\lambda,0} */
     unsigned int i;
+    lamda    = data->mu * gamma;
+    real_t g = 0.*lamda; 
+
     for (i = 0; i < data->dimension; i++){
-        /* TODO: implement prox */
+        intermediate[i] = fmax(0.0, abs(input[i]) - lamda);
+        prox[i]   = sign_x(input[i])*intermediate[i];
     }
-    return 0; /* TODO: return proper value for g(x_{bar}) */
+    struct output { 
+        prox;
+        g_prox = data->mu*SUM(intermediate, data->dimension, sum);  
+    }
+    /* return strcut containging proximal point= x_{bar} and  for g(x_{bar}) = mu * ||x_{bar}||_{1} */
+    return output;
 }
+
