@@ -1,6 +1,7 @@
 #include "stdlib.h"
 #include "../include/nmpc.h"
 #include "../PANOC/casadi_interface.h"
+#include "../PANOC/buffer.h"
 #include "../globals/globals.h"
 #include "timer.h"
 #include <stdio.h>
@@ -59,4 +60,7 @@ real_t simulation_evaluate_f(real_t* static_casadi_parameters,real_t* input){
         return casadi_interface_f_df(input,NULL);
     #endif
     
+}
+real_t get_last_buffered_cost(void){
+    return buffer_get_current_f();
 }

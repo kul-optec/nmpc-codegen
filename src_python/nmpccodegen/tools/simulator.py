@@ -207,6 +207,14 @@ class Simulator:
 
         self.nmpc_python_interface.simulation_set_weight_constraints(index_constraint_ctype,weight_constraint_ctype)
 
+    def get_last_buffered_cost(self):
+        """
+        Returns the most recent cost of the full horizon
+
+        """
+        self.nmpc_python_interface.get_last_buffered_cost.restype = ctypes.c_double
+        return self.nmpc_python_interface.get_last_buffered_cost()
+
     def _make_build_system(self):
         """
         Construct the build system (make files or visual studio solution)
