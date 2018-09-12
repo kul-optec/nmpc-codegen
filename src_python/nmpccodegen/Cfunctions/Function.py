@@ -1,5 +1,7 @@
-# Cfunction is an abstact class representing any function that has a implementation in c89
 class Cfunction:
+    """
+    Abstact class representing any function that has a implementation in c89
+    """
     def __init__(self):
         raise NotImplementedError
 

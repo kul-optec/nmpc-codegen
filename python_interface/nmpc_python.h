@@ -27,3 +27,4 @@ EXPORT int simulation_set_weight_constraints(int index_constraint,real_t weight)
 EXPORT int simulation_set_buffer_solution(real_t value, int index);
 EXPORT real_t simulation_evaluate_f_df(real_t* static_casadi_parameters,real_t* input, real_t* output);
 EXPORT real_t simulation_evaluate_f(real_t* static_casadi_parameters,real_t* input);
+EXPORT real_t get_last_buffered_cost(void);

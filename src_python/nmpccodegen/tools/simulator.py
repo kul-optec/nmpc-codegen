@@ -6,7 +6,18 @@ import subprocess
 import numpy as np
 import sys
 class Simulation_data:
+    """
+    Contains results of the simulator
+    """
     def __init__(self,panoc_time,optimal_input):
+        """
+        crate simulation data
+
+        Parameters
+        ---------
+        panoc_time : Time till convergence of PANOC
+        optimal_input : The optimal input that should be applied to the system.
+        """
         self._optimal_input=np.asarray(optimal_input)
 
         self._hours=panoc_time.hours
@@ -61,8 +72,21 @@ class Panoc_time(ctypes.Structure):
 
 
 class Simulator:
-    """ simulator used to interact in python with an controller in c """
+    """
+    Simulates the controller by compiling the C code into a
+    dynamic library, and loading it into Matlab
+       The simulator only works if the simulation tools were enabled when
+       bootstrapping the environment.
+    """
     def __init__(self,nmpc_controller_location,option=""):
+        """
+        Construct Simulator
+
+        Parameters
+        ---------
+        nmpc_controller_location : 
+        option : 3 different possibilities, leave empty/"using visual studio"/"not using visual studio"
+        """
         self._nmpc_controller_location=nmpc_controller_location
 
         if (option == "visual studio"):
@@ -81,6 +105,19 @@ class Simulator:
         self.nmpc_python_interface.simulation_cleanup()
 
     def simulate_nmpc(self,current_state,state_reference,input_reference):
+        """
+        Simulate the controller for 1 step
+
+        Parameters
+        ---------
+        current_state : 
+        state_reference : 
+        input_reference : 
+
+        Retuns
+        -----
+        Simulation_data object with simulation results in it
+        """
         length_input_reference = len(input_reference)
 
         # construct an actual new array, and save a pointer to it
@@ -111,6 +148,20 @@ class Simulator:
 
         return Simulation_data(convergence_time[0],optimal_input)
     def simulate_nmpc_multistep_solution(self,current_state,state_reference,input_reference,dimension_solution):
+        """
+        Simulate the controller for 1 step
+
+        Parameters
+        ---------
+        current_state : 
+        state_reference : 
+        input_reference : 
+
+        Retuns
+        -----
+        Simulation_data object with simulation results in it and the full horizon of optimal inputs
+        --> return (sim_data,full_solution)
+        """
         # simulate the controller
         sim_data = self.simulate_nmpc(current_state,state_reference,input_reference)
         input_size=len(input_reference)
@@ -127,6 +178,14 @@ class Simulator:
         return (sim_data,full_solution)
 
     def set_init_value_solver(self,value,index):
+        """
+        Set the initial horizon used 
+
+        Parameters
+        ---------
+        value
+        index
+        """
         index_ctype = ctypes.c_int(index)
         value_ctype = ctypes.c_double(value)
 
@@ -134,13 +193,32 @@ class Simulator:
 
         self.nmpc_python_interface.simulation_set_buffer_solution(value_ctype,index_ctype)
     def set_weight_constraint(self,index_constraint,weight_constraint):
+        """
+        Set the weight of an constraint to an different weight than the
+            default value.
 
+        Parameters
+        ---------
+        index_constraint
+        weight_constraint
+        """
         index_constraint_ctype = ctypes.c_int(index_constraint)
         weight_constraint_ctype = ctypes.c_double(weight_constraint)
 
         self.nmpc_python_interface.simulation_set_weight_constraints(index_constraint_ctype,weight_constraint_ctype)
 
+    def get_last_buffered_cost(self):
+        """
+        Returns the most recent cost of the full horizon
+
+        """
+        self.nmpc_python_interface.get_last_buffered_cost.restype = ctypes.c_double
+        return self.nmpc_python_interface.get_last_buffered_cost()
+
     def _make_build_system(self):
+        """
+        Construct the build system (make files or visual studio solution)
+        """
         cwd = os.getcwd()
         try:
             os.chdir(self._nmpc_controller_location)
@@ -158,6 +236,9 @@ class Simulator:
         finally:
             os.chdir(cwd)
     def _compile_interface(self):
+        """
+        Compile the Python/Matlab
+        """
         cwd = os.getcwd()
         try:
             os.chdir(self._nmpc_controller_location)
@@ -165,7 +246,9 @@ class Simulator:
         finally:
             os.chdir(cwd)
     def _load_library(self):
-        """ private function:load the compiled library into Python """
+        """ 
+        Load the compiled library into Python 
+        """
         self._make_build_system()
         try:
             if (platform.system() == 'Linux'):
