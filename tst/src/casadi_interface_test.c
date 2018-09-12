@@ -157,7 +157,7 @@ int simple_test_integrator(void){
 
     real_t* current_state=malloc(sizeof(real_t)*DIMENSION_STATE);
     int i;
-    for (int i = 0; i < DIMENSION_STATE; i++)current_state[i]=start_state[i];
+    for (i = 0; i < DIMENSION_STATE; i++)current_state[i]=start_state[i];
     real_t* new_state=malloc(sizeof(real_t)*DIMENSION_STATE);
 
     int number_of_simulations=1000;
