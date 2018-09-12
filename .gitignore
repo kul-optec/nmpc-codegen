@@ -14,7 +14,6 @@ CTestTestfile.cmake
 *.gch
 *.pyc
 
-casadi
 build
 .vscode
 test_controller_builds
