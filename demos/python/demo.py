@@ -81,7 +81,7 @@ def simulate_demo(trailer_controller,initial_state,reference_state,reference_inp
         print("Step [" + str(i+1) + "/" + str(number_of_steps) + "]: The optimal input is: [" \
               + str(result_simulation.optimal_input[0]) + "," + str(result_simulation.optimal_input[0]) + "]" \
               + " time=" + result_simulation.time_string + " number of panoc iterations=" + str(
-            result_simulation.panoc_interations))
+            result_simulation.panoc_interations) + " cost=" + str(sim.get_last_buffered_cost()) )
 
         state = trailer_controller.model.get_next_state_numpy(state, result_simulation.optimal_input)
         state_history[:, i] = np.reshape(state[:], trailer_controller.model.number_of_states)
