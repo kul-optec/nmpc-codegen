@@ -1,4 +1,4 @@
-# PANOC NMPC solver kernel 
+# PANOC NMPC solver kernel ![travis build](https://travis-ci.org/kul-forbes/nmpc-codegen.svg?branch=master)
 ## What is this?
 Nmpc-codegen generates MPC controllers. The user provides the dynamics of the system, a number of conditions and some MPC parameters in python. Nmpc-codegen will then generate the NMPC controller in c89 code that can be used on embedded devices. Check out the [website](https://kul-forbes.github.io/nmpc-codegen/) for more information.
 
