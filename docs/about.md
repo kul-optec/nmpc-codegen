@@ -1,5 +1,5 @@
 # About this library
-This library was made by Willem Melis as part of the thesis for the Master mathematical engineering at KuLeuven. If you encounter problems installing or using the is library, feel free to make issue. Or contact Willem Melis directly by email: willem.melis at student.kuleuven.be .
+This library was made by Willem Melis as part of the thesis for the Master mathematical engineering at KuLeuven. If you encounter problems installing or using the is library, feel free to make issue. Or contact Willem Melis directly by email: willem.melis at outlook dot com .
 
 ## Install instructions
 [Install with Python3](./install/Python_install.md)
@@ -9,7 +9,7 @@ This library was made by Willem Melis as part of the thesis for the Master mathe
 ## Workflow
 The Python or Matlab library provides a framework to construct a Python or Matlab script that generates a controller. The only thing the user has to provide are the control parameters and the mathematical model of the system. 
 
-Additionally a few algorithm depending tuning parameters must also be provided. At the moment the only to joining parameters are the amount of iterations the algorithm is allowed to execute as long as algorithm does not converge. And an optional parameter that specifies if the cost function and the gradient should always be evaluated together or not.
+Additionally a few algorithm depending parameters must be provided. At the moment the only parameters avaialable to the user are the amount of iterations the algorithm is allowed to execute as long as algorithm does not converge. And an optional parameter that specifies if the cost function and the gradient should always be evaluated together or not.
 ![alt text](img/nmpc_codegen_scheme.png "General scheme of the library")
 
 ## Internal structure Python/Matlab 
