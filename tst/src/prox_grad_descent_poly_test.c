@@ -37,7 +37,6 @@ int checkIfSolutionIsReached(void){
     example_problems_set_init_problem1(w,dimension);
     f_poly_init(dimension,degree );
     casadi_interface_test_init(dimension, 
-        g_1,
         proxg_1,
         f_poly,
         df_poly);

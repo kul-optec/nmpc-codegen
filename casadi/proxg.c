@@ -1,6 +1,6 @@
 /* file generated on 09/12/18 at 23:06:02 */
 
-void casadi_interface_proxg(real_t* state){
+real_t casadi_interface_g_proxg(real_t* state){
     size_t i;
     for(i=0;i<MPC_HORIZON;i++){
         /* check if the value of the border is outside the box, if so go to the nearest point inside the box */
@@ -21,5 +21,5 @@ void casadi_interface_proxg(real_t* state){
         }
         state+=2;
     }
-
+    return 0; /* always ends up inside the box so g(x_bar)=0 */
 }

@@ -7,6 +7,9 @@
 
 /* internal function */
 real_t sign(real_t x);
+static real_t g_1(const real_t* x);
+static real_t g_2(const real_t* x);
+static real_t g_3(const real_t* x);
 
 /* a polynomial as f */
 static size_t f_poly_dimension;
@@ -84,12 +87,12 @@ int example_problems_set_init_problem1(real_t w,size_t dimension){
     problem1_dimension=dimension;
     return SUCCESS;
 }
-real_t g_1(const real_t* x){
+static real_t g_1(const real_t* x){
     real_t potential_x = vector_norm1(x,problem1_dimension)-problem1_w;
     if(potential_x>0)return potential_x;
     return 0;
 }
-void proxg_1(real_t* x){
+real_t proxg_1(real_t* x){
     real_t norm_x = vector_norm1(x,problem1_dimension);
     if(norm_x<problem1_w){/* |x|<w -> sign(x)*(|x|-w)*/
         vector_copy(x,x,problem1_dimension);
@@ -100,17 +103,18 @@ void proxg_1(real_t* x){
         size_t i;
         for ( i = 0; i < problem1_dimension; i++)x[i]=sign(x[i])*problem1_w; 
     }
+    return(g_1(x));
 }
 
 
 /* g2=Indicator{-1;0;1} */
-real_t g_2(const real_t* x){
+static real_t g_2(const real_t* x){
     if(*x==-1)return 0;
     if(*x==1)return 0;
     if(*x==0)return 0;
     return LARGE;
 }
-void proxg_2(real_t* x){
+real_t proxg_2(real_t* x){
     if(*x<-0.5){
         *x= -1;
     }else if (*x>0.5){
@@ -118,6 +122,7 @@ void proxg_2(real_t* x){
     }else{
         *x= 0;
     }
+    return g_2(x);
 }
 
 static real_t problem3_u_min=0;
@@ -129,16 +134,17 @@ int example_problems_set_init_problem3(real_t u_min,real_t u_max){
     return SUCCESS;
 }
 /* indicator{[-u_max u_min]u[u_min u_max]} */
-real_t g_3(const real_t* x){
+static real_t g_3(const real_t* x){
     if(*x>problem3_u_min && *x<problem3_u_max)return 0;
     if(*x<-problem3_u_min && *x>-problem3_u_max)return 0;
     return LARGE;
 }
-void proxg_3(real_t* x){
+real_t proxg_3(real_t* x){
     if(*x>problem3_u_min && *x<problem3_u_max)*x = *x;
     if(*x<-problem3_u_min && *x>-problem3_u_max)*x = *x;
     if(*x>problem3_u_max) *x = problem3_u_max;
     if(*x<-problem3_u_max) *x = -problem3_u_max;
     if(*x>0)*x =problem3_u_min;
     else *x =-problem3_u_min;
+    return(g_3(x));
 }

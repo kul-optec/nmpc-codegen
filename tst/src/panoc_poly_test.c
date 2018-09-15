@@ -36,7 +36,6 @@ int checkIfSolutionIsReached(void){
     example_problems_set_init_problem1(w,dimension);
     f_poly_init(dimension,degree );
     casadi_interface_test_init(dimension, 
-        g_1,
         proxg_1,
         f_poly,
         df_poly);
@@ -82,7 +81,6 @@ int checkIfSolutionIsReached2(void){
     example_problems_set_init_problem1(w,dimension);
     f_poly_init(dimension,degree );
     casadi_interface_test_init(dimension, 
-        g_1,
         proxg_1,
         f_poly,
         df_poly);
@@ -130,7 +128,6 @@ int rosen_test(void){
     example_problems_set_init_problem1(w,dimension);
     f_poly_init(dimension,degree );
     casadi_interface_test_init(dimension, 
-        g_3,
         proxg_3,
         f_rosenbrock,
         df_rosenbrock);

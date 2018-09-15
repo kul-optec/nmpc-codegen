@@ -25,6 +25,7 @@ static real_t* new_location;
 static real_t* direction;
 static real_t* new_location_FBE;
 static real_t* direction_FBE;
+static real_t g_new_location;
 
 
 int proximal_gradient_descent_init(void){
@@ -140,7 +141,7 @@ static int proximal_gradient_descent_forward_backward_step(const real_t* locatio
     vector_copy(location,new_location,DIMENSION_PANOC);
     vector_add_ntimes(new_location,df_location,DIMENSION_PANOC,-1*linesearch_gamma); /* new_location = location - gamma * df_location */
     
-    casadi_interface_proxg(new_location); /* new_location = proxg(new_location) */
+    g_new_location = casadi_interface_g_proxg(new_location); /* new_location = proxg(new_location) */
     vector_sub(location,new_location,DIMENSION_PANOC,direction); /* find the direction */
     return SUCCESS;
 }
@@ -232,7 +233,6 @@ real_t proximal_gradient_descent_get_current_forward_backward_envelop(void){
  * calculate the forward backward envelop using internal forwardbackward step
  */
 static real_t proximal_gradient_descent_forward_backward_envelop_precomputed_step(const real_t f_location,const real_t* df_location){
-    const real_t g_new_location=casadi_interface_g(new_location);
     const real_t norm_direction = inner_product(direction,direction,DIMENSION_PANOC);
 
     const real_t forward_backward_envelop = f_location + g_new_location \

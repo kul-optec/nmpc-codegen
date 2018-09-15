@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "casadi_interface.h"
 
-#include "../casadi/g.c"
+// #include "../casadi/g.c"
 #include "../casadi/proxg.c"
 #ifdef INTEGRATOR_CASADI
 #include "../casadi/integrator.c"
