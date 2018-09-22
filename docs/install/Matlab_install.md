@@ -9,7 +9,7 @@
 
 ## How to install
 - make sure Cmake,make and gcc are installed (run Matlab_test_utils.m to test if they are available)
-- git clone the repo [nmpc-codegen-matlab](https://github.com/kul-forbes/nmpc-codegen-matlab)
+- git clone (with the --recursive flag on) the repo [nmpc-codegen-matlab](https://github.com/kul-forbes/nmpc-codegen-matlab)
 - add the src folder to your matlab path
 - !! no compilation is required when installing , Matlab takes care of any compilation !!
 - install the following library's [casadi](http://casadi.org), No toolboxes are required 
