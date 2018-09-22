@@ -9,7 +9,7 @@ At the moment there is no package, but very soon the python package will be avai
 
 ## How to install
 - make sure Cmake,make and gcc are installed 
-- git clone the [nmpc-codegen-python](https://github.com/kul-forbes/nmpc-codegen-python) repo 
+- git clone (with the --recursive flag on) the [nmpc-codegen-python](https://github.com/kul-forbes/nmpc-codegen-python) repo 
 - add src to your python path
 - !! no compilation is required when installing , Python takes care of any compilation !!
 - Install the following library's numpy,casadi,matplotlib
