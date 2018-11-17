@@ -26,11 +26,14 @@ static real_t* current_input;
 static real_t* new_input;
 static real_t* static_casadi_parameters;
 
-static int nmpc_prepare(real_t* static_casadi_parameters,const real_t* current_state,const real_t* state_reference,\
-        const real_t* input_reference,const real_t* optimal_inputs);
+static int nmpc_prepare(
+        real_t* static_casadi_parameters,
+        const real_t* current_state,
+        const real_t* state_reference,
+        const real_t* input_reference);
 static int nmpc_solve_classic_way(real_t minimum_residual);
 static int shift_input(void);
-static real_t current_residual;
+static real_t current_residual_inf_norm;
 
 #ifdef USE_LA
 static int nmpc_solve_with_lagrangian(real_t* static_casadi_parameters);
@@ -38,6 +41,10 @@ static int shift_weights_and_lambda(void);
 static real_t* weights_constraints;
 static real_t* lambdas;
 #endif
+
+real_t nmpc_get_residual_inf_norm(void){
+    return current_residual_inf_norm;
+}
 
 int nmpc_init(void){
     if(panoc_init()==FAILURE) goto fail_1;
@@ -97,8 +104,11 @@ static void switch_input_current_new(void){
     current_input=new_input;
     new_input=buffer;
 }
-static int nmpc_prepare(real_t* static_casadi_parameters,const real_t* current_state,const real_t* state_reference,\
-        const real_t* input_reference,const real_t* optimal_inputs){
+static int nmpc_prepare(
+        real_t* static_casadi_parameters,
+        const real_t* current_state,
+        const real_t* state_reference,
+        const real_t* input_reference){
     int i;
     for(i=0;i<DIMENSION_STATE;i++){
         static_casadi_parameters[i] = current_state[i];
@@ -110,6 +120,7 @@ static int nmpc_prepare(real_t* static_casadi_parameters,const real_t* current_s
     casadi_prepare_cost_function(static_casadi_parameters);
     return SUCCESS;
 }
+
 static int shift_input(void){
     int i;
     for (i = 0; i < DIMENSION_INPUT*MPC_HORIZON - DIMENSION_INPUT; i++){
@@ -128,7 +139,7 @@ int npmc_solve( const real_t* current_state,
      *    1. classic way, min cost(x) + h(x) with h(x) as the soft constraint
      *    2. Accelerated lagrangian
      */
-    nmpc_prepare(static_casadi_parameters,current_state,state_reference,input_reference,optimal_inputs);
+    nmpc_prepare(static_casadi_parameters,current_state,state_reference,input_reference);
     #ifdef USE_LA
         int i_panoc = nmpc_solve_with_lagrangian(static_casadi_parameters);
         shift_weights_and_lambda();
@@ -157,14 +168,14 @@ static int nmpc_solve_classic_way(real_t minimum_residual){
      * take implicitly the previous inputs as the starting position for the algorithm 
      */
     int i_panoc;
-    real_t current_residual=minimum_residual*10;
+    current_residual_inf_norm = minimum_residual*10;
     for (i_panoc= 0; i_panoc < PANOC_MAX_STEPS ; i_panoc++){
-        if(i_panoc > PANOC_MIN_STEPS && current_residual<minimum_residual){
+        if(i_panoc > PANOC_MIN_STEPS && current_residual_inf_norm<minimum_residual){
             /* if more then PANOC_MIN_STEPS steps are passed 
                and residual is low stop iterating */
             break;
         }
-        current_residual = panoc_get_new_location(current_input,new_input);
+        current_residual_inf_norm = panoc_get_new_location(current_input,new_input);
 
         /*
          * if the residual was larger then the machine accuracy
@@ -172,7 +183,7 @@ static int nmpc_solve_classic_way(real_t minimum_residual){
          * WARNING: if the residual was smaller then the machine 
          *  accuracy you might get NaN thats why we won't use it
          */
-        if(current_residual>MACHINE_ACCURACY)
+        if(current_residual_inf_norm>MACHINE_ACCURACY)
             switch_input_current_new();
             
     }
@@ -204,7 +215,7 @@ static int nmpc_solve_with_lagrangian(real_t* static_casadi_parameters){
      */
     int i_panoc=0;int i;
     real_t minimum_residual=START_RESIDUAL;
-    for (i = 0; (i < MAX_STEPS_LA) && (current_residual<MIN_RESIDUAL) && (minimum_residual>=MIN_RESIDUAL) ; i++)
+    for (i = 0; (i < MAX_STEPS_LA) && (current_residual_inf_norm<MIN_RESIDUAL) && (minimum_residual>=MIN_RESIDUAL) ; i++)
     {
         /*
          * Solve the problem

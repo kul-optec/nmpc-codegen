@@ -127,7 +127,10 @@ static int proximal_gradient_descent_check_linesearch(void){
 
     const real_t norm_direction_gamma = inner_product(direction,direction,DIMENSION_PANOC); /* direction=gamma*r in paper */
 
-    if(f_new_location>f_current_location - inner_product_df_direction + ( (1-PROXIMAL_GRAD_DESC_SAFETY_VALUE)/(2*linesearch_gamma) )*norm_direction_gamma + 1e-6*f_current_location)
+    if( f_new_location > f_current_location 
+            - inner_product_df_direction 
+            + ( (1-PROXIMAL_GRAD_DESC_SAFETY_VALUE)/(2*linesearch_gamma) )*norm_direction_gamma 
+            + 1e-6*f_current_location)
         return FAILURE;
     else
         return SUCCESS;
@@ -217,11 +220,11 @@ real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location
     real_t f_location=buffer_get_new_location_f();
 
     proximal_gradient_descent_forward_backward_step(location, df_location); /* this will fill the new_direction variable */
-    real_t forward_backward_envelop = proximal_gradient_descent_forward_backward_envelop_precomputed_step(f_location,df_location);
+    real_t forward_backward_envelope = proximal_gradient_descent_forward_backward_envelop_precomputed_step(f_location,df_location);
 
     proximal_gradient_descent_push(); /* swap data fields to FBE calculation fields */
 
-    return forward_backward_envelop;
+    return forward_backward_envelope;
 }
 real_t proximal_gradient_descent_get_current_forward_backward_envelop(void){
     const real_t f_location = buffer_get_current_f();
@@ -232,14 +235,16 @@ real_t proximal_gradient_descent_get_current_forward_backward_envelop(void){
 /*
  * calculate the forward backward envelop using internal forwardbackward step
  */
-static real_t proximal_gradient_descent_forward_backward_envelop_precomputed_step(const real_t f_location,const real_t* df_location){
+static real_t proximal_gradient_descent_forward_backward_envelop_precomputed_step(
+        const real_t f_location,
+        const real_t* df_location)
+{
     const real_t norm_direction = inner_product(direction,direction,DIMENSION_PANOC);
-
-    const real_t forward_backward_envelop = f_location + g_new_location \
+    const real_t forward_backward_envelope = f_location + g_new_location \
      - inner_product(df_location,direction,DIMENSION_PANOC) \
      + (1/(linesearch_gamma*2))*norm_direction;
 
-    return forward_backward_envelop;
+    return forward_backward_envelope;
 }
 
 real_t proximal_gradient_descent_get_gamma(void){

@@ -7,7 +7,7 @@
 int panoc_init();
 int panoc_cleanup();
 
-real_t panoc_get_new_location(const real_t* current_location,real_t* optimal_inputs);
+real_t panoc_get_new_location(const real_t* current_location, real_t* optimal_inputs);
 
 /*
  * call this function from nmpc at the end to reset the buffers/counters

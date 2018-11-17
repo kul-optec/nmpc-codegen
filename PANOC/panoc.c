@@ -35,8 +35,8 @@ static real_t direction_norm;
 /* functions used internally */
 static int panoc_check_linesearch_condition(real_t* new_location, const real_t linesearch_gamma);
 static int panoc_get_new_potential_location(const  real_t* forward_backward_step,
-const real_t* direction_residue,const real_t tau,real_t* potential_new_location);
-static int panoc_linesearch(const real_t* forward_backward_step,const real_t* direction_residue,\
+const real_t* direction_residual,const real_t tau,real_t* potential_new_location);
+static int panoc_linesearch(const real_t* forward_backward_step,const real_t* direction_residual,\
         real_t linesearch_gamma, real_t* new_location);
 
 /*
@@ -79,9 +79,9 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
     const real_t linesearch_gamma = proximal_gradient_descent_get_gamma();
 
     #ifndef PURE_PROX_GRADIENT /* if PURE_PROX_GRADIENT is defined, we wont use lbgfs step */
-        const real_t* direction_residue = lbfgs_get_direction();
+        const real_t* direction_residual = lbfgs_get_direction();
     #else
-        const real_t* direction_residue = NULL;
+        const real_t* direction_residual = NULL;
     #endif /* if PURE_PROX_GRADIENT is defined, we wont use lbgfs step */
     
     /* precompute FBE used in linesearch check, static fields ! */
@@ -89,10 +89,10 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
     direction_norm=inner_product(forward_backward_step,forward_backward_step,DIMENSION_PANOC);
 
     if(lbfgs_get_active_buffer_size()>0)
-        panoc_linesearch(forward_backward_step,direction_residue,linesearch_gamma,new_location);
+        panoc_linesearch(forward_backward_step,direction_residual,linesearch_gamma,new_location);
     else{
         tau=0;/* no linesearch needed, as the lbfgs buffer is empty */
-        panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
+        panoc_get_new_potential_location(forward_backward_step,direction_residual,tau,new_location);
     }
 
     #ifndef PURE_PROX_GRADIENT /* if PURE_PROX_GRADIENT is defined, we wont use lbgfs step */
@@ -117,19 +117,19 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
     const real_t residual_inf_norm=proximal_gradient_descent_get_current_residual_inf_norm();
     return residual_inf_norm;
 }
-static int panoc_linesearch(const real_t* forward_backward_step,const real_t* direction_residue,\
+static int panoc_linesearch(const real_t* forward_backward_step,const real_t* direction_residual,\
                         real_t linesearch_gamma, real_t* new_location){
     tau=1;
-    panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
+    panoc_get_new_potential_location(forward_backward_step,direction_residual,tau,new_location);
     int i=0;
     for(i=0;i<FBE_LINESEARCH_MAX_ITERATIONS && panoc_check_linesearch_condition(new_location,linesearch_gamma)==FAILURE;i++){
             tau=tau/2;
-            panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
+            panoc_get_new_potential_location(forward_backward_step,direction_residual,tau,new_location);
     }
 
     if(i==FBE_LINESEARCH_MAX_ITERATIONS){
         tau=0;
-        panoc_get_new_potential_location(forward_backward_step,direction_residue,tau,new_location);
+        panoc_get_new_potential_location(forward_backward_step,direction_residual,tau,new_location);
     }
 
     return SUCCESS;
@@ -161,18 +161,18 @@ static int panoc_check_linesearch_condition(real_t* new_location,const real_t li
 }
 
 /* 
- * find potential new location x=x-(1-tau)*forward_backward_step+tau*direction_residue 
+ * find potential new location x=x-(1-tau)*forward_backward_step+tau*direction_residual 
  */
 static int panoc_get_new_potential_location(const  real_t* forward_backward_step,
-    const real_t* direction_residue,const real_t tau,real_t* potential_new_location){
+    const real_t* direction_residual,const real_t tau,real_t* potential_new_location){
 
     const real_t* current_location = buffer_get_current_location();
     if(tau>0 && tau<1)
-        vector_add_2_vectors_a_times(current_location,forward_backward_step,direction_residue,DIMENSION_PANOC,\
+        vector_add_2_vectors_a_times(current_location,forward_backward_step,direction_residual,DIMENSION_PANOC,\
             -(1-tau),tau,potential_new_location); 
     else if (tau==1){
         vector_copy(current_location,potential_new_location,DIMENSION_PANOC);
-        vector_add_ntimes(potential_new_location,direction_residue,DIMENSION_PANOC,1.);
+        vector_add_ntimes(potential_new_location,direction_residual,DIMENSION_PANOC,1.);
     }
     else{ /* tau == 0 */
         vector_copy(current_location,potential_new_location,DIMENSION_PANOC);
