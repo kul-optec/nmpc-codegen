@@ -1,9 +1,13 @@
-#ifndef CASADI_INTERFACE_H
-#define CASADI_INTERFACE_H
-
 #include "../globals/globals.h"
 #include <stddef.h>
 #include <stdlib.h>
+
+#ifndef CASADI_INTERFACE_H
+#define CASADI_INTERFACE_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct {
     int inputSize;
@@ -40,6 +44,11 @@ real_t casadi_interface_g_proxg(real_t* state);
  */
 #ifdef USE_LA
 int casadi_evaluate_constraints(const real_t* inputs,real_t* constraint_values);
+#endif
+
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif

@@ -1,9 +1,13 @@
-#ifndef LBFGS_H
-#define LBFGS_H
-
 #include "../globals/globals.h"
 #include <stddef.h>
 #include <stdlib.h>
+
+#ifndef LBFGS_H
+#define LBFGS_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 int lbfgs_init(const unsigned int buffer_size_);
 int lbfgs_cleanup(void);
@@ -16,4 +20,8 @@ const real_t* lbfgs_get_direction(void);
 int lbfgs_reset_iteration_counters(void);
 unsigned int lbfgs_get_active_buffer_size(void);
 
-#endif 
+#ifdef __cplusplus
+}
+#endif
+
+#endif  /* LBFGS_H */

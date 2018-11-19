@@ -1,4 +1,12 @@
 #include "./python_interface/timer.h"
+
+#ifndef LIBPYTHON_INTERFACE_H
+#define LIBPYTHON_INTERFACE_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define real_t double
 
 /*
@@ -20,3 +28,9 @@ int simulation_set_buffer_solution(real_t value, int index);
 real_t simulation_evaluate_f_df(real_t* static_casadi_parameters,real_t* input, real_t* output);
 real_t simulation_evaluate_f(real_t* static_casadi_parameters,real_t* input);
 real_t get_last_buffered_cost(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

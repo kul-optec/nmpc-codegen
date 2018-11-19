@@ -1,9 +1,13 @@
-#ifndef MATRIX_OPERATIONS_H
-#define MATRIX_OPERATIONS_H
-
 #include "../globals/globals.h"
 #include "stddef.h"
 #include "math.h"
+
+#ifndef MATRIX_OPERATIONS_H
+#define MATRIX_OPERATIONS_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
  
 /* squared with preprocessor */
 #define sq(x) ((x)*(x))
@@ -54,5 +58,9 @@ void vector_add_ntimes(real_t* vector1,const real_t* vector2,const int size_vect
 /* add vector2 a_vector2 times to vector1 and add vector3 a_vector3 times to vector1*/
 void vector_add_2_vectors_a_times(const real_t* vector1,const real_t* vector2,const real_t* vector3,const int size_vector,
     const real_t a_vector2,const real_t a_vector3,real_t* result);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

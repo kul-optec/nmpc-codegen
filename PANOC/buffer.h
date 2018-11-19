@@ -1,9 +1,13 @@
-#ifndef BUFFER_H
-#define BUFFER_H
-
 #include "../globals/globals.h"
 #include <stddef.h>
 #include <stdlib.h>
+
+#ifndef BUFFER_H
+#define BUFFER_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 int buffer_init(void);
 int buffer_cleanup(void);
@@ -31,4 +35,8 @@ const real_t* buffer_get_pure_prox_df(void);
 real_t buffer_get_pure_prox_f(void);
 #endif
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* BUFFER_H */

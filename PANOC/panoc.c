@@ -1,7 +1,7 @@
 /*
  * The panoc algorithm uses a combination of proximal gradient and lbfgs. The
  * linesearch is performed using an smoothed version of the problem called the
- * forward backward envelop, or short FBE.
+ * forward backward envelope, or short FBE.
  * 
  * Every iteration a linesearch(backtracking) on the combination is executed:
  * New direction = -(1-tau)*(direction gradient) + tau*(downward direction lbfgs)
@@ -85,7 +85,7 @@ real_t panoc_get_new_location(const real_t* current_location,real_t* new_locatio
     #endif /* if PURE_PROX_GRADIENT is defined, we wont use lbgfs step */
     
     /* precompute FBE used in linesearch check, static fields ! */
-    FBE_current_location = proximal_gradient_descent_get_current_forward_backward_envelop();
+    FBE_current_location = proximal_gradient_descent_get_current_forward_backward_envelope();
     direction_norm=inner_product(forward_backward_step,forward_backward_step,DIMENSION_PANOC);
 
     if(lbfgs_get_active_buffer_size()>0)
@@ -140,7 +140,7 @@ static int panoc_check_linesearch_condition(real_t* new_location,const real_t li
      * If this is the first time you call the check_line_condition:
      *      use the precomputed FBE as your only using lbfgs
      */
-    const real_t FBE_potential_new_location = proximal_gradient_descent_forward_backward_envelop(new_location);
+    const real_t FBE_potential_new_location = proximal_gradient_descent_forward_backward_envelope(new_location);
     const real_t factor = PROXIMAL_GRAD_DESC_SAFETY_VALUE/(4*linesearch_gamma);
 
     /*

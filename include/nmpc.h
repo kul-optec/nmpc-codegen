@@ -1,6 +1,10 @@
 #ifndef NMPC_H
 #define NMPC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include<stdlib.h>
 #include "../globals/globals.h"
 
@@ -17,4 +21,8 @@ int nmpc_set_weight_constraints(int index_constraint,real_t weight);/* returns f
 int nmpc_set_buffer_solution(real_t value, int index); /* set the internal value of the input of the cost function */
 real_t nmpc_get_residual_inf_norm(void);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* NMPC_H */

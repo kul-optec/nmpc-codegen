@@ -37,5 +37,5 @@ real_t casadi_interface_f_df(const real_t* input,real_t* output){
     return f(input); /* get function value */
 }
 real_t casadi_interface_g_proxg(real_t* state){
-    proxg(state);
+    return proxg(state);
 }

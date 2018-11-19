@@ -13,7 +13,7 @@ static int proximal_gradient_descent_check_linesearch(void);
 static int proximal_gradient_descent_forward_backward_step(const real_t* location,const real_t* df_location);
 static int proximal_gradient_descent_push(void);
 static int proximal_gradient_descent_linesearch(void);
-static real_t proximal_gradient_descent_forward_backward_envelop_precomputed_step(const real_t f_location,const real_t* df_location);
+static real_t proximal_gradient_descent_forward_backward_envelope_precomputed_step(const real_t f_location,const real_t* df_location);
 
 /* variables saved between direction calls */
 static size_t iteration_index=0; /* is 0 at first and 1 after first time you call get direction */
@@ -174,7 +174,7 @@ int proximal_gradient_descent_get_new_residual(const real_t* location,real_t* re
     return SUCCESS;
 }
 /*
- * compute residual using direction used by fordward backward envelop
+ * compute residual using direction used by fordward backward envelope
  */
 int proximal_gradient_descent_get_new_residual_buffered(real_t* residual){
     proximal_gradient_descent_push(); /* swap data fields to FBE calculation fields */
@@ -206,10 +206,10 @@ real_t proximal_gradient_descent_get_current_residual_inf_norm(void){
 
 
 /*
- * calculate the forward backward envelop using the internal gamma
+ * calculate the forward backward envelope using the internal gamma
  * Matlab cache.FBE = cache.fx + cache.gz - cache.gradfx(:)'*cache.FPR(:) + (0.5/gam)*(cache.normFPR^2);
  */
-real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location){
+real_t proximal_gradient_descent_forward_backward_envelope(const real_t* location){
     proximal_gradient_descent_push(); /* swap data fields to FBE calculation fields */
 
     /* 
@@ -220,22 +220,22 @@ real_t proximal_gradient_descent_forward_backward_envelop(const real_t* location
     real_t f_location=buffer_get_new_location_f();
 
     proximal_gradient_descent_forward_backward_step(location, df_location); /* this will fill the new_direction variable */
-    real_t forward_backward_envelope = proximal_gradient_descent_forward_backward_envelop_precomputed_step(f_location,df_location);
+    real_t forward_backward_envelope = proximal_gradient_descent_forward_backward_envelope_precomputed_step(f_location,df_location);
 
     proximal_gradient_descent_push(); /* swap data fields to FBE calculation fields */
 
     return forward_backward_envelope;
 }
-real_t proximal_gradient_descent_get_current_forward_backward_envelop(void){
+real_t proximal_gradient_descent_get_current_forward_backward_envelope(void){
     const real_t f_location = buffer_get_current_f();
     const real_t* df_location = buffer_get_current_df();
-    return proximal_gradient_descent_forward_backward_envelop_precomputed_step(f_location,df_location);
+    return proximal_gradient_descent_forward_backward_envelope_precomputed_step(f_location,df_location);
 }
 
 /*
  * calculate the forward backward envelop using internal forwardbackward step
  */
-static real_t proximal_gradient_descent_forward_backward_envelop_precomputed_step(
+static real_t proximal_gradient_descent_forward_backward_envelope_precomputed_step(
         const real_t f_location,
         const real_t* df_location)
 {

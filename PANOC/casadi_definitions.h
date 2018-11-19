@@ -1,7 +1,11 @@
+#include"../globals/globals.h"
+
 #ifndef CASADI_DEFINITIONS_H
 #define CASADI_DEFINITIONS_H
 
-#include"../globals/globals.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define to_double(x) (double) x
 #define to_int(x) (int) x
@@ -16,4 +20,8 @@
 real_t sq(real_t x) { return x*x;}
 real_t sign(real_t x) { return x<0 ? -1 : x>0 ? 1 : x;}
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif /* CASADI_DEFINITIONS_H */

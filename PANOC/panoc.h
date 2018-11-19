@@ -1,8 +1,12 @@
+#include<stddef.h>
+#include"../globals/globals.h"
+
 #ifndef PANOC_H
 #define PANOC_H
 
-#include<stddef.h>
-#include"../globals/globals.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 int panoc_init();
 int panoc_cleanup();
@@ -15,4 +19,9 @@ real_t panoc_get_new_location(const real_t* current_location, real_t* optimal_in
 int panoc_reset_cycli(void);
 
 real_t panoc_get_tau(void);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

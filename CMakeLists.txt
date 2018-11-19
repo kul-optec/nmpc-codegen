@@ -8,9 +8,10 @@ cmake_minimum_required (VERSION 2.6)
 project (npmc C)
 # set the compiler with its flags
 # SET(CMAKE_C_COMPILER gcc)
-SET(CMAKE_BUILD_TYPE Debug)
+SET(CMAKE_BUILD_TYPE Release)
 if(NOT MSVC)
     set(CMAKE_C_FLAGS_DEBUG "-g -O0 -Wall -Wextra -fprofile-arcs -ftest-coverage")
+    set(CMAKE_C_FLAGS_RELEASE "-g -O0 -ffast-math -Wall -Wextra -Wno-unused-parameter -fprofile-arcs -ftest-coverage")
     set(LDFLAGS "-O0 -fprofile-arcs -ftest-coverage")
     SET(CMAKE_EXE_LINKER_FLAGS="-fprofile-arcs -ftest-coverage")
 endif()
@@ -68,11 +69,11 @@ add_dependencies(gcov panoc_poly_test)
 
 add_custom_command(TARGET gcov
     COMMAND echo "=================== GCOV ===================="
-    COMMAND gcov -b ${CMAKE_SOURCE_DIR}/panoc/*.c -o "${CMAKE_BINARY_DIR}/tst/CMakeFiles/matrix_operations_norms.dir/src/matrix_operations_norms.c.gcno"
-    COMMAND gcov -b ${CMAKE_SOURCE_DIR}/panoc/*.c -o "${CMAKE_BINARY_DIR}/tst/CMakeFiles/matrix_operations_vectors.dir/src/matrix_operations_vectors.c.gcno"
-    COMMAND gcov -b ${CMAKE_SOURCE_DIR}/panoc/*.c -o "${CMAKE_BINARY_DIR}/tst/CMakeFiles/lbfgs_poly_test.dir/src/lbfgs_poly_test.c.gcno"
-    COMMAND gcov -b ${CMAKE_SOURCE_DIR}/panoc/*.c -o "${CMAKE_BINARY_DIR}/tst/CMakeFiles/prox_grad_descent_poly_test.dir/src/prox_grad_descent_poly_test.c.gcno"
-    COMMAND gcov -b ${CMAKE_SOURCE_DIR}/panoc/*.c -o "${CMAKE_BINARY_DIR}/tst/CMakeFiles/panoc_poly_test.dir/src/panoc_poly_test.c.gcno"
+    COMMAND gcov-4.8 -b ${CMAKE_SOURCE_DIR}/PANOC/*.c -o "${CMAKE_BINARY_DIR}/tst/CMakeFiles/matrix_operations_norms.dir/src/matrix_operations_norms.c.gcno"
+    COMMAND gcov-4.8 -b ${CMAKE_SOURCE_DIR}/PANOC/*.c -o "${CMAKE_BINARY_DIR}/tst/CMakeFiles/matrix_operations_vectors.dir/src/matrix_operations_vectors.c.gcno"
+    COMMAND gcov-4.8 -b ${CMAKE_SOURCE_DIR}/PANOC/*.c -o "${CMAKE_BINARY_DIR}/tst/CMakeFiles/lbfgs_poly_test.dir/src/lbfgs_poly_test.c.gcno"
+    COMMAND gcov-4.8 -b ${CMAKE_SOURCE_DIR}/PANOC/*.c -o "${CMAKE_BINARY_DIR}/tst/CMakeFiles/prox_grad_descent_poly_test.dir/src/prox_grad_descent_poly_test.c.gcno"
+    COMMAND gcov-4.8 -b ${CMAKE_SOURCE_DIR}/PANOC/*.c -o "${CMAKE_BINARY_DIR}/tst/CMakeFiles/panoc_poly_test.dir/src/panoc_poly_test.c.gcno"
     COMMAND echo "-- Coverage files have been output to ${CMAKE_BINARY_DIR}/coverage"
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/coverage 
     )
